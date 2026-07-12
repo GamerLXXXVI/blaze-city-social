@@ -24,7 +24,15 @@ function Login() {
     try {
       // Ensure we have a supabase user (anon) so callback can bind tokens to us
       const { data: session } = await supabase.auth.getSession();
-      if (!session.session) await supabase.auth.signInAnonymously();
+      if (!session.session) {
+        const { error: anonErr } = await supabase.auth.signInAnonymously();
+        if (anonErr) {
+          setError(
+            `Couldn't start a local session (${anonErr.message}). Anonymous sign-in must be enabled for Blaze login to work. Try the dev shortcut below, or ask an admin to enable anonymous sign-ins.`,
+          );
+          return;
+        }
+      }
 
       const res = await supabase.functions.invoke("blaze-auth-url", { body: {} });
       if (res.error) throw new Error(res.error.message);
