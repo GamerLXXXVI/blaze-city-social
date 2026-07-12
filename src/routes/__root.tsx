@@ -77,14 +77,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Blaze City — hang out with Blaze streamers" },
+      { name: "description", content: "A live social room for Blaze.stream viewers. Pick an avatar, walk into the bar or the dance floor, and chat with everyone else watching." },
+      { property: "og:title", content: "Blaze City" },
+      { property: "og:description", content: "A live social room for Blaze.stream viewers." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
