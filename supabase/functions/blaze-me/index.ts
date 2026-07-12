@@ -1,6 +1,36 @@
 // Returns the Blaze profile for the caller using the stored access token.
+// Transparently refreshes the access token via the stored refresh token when
+// the current one is expired or about to expire.
 // Requires the caller to be an authenticated Supabase user (JWT in Authorization header).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// Refresh a bit early so we don't race the expiry.
+const REFRESH_SKEW_MS = 60 * 1000;
+
+async function refreshBlazeToken(refreshToken: string) {
+  const clientId = Deno.env.get("BLAZE_CLIENT_ID")!;
+  const clientSecret = Deno.env.get("BLAZE_CLIENT_SECRET")!;
+  const res = await fetch("https://blaze.stream/bapi/oauth2/token", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      grantType: "refresh_token",
+      clientId,
+      clientSecret,
+      refreshToken,
+    }),
+  });
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(`refresh_failed:${res.status}:${detail}`);
+  }
+  const tokens = await res.json();
+  return {
+    access_token: tokens.accessToken ?? tokens.access_token,
+    refresh_token: tokens.refreshToken ?? tokens.refresh_token ?? refreshToken,
+    expires_in: tokens.expiresIn ?? tokens.expires_in ?? null,
+  };
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -33,7 +63,7 @@ Deno.serve(async (req) => {
 
     const { data: row } = await admin
       .from("blaze_tokens")
-      .select("access_token")
+      .select("access_token, refresh_token, expires_at")
       .eq("user_id", userRes.user.id)
       .maybeSingle();
     if (!row?.access_token) {
@@ -43,9 +73,54 @@ Deno.serve(async (req) => {
       });
     }
 
-    const res = await fetch("https://api.blaze.stream/v1/users/profile", {
-      headers: { Authorization: `Bearer ${row.access_token}` },
+    let accessToken: string = row.access_token;
+    const expiresAt = row.expires_at ? Date.parse(row.expires_at) : null;
+    const isExpiring = expiresAt !== null && expiresAt - Date.now() <= REFRESH_SKEW_MS;
+
+    if (isExpiring && row.refresh_token) {
+      try {
+        const refreshed = await refreshBlazeToken(row.refresh_token);
+        if (refreshed.access_token) {
+          accessToken = refreshed.access_token;
+          await admin.from("blaze_tokens").update({
+            access_token: refreshed.access_token,
+            refresh_token: refreshed.refresh_token,
+            expires_at: refreshed.expires_in
+              ? new Date(Date.now() + refreshed.expires_in * 1000).toISOString()
+              : null,
+          }).eq("user_id", userRes.user.id);
+        }
+      } catch (e) {
+        console.error("proactive refresh failed", e);
+      }
+    }
+
+    let res = await fetch("https://api.blaze.stream/v1/users/profile", {
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
+
+    // Reactive refresh: token may have been revoked or expired sooner than expected.
+    if (res.status === 401 && row.refresh_token) {
+      try {
+        const refreshed = await refreshBlazeToken(row.refresh_token);
+        if (refreshed.access_token) {
+          accessToken = refreshed.access_token;
+          await admin.from("blaze_tokens").update({
+            access_token: refreshed.access_token,
+            refresh_token: refreshed.refresh_token,
+            expires_at: refreshed.expires_in
+              ? new Date(Date.now() + refreshed.expires_in * 1000).toISOString()
+              : null,
+          }).eq("user_id", userRes.user.id);
+          res = await fetch("https://api.blaze.stream/v1/users/profile", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+        }
+      } catch (e) {
+        console.error("reactive refresh failed", e);
+      }
+    }
+
     const body = await res.text();
     return new Response(body, {
       status: res.status,
