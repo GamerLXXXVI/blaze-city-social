@@ -43,8 +43,9 @@ Deno.serve(async (req) => {
       });
     }
     const data = await res.json();
-    // Expected shape: { authUrl, state, codeVerifier } (per Blaze docs)
-    const { authUrl, state, codeVerifier } = data;
+    // Blaze returns { url, state, codeVerifier } (docs sometimes call it authUrl).
+    const authUrl = data.authUrl ?? data.url;
+    const { state, codeVerifier } = data;
     if (!authUrl || !state || !codeVerifier) {
       return new Response(JSON.stringify({ error: "bad_upstream_response", data }), {
         status: 502,
