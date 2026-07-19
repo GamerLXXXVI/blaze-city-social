@@ -29,32 +29,36 @@ export function Chat({ messages, onSend }: Props) {
   };
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-border" style={{ background: "var(--chat-surface)" }}>
-      <div className="border-b border-border px-4 py-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        Room chat
+    <div className="hud-panel flex h-full flex-col overflow-hidden">
+      <div className="flex items-center justify-between border-b border-[color:var(--glass-border)] px-4 py-3">
+        <span className="font-mono-display text-[11px] uppercase tracking-[0.2em] text-primary/90">
+          // room chat
+        </span>
+        <span className="hud-chip px-2 py-0.5 text-muted-foreground">live</span>
       </div>
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-2 text-sm">
         {messages.length === 0 && (
-          <p className="text-muted-foreground italic">Say hi — nobody's talking yet.</p>
+          <p className="text-muted-foreground italic">The room's quiet. Say something.</p>
         )}
         {messages.map((m) => (
-          <div key={m.id}>
-            <span className="font-semibold text-accent">{m.username}</span>{" "}
-            <span>{m.text}</span>
+          <div key={m.id} className="leading-relaxed">
+            <span className="font-semibold text-ember">{m.username}</span>
+            <span className="text-muted-foreground/60"> › </span>
+            <span className="text-foreground/90">{m.text}</span>
           </div>
         ))}
       </div>
-      <form onSubmit={submit} className="flex gap-2 border-t border-border p-2">
+      <form onSubmit={submit} className="flex gap-2 border-t border-[color:var(--glass-border)] p-2">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Message the room…"
-          className="flex-1 rounded-lg bg-input px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="flex-1 rounded-lg bg-input/60 px-3 py-2 text-sm outline-none placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-ring"
           maxLength={280}
         />
         <button
           type="submit"
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          className="btn-ember rounded-lg px-4 py-2 text-sm hover:brightness-110 active:scale-[0.98]"
         >
           Send
         </button>
