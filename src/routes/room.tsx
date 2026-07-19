@@ -63,6 +63,11 @@ function RoomPage() {
         toast.info(`${zone.label} — coming soon`);
       } else {
         toast.success(`${zone.actionLabel}!`);
+        window.dispatchEvent(
+          new CustomEvent("spark-burst", {
+            detail: { x: 50, y: 60, count: 30, hue: zone.id === "dance" ? "violet" : "gold" },
+          }),
+        );
       }
     };
     window.addEventListener("zone-action", handler);
