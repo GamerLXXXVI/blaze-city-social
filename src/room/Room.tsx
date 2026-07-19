@@ -186,7 +186,7 @@ function PlayerMarker({ player, isLocal }: { player: RemotePlayer; isLocal?: boo
         width: `${(AVATAR_SIZE / ROOM_WIDTH) * 100}%`,
       }}
     >
-      <div className="flex flex-col items-center">
+      <div className="relative flex flex-col items-center">
         <span
           className={`hud-chip mb-1 px-2 py-0.5 ${
             isLocal
