@@ -64,56 +64,82 @@ function drawPlaceholder(
   ctx.clearRect(0, 0, size, size);
   const baseColor = LAYER_COLORS[layer] ?? "#888";
   const color = shift(baseColor, hashString(optionId + layer));
+  const dy = state === "walk" ? -1.5 : 0;
+  const cx = size / 2;
 
-  // walk state adds a subtle offset so the animation is visible
-  const dy = state === "walk" ? -2 : 0;
+  // Helpers for a rounded humanoid silhouette
+  const roundRect = (x: number, y: number, w: number, h: number, r: number) => {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+    ctx.fill();
+  };
 
-  // Rough per-layer silhouettes (all within the same 96x96 avatar frame)
   ctx.fillStyle = color;
   switch (layer) {
-    case "body":
-      // full silhouette
-      ctx.fillRect(size * 0.32, size * 0.30 + dy, size * 0.36, size * 0.55);
+    case "body": {
+      // legs
+      roundRect(cx - size * 0.16, size * 0.58 + dy, size * 0.32, size * 0.28, size * 0.09);
+      // torso (rounded shoulders)
+      roundRect(cx - size * 0.20, size * 0.36 + dy, size * 0.40, size * 0.30, size * 0.14);
+      // neck
+      roundRect(cx - size * 0.05, size * 0.30 + dy, size * 0.10, size * 0.06, size * 0.03);
+      // head
+      ctx.beginPath();
+      ctx.arc(cx, size * 0.22 + dy, size * 0.13, 0, Math.PI * 2);
+      ctx.fill();
       break;
+    }
     case "pants":
-      ctx.fillRect(size * 0.32, size * 0.60 + dy, size * 0.36, size * 0.25);
+      roundRect(cx - size * 0.17, size * 0.58 + dy, size * 0.34, size * 0.28, size * 0.09);
       break;
     case "shirt":
-      ctx.fillRect(size * 0.28, size * 0.38 + dy, size * 0.44, size * 0.25);
+      roundRect(cx - size * 0.22, size * 0.36 + dy, size * 0.44, size * 0.26, size * 0.13);
       break;
     case "head_shape":
       ctx.beginPath();
-      ctx.arc(size * 0.5, size * 0.25 + dy, size * 0.14, 0, Math.PI * 2);
+      ctx.arc(cx, size * 0.22 + dy, size * 0.135, 0, Math.PI * 2);
       ctx.fill();
       break;
     case "mouth":
-      ctx.fillRect(size * 0.46, size * 0.32 + dy, size * 0.08, size * 0.02);
+      roundRect(cx - size * 0.05, size * 0.27 + dy, size * 0.10, size * 0.018, size * 0.009);
       break;
     case "eyes":
       if (direction !== "up") {
-        ctx.fillRect(size * 0.44, size * 0.24 + dy, size * 0.04, size * 0.03);
-        ctx.fillRect(size * 0.52, size * 0.24 + dy, size * 0.04, size * 0.03);
+        ctx.beginPath();
+        ctx.arc(cx - size * 0.05, size * 0.22 + dy, size * 0.018, 0, Math.PI * 2);
+        ctx.arc(cx + size * 0.05, size * 0.22 + dy, size * 0.018, 0, Math.PI * 2);
+        ctx.fill();
       }
       break;
     case "eyebrows":
-      ctx.fillRect(size * 0.44, size * 0.20 + dy, size * 0.04, size * 0.01);
-      ctx.fillRect(size * 0.52, size * 0.20 + dy, size * 0.04, size * 0.01);
+      roundRect(cx - size * 0.075, size * 0.185 + dy, size * 0.055, size * 0.012, size * 0.006);
+      roundRect(cx + size * 0.02, size * 0.185 + dy, size * 0.055, size * 0.012, size * 0.006);
       break;
-    case "hair":
+    case "hair": {
+      // top curve
       ctx.beginPath();
-      ctx.arc(size * 0.5, size * 0.18 + dy, size * 0.16, Math.PI, 2 * Math.PI);
+      ctx.arc(cx, size * 0.19 + dy, size * 0.15, Math.PI * 1.05, Math.PI * 1.95);
+      ctx.lineTo(cx + size * 0.14, size * 0.24 + dy);
+      ctx.lineTo(cx - size * 0.14, size * 0.24 + dy);
+      ctx.closePath();
       ctx.fill();
       break;
+    }
   }
 
-  // tiny direction indicator (dev aid) - a small dot on the "facing" side
-  ctx.fillStyle = "rgba(255,255,255,0.35)";
-  if (direction === "side") {
-    ctx.fillRect(size * 0.66, size * 0.28 + dy, 2, 2);
-  } else if (direction === "up") {
-    ctx.fillRect(size * 0.49, size * 0.14 + dy, 2, 2);
-  } else {
-    ctx.fillRect(size * 0.49, size * 0.34 + dy, 2, 2);
+  // subtle direction glint on the face
+  if (layer === "eyes" && direction !== "up") {
+    ctx.fillStyle = "rgba(255,255,255,0.6)";
+    const gx = direction === "side" ? cx + size * 0.058 : cx + size * 0.005;
+    ctx.beginPath();
+    ctx.arc(gx, size * 0.215 + dy, 0.7, 0, Math.PI * 2);
+    ctx.arc(cx - size * 0.05 + (direction === "side" ? size * 0.008 : 0), size * 0.215 + dy, 0.7, 0, Math.PI * 2);
+    ctx.fill();
   }
 }
 
