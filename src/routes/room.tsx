@@ -63,6 +63,11 @@ function RoomPage() {
         toast.info(`${zone.label} — coming soon`);
       } else {
         toast.success(`${zone.actionLabel}!`);
+        window.dispatchEvent(
+          new CustomEvent("spark-burst", {
+            detail: { x: 50, y: 60, count: 30, hue: zone.id === "dance" ? "violet" : "gold" },
+          }),
+        );
       }
     };
     window.addEventListener("zone-action", handler);
@@ -80,16 +85,22 @@ function RoomPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground p-4 md:p-6">
-      <div className="mx-auto max-w-[1600px] grid gap-4 md:grid-cols-[1fr_320px]">
+    <main className="min-h-screen text-foreground p-4 md:p-6">
+      <div className="mx-auto max-w-[1600px] grid gap-4 md:grid-cols-[1fr_340px]">
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl font-black">
-              Blaze <span className="text-primary">City</span>
+          <div className="hud-panel flex items-center justify-between px-4 py-2.5">
+            <h1 className="text-lg font-extrabold tracking-tight">
+              Blaze <span className="text-ember">City</span>
             </h1>
-            <span className="text-xs text-muted-foreground">
-              {remote.length} online · logged in as {initial.username}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="hud-chip px-3 py-1 text-primary/90">
+                <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--primary)] align-middle" />
+                {remote.length} online
+              </span>
+              <span className="hud-chip px-3 py-1 text-muted-foreground">
+                @{initial.username}
+              </span>
+            </div>
           </div>
           <Room
             localId={initial.id}
@@ -98,8 +109,8 @@ function RoomPage() {
             remotePlayers={remote}
             onLocalMove={handleMove}
           />
-          <p className="text-xs text-muted-foreground">
-            Click anywhere on the floor to walk. Step into a zone for its action.
+          <p className="font-mono-display text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70">
+            » click the floor to walk · step into a zone to interact
           </p>
         </div>
         <div className="h-[70vh] md:h-auto md:min-h-[600px]">

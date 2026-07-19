@@ -79,25 +79,53 @@ function Login() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6 py-16 bg-background">
-      <div className="w-full max-w-md text-center space-y-8">
+    <main className="relative min-h-screen flex items-center justify-center px-6 py-16 overflow-hidden">
+      {/* backdrop */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 30% 20%, rgba(240,185,11,0.18), transparent 55%), radial-gradient(ellipse at 75% 80%, rgba(194,65,12,0.22), transparent 60%), #14110D",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
+        }}
+      />
+
+      <div className="hud-panel relative w-full max-w-md p-8 text-center space-y-8">
         <div>
-          <h1 className="text-5xl font-black tracking-tight">
-            Blaze <span className="text-primary">City</span>
+          <p className="font-mono-display text-[11px] uppercase tracking-[0.3em] text-primary/80">
+            // blaze.stream // room 001
+          </p>
+          <h1 className="mt-3 text-6xl font-extrabold tracking-tight leading-none">
+            Blaze <span className="text-ember">City</span>
           </h1>
-          <p className="mt-3 text-muted-foreground">
-            A live room for the Blaze.stream community. Walk around, chat, hang out at the bar.
+          <p className="mt-4 text-muted-foreground">
+            A live room for the Blaze community. Walk around, chat,
+            hang at the bar, burn on the dance floor.
           </p>
         </div>
 
         <div className="space-y-3">
-          <Button size="lg" className="w-full" onClick={signInWithBlaze} disabled={loading !== null}>
+          <Button
+            size="lg"
+            className="w-full btn-ember hover:brightness-110"
+            onClick={signInWithBlaze}
+            disabled={loading !== null}
+          >
             {loading === "blaze" ? "Opening Blaze…" : "Sign in with Blaze"}
           </Button>
           <Button
-            variant="secondary"
+            variant="outline"
             size="lg"
-            className="w-full"
+            className="w-full border-[color:var(--glass-border)] bg-transparent hover:bg-white/5"
             onClick={useTestProfile}
             disabled={loading !== null}
           >
@@ -106,13 +134,13 @@ function Login() {
         </div>
 
         {error && (
-          <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive-foreground">
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-left text-sm text-destructive-foreground">
             {error}
           </div>
         )}
 
-        <p className="text-xs text-muted-foreground">
-          Phase 1 preview · art & Blaze credentials are placeholders
+        <p className="font-mono-display text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70">
+          Phase 1 preview · art & credentials are placeholders
         </p>
       </div>
     </main>

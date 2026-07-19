@@ -49,11 +49,18 @@ function Create() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground px-6 py-10">
+    <main className="min-h-screen text-foreground px-6 py-10">
       <div className="mx-auto max-w-4xl space-y-8">
-        <header>
-          <h1 className="text-3xl font-black">Build your avatar</h1>
-          <p className="text-muted-foreground">Cycle through each slot, then step into the room.</p>
+        <header className="hud-panel px-6 py-5">
+          <p className="font-mono-display text-[10px] uppercase tracking-[0.3em] text-primary/80">
+            // avatar builder
+          </p>
+          <h1 className="mt-1 text-3xl font-extrabold tracking-tight">
+            Build your <span className="text-ember">look</span>
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Cycle through each slot, then step into the city.
+          </p>
         </header>
         <AvatarCreator initial={initial} onSave={onSave} saving={saving} />
       </div>
