@@ -4,6 +4,7 @@ import { AVATAR_SIZE } from "@/avatar/manifest";
 import type { AvatarConfig, Direction, Facing } from "@/avatar/types";
 import { ROOM_HEIGHT, ROOM_WIDTH, ZONES, zoneAt } from "./zones";
 import { facingFromDelta, stepToward, type Vec2 } from "./movement";
+import { EmberField } from "./EmberField";
 
 // Swap to a URL when real background art lands — that's the single-line change.
 const BACKGROUND_URL: string | null = null;
@@ -91,16 +92,29 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
       <div
         ref={containerRef}
         onClick={handleClick}
-        className="absolute inset-0 overflow-hidden rounded-2xl border border-border cursor-crosshair"
+        className="absolute inset-0 overflow-hidden rounded-2xl border cursor-crosshair"
         style={{
           background: BACKGROUND_URL ? `center / cover no-repeat url(${BACKGROUND_URL})` : BACKGROUND_COLOR,
+          borderColor: "var(--glass-border)",
+          boxShadow: "inset 0 0 120px rgba(0,0,0,0.55), 0 30px 80px -30px rgba(0,0,0,0.7)",
         }}
       >
+        {/* subtle grid + vignette */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+
         {/* Zones */}
         {ZONES.map((z) => (
           <div
             key={z.id}
-            className="absolute rounded-xl border-2"
+            className="absolute rounded-2xl border-2 backdrop-blur-[2px] transition-shadow"
             style={{
               left: `${(z.rect.x / ROOM_WIDTH) * 100}%`,
               top: `${(z.rect.y / ROOM_HEIGHT) * 100}%`,
@@ -108,13 +122,19 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
               height: `${(z.rect.h / ROOM_HEIGHT) * 100}%`,
               background: z.color,
               borderColor: z.border,
+              boxShadow: `inset 0 0 60px ${z.color}, 0 0 24px -8px ${z.border}`,
             }}
           >
-            <span className="absolute left-3 top-2 text-xs font-semibold uppercase tracking-widest text-foreground/80">
+            <span
+              className="hud-chip absolute left-3 top-3 px-2.5 py-1 text-foreground/90"
+              style={{ borderColor: z.border }}
+            >
               {z.label}
             </span>
           </div>
         ))}
+
+        <EmberField />
 
         {/* Remote players */}
         {remotePlayers
@@ -145,7 +165,7 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
             onClick={() =>
               window.dispatchEvent(new CustomEvent("zone-action", { detail: currentZone.id }))
             }
-            className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/40 hover:bg-primary/90 transition"
+            className="btn-ember rounded-full px-7 py-3 text-sm hover:brightness-110 active:scale-[0.98]"
           >
             {currentZone.actionLabel}
           </button>
@@ -168,12 +188,26 @@ function PlayerMarker({ player, isLocal }: { player: RemotePlayer; isLocal?: boo
     >
       <div className="flex flex-col items-center">
         <span
-          className={`mb-1 rounded px-2 py-0.5 text-xs font-medium ${
-            isLocal ? "bg-primary text-primary-foreground" : "bg-card/80 text-foreground"
+          className={`hud-chip mb-1 px-2 py-0.5 ${
+            isLocal
+              ? "!bg-[color:var(--primary)] !text-[color:var(--primary-foreground)] !border-transparent"
+              : "text-foreground/90"
           }`}
         >
           {player.username}
         </span>
+        {/* soft shadow under avatar */}
+        <div
+          aria-hidden
+          className="absolute left-1/2 -translate-x-1/2"
+          style={{
+            bottom: "-6px",
+            width: "60%",
+            height: "10px",
+            background: "radial-gradient(ellipse, rgba(0,0,0,0.55) 0%, transparent 70%)",
+            filter: "blur(2px)",
+          }}
+        />
         <div style={{ width: "100%", aspectRatio: "1 / 1" }}>
           <AvatarSprite
             config={player.config}
