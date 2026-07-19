@@ -47,10 +47,14 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
 
   return (
     <div className="grid gap-8 md:grid-cols-[240px_1fr] items-start">
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-6">
+      <div className="hud-panel flex flex-col items-center gap-3 p-6">
         <div
           className="rounded-xl p-4"
-          style={{ background: "var(--room-floor)" }}
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 40%, rgba(240,185,11,0.15), transparent 60%), #1B1712",
+            boxShadow: "inset 0 0 40px rgba(0,0,0,0.55)",
+          }}
         >
           <AvatarSprite
             config={cfg}
@@ -99,7 +103,12 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
           />
         ))}
         <div className="pt-4">
-          <Button size="lg" onClick={() => onSave(cfg)} disabled={saving}>
+          <Button
+            size="lg"
+            className="btn-ember hover:brightness-110"
+            onClick={() => onSave(cfg)}
+            disabled={saving}
+          >
             {saving ? "Saving..." : "Enter Blaze City"}
           </Button>
         </div>
@@ -120,15 +129,15 @@ function StepperRow({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border border-border bg-card px-4 py-3">
-      <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+    <div className="hud-panel flex items-center justify-between gap-4 px-4 py-3">
+      <span className="font-mono-display text-[11px] text-muted-foreground uppercase tracking-[0.2em]">
         {label}
       </span>
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" onClick={() => onChange(step(options, value, -1))}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <span className="w-24 text-center font-mono text-sm">{value}</span>
+        <span className="w-24 text-center font-mono-display text-sm text-primary/90">{value}</span>
         <Button variant="ghost" size="icon" onClick={() => onChange(step(options, value, 1))}>
           <ChevronRight className="h-4 w-4" />
         </Button>
