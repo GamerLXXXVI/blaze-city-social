@@ -16,6 +16,7 @@ interface Props {
   facing?: Facing;
   size?: number;
   className?: string;
+  debugShowFrameOverlay?: boolean;
 }
 
 export function AvatarSprite({
@@ -25,6 +26,7 @@ export function AvatarSprite({
   facing = "right",
   size = AVATAR_SIZE,
   className,
+  debugShowFrameOverlay = false,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [frame, setFrame] = useState(0);
@@ -70,12 +72,37 @@ export function AvatarSprite({
   }, [config, direction, state, frame, facing]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={AVATAR_SIZE}
-      height={AVATAR_SIZE}
-      style={{ width: size, height: size, imageRendering: "pixelated" }}
-      className={className}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        width={AVATAR_SIZE}
+        height={AVATAR_SIZE}
+        style={{ width: size, height: size, imageRendering: "pixelated" }}
+        className={className}
+      />
+      {debugShowFrameOverlay && state === "dance" && (
+        <span
+          aria-label="Dance animation frame diagnostic"
+          style={{
+            position: "absolute",
+            left: "calc(100% + 6px)",
+            top: "18%",
+            zIndex: 30,
+            minWidth: 22,
+            border: "1px solid rgba(240,185,11,0.85)",
+            borderRadius: 4,
+            background: "rgba(20,17,13,0.9)",
+            color: "#F0B90B",
+            fontFamily: "var(--font-mono, monospace)",
+            fontSize: 11,
+            lineHeight: "16px",
+            textAlign: "center",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+          }}
+        >
+          {frame}
+        </span>
+      )}
+    </>
   );
 }
