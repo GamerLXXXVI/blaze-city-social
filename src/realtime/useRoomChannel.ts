@@ -82,6 +82,7 @@ export function useRoomChannel(roomId: string, initial: LocalPresence | null) {
       username: presenceRef.current.username,
       text,
       ts: Date.now(),
+      senderId: presenceRef.current.id,
     };
     void ch.send({ type: "broadcast", event: "chat", payload: msg });
     setMessages((prev) => [...prev.slice(-99), msg]);
