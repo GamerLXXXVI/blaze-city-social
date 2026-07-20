@@ -1,4 +1,5 @@
 import type { Direction, Facing } from "@/avatar/types";
+import { isBlocked } from "./zones";
 
 export interface Vec2 {
   x: number;
@@ -13,7 +14,13 @@ export function stepToward(current: Vec2, target: Vec2, dt: number): Vec2 {
   const dist = Math.hypot(dx, dy);
   if (dist < 1) return target;
   const step = Math.min(dist, WALK_SPEED * dt);
-  return { x: current.x + (dx / dist) * step, y: current.y + (dy / dist) * step };
+  const nx = current.x + (dx / dist) * step;
+  const ny = current.y + (dy / dist) * step;
+  // Collision: try full move, then axis-separated slide, else stop.
+  if (!isBlocked(nx, ny)) return { x: nx, y: ny };
+  if (!isBlocked(nx, current.y)) return { x: nx, y: current.y };
+  if (!isBlocked(current.x, ny)) return { x: current.x, y: ny };
+  return current;
 }
 
 export function facingFromDelta(dx: number, dy: number): { direction: Direction; facing: Facing } {
