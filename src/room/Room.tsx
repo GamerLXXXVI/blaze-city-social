@@ -401,22 +401,6 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
         })()}
 
         {/* DEBUG stool markers */}
-        {STOOLS.map((s) => (
-          <div
-            key={s.id}
-            className="absolute pointer-events-none"
-            style={{
-              left: `${(s.seat.x / ROOM_WIDTH) * 100}%`,
-              top: `${(s.seat.y / ROOM_HEIGHT) * 100}%`,
-              width: 16,
-              height: 16,
-              background: "#ff00ff",
-              border: "2px solid yellow",
-              transform: "translate(-50%, -50%)",
-              zIndex: 999,
-            }}
-          />
-        ))}
         {/* Remote players */}
         {remotePlayers
           .filter((p) => p.id !== localId)
