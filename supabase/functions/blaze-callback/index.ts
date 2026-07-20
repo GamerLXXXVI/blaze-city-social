@@ -98,21 +98,47 @@ Deno.serve(async (req) => {
 
     await supabase.from("oauth_states").delete().eq("state", state);
 
-    // Fetch profile
+    // Fetch profile. Blaze's /v1/users/profile REQUIRES a `client-id` header,
+    // and wraps the payload as { success, data: { userId, username, ... } }.
     let profile: any = null;
     try {
       const meRes = await fetch("https://api.blaze.stream/v1/users/profile", {
-        headers: { Authorization: `Bearer ${access}` },
+        headers: {
+          Authorization: `Bearer ${access}`,
+          "client-id": clientId,
+          Accept: "application/json",
+        },
       });
-      if (meRes.ok) profile = await meRes.json();
-    } catch (_) { /* ignore */ }
+      const bodyText = await meRes.text();
+      if (!meRes.ok) {
+        console.error("blaze-callback: profile fetch failed", {
+          status: meRes.status,
+          body: bodyText.slice(0, 500),
+        });
+      } else {
+        try {
+          const parsed = JSON.parse(bodyText);
+          profile = parsed?.data ?? parsed;
+        } catch (e) {
+          console.error("blaze-callback: profile JSON parse failed", e, bodyText.slice(0, 300));
+        }
+      }
+    } catch (e) {
+      console.error("blaze-callback: profile fetch threw", e);
+    }
 
     // Upsert profile server-side (bypasses RLS via service role).
     if (profile && typeof profile === "object") {
       const username = profile.username ?? profile.userName ?? null;
-      const displayName = profile.displayName ?? username;
+      const displayName = profile.displayName ?? profile.display_name ?? username;
       const avatarUrl = profile.avatarUrl ?? profile.avatar_url ?? null;
       const blazeUserId = profile.userId ?? profile.id ?? null;
+      console.log("blaze-callback: upserting profile", {
+        supabaseUserId,
+        blazeUserId,
+        username,
+        hasDisplayName: !!displayName,
+      });
       await supabase.from("profiles").upsert({
         id: supabaseUserId,
         blaze_user_id: blazeUserId ? String(blazeUserId) : null,
@@ -120,6 +146,8 @@ Deno.serve(async (req) => {
         display_name: displayName,
         avatar_url: avatarUrl,
       });
+    } else {
+      console.warn("blaze-callback: no profile fetched; row left without name", { supabaseUserId });
     }
 
     return new Response(JSON.stringify({ ok: true, profile }), {

@@ -95,8 +95,14 @@ Deno.serve(async (req) => {
       }
     }
 
+    const clientId = Deno.env.get("BLAZE_CLIENT_ID")!;
+    const profileHeaders = () => ({
+      Authorization: `Bearer ${accessToken}`,
+      "client-id": clientId,
+      Accept: "application/json",
+    });
     let res = await fetch("https://api.blaze.stream/v1/users/profile", {
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: profileHeaders(),
     });
 
     // Reactive refresh: token may have been revoked or expired sooner than expected.
@@ -113,7 +119,7 @@ Deno.serve(async (req) => {
               : null,
           }).eq("user_id", userRes.user.id);
           res = await fetch("https://api.blaze.stream/v1/users/profile", {
-            headers: { Authorization: `Bearer ${accessToken}` },
+            headers: profileHeaders(),
           });
         }
       } catch (e) {
@@ -122,6 +128,9 @@ Deno.serve(async (req) => {
     }
 
     const body = await res.text();
+    if (!res.ok) {
+      console.error("blaze-me: profile fetch failed", { status: res.status, body: body.slice(0, 500) });
+    }
     return new Response(body, {
       status: res.status,
       headers: { ...corsHeaders, "content-type": "application/json" },
