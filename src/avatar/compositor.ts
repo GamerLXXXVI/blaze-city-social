@@ -74,7 +74,7 @@ export async function compositeFrame(
         : "down";
 
   const layerImages = await Promise.all(
-    LAYER_ORDER.map((layer) => loadAvatarImage(pathFor(layer, cfg, direction, frameState))),
+    LAYER_ORDER.map((layer) => loadAvatarImage(pathFor(layer, cfg, layerDirection, frameState))),
   );
 
   if (direction === "west" || (facing === "left" && layerDirection === "side")) {

@@ -33,7 +33,7 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [pos, setPos] = useState<Vec2>({ x: ROOM_WIDTH / 2, y: ROOM_HEIGHT / 2 });
   const [target, setTarget] = useState<Vec2>({ x: ROOM_WIDTH / 2, y: ROOM_HEIGHT / 2 });
-  const [direction, setDirection] = useState<Direction>("down");
+  const [direction, setDirection] = useState<Direction>("south");
   const [facing, setFacing] = useState<Facing>("right");
   const state: "idle" | "walk" = pos.x === target.x && pos.y === target.y ? "idle" : "walk";
 
