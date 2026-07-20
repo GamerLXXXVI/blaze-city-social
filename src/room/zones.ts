@@ -97,10 +97,10 @@ export const BLOCKERS: Blocker[] = [
   // of a machine — the foot anchor still stops on floor tiles.
 
   // Right-side cabinets / speakers below the arcade. Shrunk eastward
-  // from x:1120 → x:1160 so the games right-walkway rect
-  // ({x:1109,y:250,w:78,h:402}) is substantially walkable instead of
-  // being ~50% blocked by the speaker footprint.
-  { x: 1160, y: 260, w: 96, h: 220 },
+  // from x:1120 → x:1188 so the games right-walkway rect
+  // ({x:1109,y:250,w:78,h:402}, east edge x=1187) is fully walkable.
+  // Speakers footprint now hugs the east wall.
+  { x: 1188, y: 260, w: 68, h: 220 },
 
   // DJ booth / speaker stack on lower-right of dance floor
   { x: 1040, y: 500, w: 200, h: 90 },
