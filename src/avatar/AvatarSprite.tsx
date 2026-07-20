@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { compositeFrame } from "./compositor";
-import { AVATAR_SIZE, WALK_FRAME_COUNT } from "./manifest";
+import { AVATAR_SIZE, WALK_FRAME_COUNT, DANCE_FRAME_COUNT, DANCE_FRAME_MS } from "./manifest";
 import {
   normalizeDirection,
   type AvatarConfig,
@@ -30,12 +30,20 @@ export function AvatarSprite({
   const [frame, setFrame] = useState(0);
 
   useEffect(() => {
-    if (state !== "walk") {
+    if (state === "walk") {
       setFrame(0);
-      return;
+      const id = window.setInterval(() => setFrame((f) => (f + 1) % WALK_FRAME_COUNT), 125);
+      return () => window.clearInterval(id);
     }
-    const id = window.setInterval(() => setFrame((f) => (f + 1) % WALK_FRAME_COUNT), 125);
-    return () => window.clearInterval(id);
+    if (state === "dance") {
+      setFrame(0);
+      const id = window.setInterval(
+        () => setFrame((f) => (f + 1) % DANCE_FRAME_COUNT),
+        DANCE_FRAME_MS,
+      );
+      return () => window.clearInterval(id);
+    }
+    setFrame(0);
   }, [state]);
 
   useEffect(() => {
