@@ -188,11 +188,14 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
           aria-hidden
           className="absolute pointer-events-none overflow-hidden"
           style={{
-            // Staff lane behind the vertical bar counter on the left side.
-            left: `${(150 / ROOM_WIDTH) * 100}%`,
-            top: `${(360 / ROOM_HEIGHT) * 100}%`,
+            // Dark staff aisle LEFT of the vertical bar counter. (95, 440) is
+            // the bottom-center foot anchor in world coords; translate so the
+            // clipped sprite box sits with its feet on that point.
+            left: `${(95 / ROOM_WIDTH) * 100}%`,
+            top: `${(440 / ROOM_HEIGHT) * 100}%`,
             width: `${((64 * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100}%`,
             height: `${((43 * PLAYER_SPRITE_SCALE) / ROOM_HEIGHT) * 100}%`,
+            transform: "translate(-50%, -100%)",
           }}
         >
           <img
