@@ -25,21 +25,11 @@ function Callback() {
         return;
       }
       const res = await supabase.functions.invoke("blaze-callback", {
-        body: { code, state, supabaseUserId: session.session.user.id },
+        body: { code, state },
       });
       if (res.error) {
         setError(res.error.message);
         return;
-      }
-      const data = res.data as { ok?: boolean; profile?: { username?: string; displayName?: string; avatarUrl?: string; userId?: string } };
-      if (data?.profile) {
-        await supabase.from("profiles").upsert({
-          id: session.session.user.id,
-          blaze_user_id: data.profile.userId,
-          username: data.profile.username,
-          display_name: data.profile.displayName ?? data.profile.username,
-          avatar_url: data.profile.avatarUrl,
-        });
       }
       navigate({ to: "/create" });
     })();
