@@ -75,6 +75,13 @@ export const BLOCKERS: Blocker[] = [
 
   // DJ booth / speaker stack on lower-right of dance floor
   { x: 1040, y: 500, w: 200, h: 90 },
+
+  // Staff area boundary behind the bar — stepped path traced from art.
+  // Blocks players from walking behind the counter where the bartender stands.
+  { x: 362, y: 176, w: 10, h: 55 }, // top vertical
+  { x: 206, y: 226, w: 167, h: 10 }, // horizontal connector
+  { x: 205, y: 231, w: 10, h: 370 }, // long vertical run
+  { x: 64, y: 603, w: 147, h: 10 }, // bottom horizontal
 ];
 
 export function isBlocked(x: number, y: number): boolean {
