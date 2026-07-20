@@ -327,6 +327,10 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
       >
         {/* Zones — restrained outline; artwork stays fully visible. Highlight only the player's current zone. */}
         {ZONES.map((z) => {
+          // The dance floor already has its fuchsia border baked into the room
+          // art, so any UI outline/glow here duplicates it. Skip rendering the
+          // dance zone entirely while still keeping its hit-test rect intact.
+          if (z.id === "dance") return null;
           const isCurrent = currentZone?.id === z.id;
           return (
             <div
