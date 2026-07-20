@@ -334,51 +334,10 @@ export function Room({
       >
         {/* Zones — restrained outline; artwork stays fully visible. Highlight only the player's current zone. */}
         {ZONES.map((z) => {
-          // Dance floor and bar counter both have their borders/shapes baked
-          // into the room art, so a UI rectangle duplicates them. Skip the
-          // rendered outline/highlight for those two while keeping the hit-test
-          // rects intact. The bar label chip is also removed here.
-          const isArtBaked = z.id === "dance" || z.id === "bar";
-          const isCurrent = currentZone?.id === z.id;
-          if (z.id === "bar") return null;
-          if (isArtBaked) {
-            return (
-              <div
-                key={z.id}
-                className="absolute pointer-events-none"
-                style={{
-                  left: `${(z.rect.x / ROOM_WIDTH) * 100}%`,
-                  top: `${(z.rect.y / ROOM_HEIGHT) * 100}%`,
-                  width: `${(z.rect.w / ROOM_WIDTH) * 100}%`,
-                  height: `${(z.rect.h / ROOM_HEIGHT) * 100}%`,
-                }}
-              />
-            );
-          }
-          return (
-            <div
-              key={z.id}
-              className="absolute rounded-xl border transition-all pointer-events-none"
-              style={{
-                left: `${(z.rect.x / ROOM_WIDTH) * 100}%`,
-                top: `${(z.rect.y / ROOM_HEIGHT) * 100}%`,
-                width: `${(z.rect.w / ROOM_WIDTH) * 100}%`,
-                height: `${(z.rect.h / ROOM_HEIGHT) * 100}%`,
-                background: isCurrent ? z.color : "transparent",
-                borderColor: z.border,
-                borderWidth: isCurrent ? 2 : 1,
-                boxShadow: isCurrent ? `0 0 24px -6px ${z.border}` : "none",
-                opacity: isCurrent ? 1 : 0.55,
-              }}
-            >
-              <span
-                className="hud-chip absolute left-2 top-2 px-2 py-0.5 text-foreground/90"
-                style={{ borderColor: z.border }}
-              >
-                {z.label}
-              </span>
-            </div>
-          );
+          // All three zones have their borders/shapes baked into the room art,
+          // so no UI rectangle or label chip renders here. Hit-test rects and
+          // zone action buttons remain unchanged.
+          return null;
         })}
 
         <EmberField />
