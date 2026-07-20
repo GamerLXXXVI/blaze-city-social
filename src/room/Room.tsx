@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AvatarSprite } from "@/avatar/AvatarSprite";
-import { AVATAR_SIZE, PLAYER_SPRITE_SCALE } from "@/avatar/manifest";
+import { AVATAR_SIZE, PLAYER_SPRITE_SCALE, NPC_RENDER_SCALE } from "@/avatar/manifest";
 import type { AvatarConfig, Direction, Facing } from "@/avatar/types";
 import { ROOM_HEIGHT, ROOM_WIDTH, ZONES, zoneAt } from "./zones";
 import { isBlocked } from "./zones";
@@ -183,38 +183,49 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
 
         <EmberField />
 
-        {/* Bartender NPC — static GIF, browser-native loop. Clipped to hide legs so the counter art occludes naturally. */}
-        <div
-          aria-hidden
-          className="absolute pointer-events-none overflow-hidden"
-          style={{
-            // Dark staff aisle LEFT of the vertical bar counter. (95, 440) is
-            // the bottom-center foot anchor in world coords; translate so the
-            // clipped sprite box sits with its feet on that point.
-            left: `${(215 / ROOM_WIDTH) * 100}%`,
-            top: `${(415 / ROOM_HEIGHT) * 100}%`,
-            width: `${((64 * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100}%`,
-            height: `${((43 * PLAYER_SPRITE_SCALE) / ROOM_HEIGHT) * 100}%`,
-            transform: "translate(-50%, -100%)",
-          }}
-        >
-          <img
-            src="/assets/npcs/bartender-idle-east.gif"
-            alt=""
-            style={{
-              width: "100%",
-              height: `${(64 / 43) * 100}%`,
-              imageRendering: "pixelated",
-              display: "block",
-            }}
-            draggable={false}
-            onError={(e) => {
-              const src = (e.currentTarget as HTMLImageElement).src;
-              // eslint-disable-next-line no-console
-              console.error("[bartender] failed to load NPC sprite", src);
-            }}
-          />
-        </div>
+        {/* Bartender NPC — static GIF, browser-native loop. Positioned on the
+            dark staff aisle floor LEFT of the vertical bar counter. Foot
+            anchor at world (80, 420). Clip includes feet (rows 0–47) since
+            he now stands on open floor rather than being tucked into a wall
+            alcove. */}
+        {(() => {
+          const NPC_X = 80;
+          const NPC_Y = 420;
+          const NPC_CLIP_ROWS = 48; // rows 0..47 → include feet at row 47
+          const NPC_SRC_ROWS = 64;
+          return (
+            <>
+              <div
+                aria-hidden
+                className="absolute pointer-events-none overflow-hidden"
+                style={{
+                  left: `${(NPC_X / ROOM_WIDTH) * 100}%`,
+                  top: `${(NPC_Y / ROOM_HEIGHT) * 100}%`,
+                  width: `${((64 * NPC_RENDER_SCALE) / ROOM_WIDTH) * 100}%`,
+                  height: `${((NPC_CLIP_ROWS * NPC_RENDER_SCALE) / ROOM_HEIGHT) * 100}%`,
+                  transform: "translate(-50%, -100%)",
+                }}
+              >
+                <img
+                  src="/assets/npcs/bartender-idle-east.gif"
+                  alt=""
+                  style={{
+                    width: "100%",
+                    height: `${(NPC_SRC_ROWS / NPC_CLIP_ROWS) * 100}%`,
+                    imageRendering: "pixelated",
+                    display: "block",
+                  }}
+                  draggable={false}
+                  onError={(e) => {
+                    const src = (e.currentTarget as HTMLImageElement).src;
+                    // eslint-disable-next-line no-console
+                    console.error("[bartender] failed to load NPC sprite", src);
+                  }}
+                />
+              </div>
+            </>
+          );
+        })()}
 
         {/* Remote players */}
         {remotePlayers
@@ -274,9 +285,14 @@ function PlayerMarker({
   // coord. Because PLAYER_SPRITE_SCALE grows the whole box uniformly, the
   // scaled sprite's feet also land on the anchor.
   const scaledWidthPct = ((AVATAR_SIZE * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100;
+  // Local player: no CSS transition — rAF loop drives smooth motion frame by
+  // frame, and a transition here would fight the loop and roughly double
+  // perceived speed while smearing the target. Remote players still need the
+  // transition to smooth between throttled ~10Hz presence updates.
+  const transitionClass = isLocal ? "" : "transition-[left,top] duration-100 ease-linear";
   return (
     <div
-      className="absolute pointer-events-none transition-[left,top] duration-100 ease-linear"
+      className={`absolute pointer-events-none ${transitionClass}`}
       style={{
         left: `${(player.x / ROOM_WIDTH) * 100}%`,
         top: `${(player.y / ROOM_HEIGHT) * 100}%`,
