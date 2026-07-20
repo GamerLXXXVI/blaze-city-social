@@ -89,19 +89,18 @@ export const BLOCKERS: Blocker[] = [
   // Arcade cabinets (upper-right)
   { x: 900, y: 24, w: 356, h: 140 },
 
-  // Arcade approach boundary — invisible blocker just south of the cabinets.
-  // The cabinet blocker above (south edge y=164) stops the player's foot
-  // anchor at that line, but the ~137px-tall visible body at
-  // PLAYER_SPRITE_SCALE = 2.4 then overlaps the cabinet art. This new
-  // boundary (same footprint, ~140px tall) pushes the natural stopping
-  // point down to ~y=305, matching where a player visually lands when
-  // approaching the machines. Stopping point stays inside the games zone
-  // rect (x:1056..1232, y:60..340) so the "Insert Coin" action still
-  // triggers from the approach position.
-  { x: 900, y: 164, w: 356, h: 140 },
+  // NOTE: the old "arcade approach boundary" ({x:900,y:164,w:356,h:140})
+  // was removed. It gave visual clearance for the ~137px-tall sprite but
+  // ate the games top-strip trigger zone (y:174-250), leaving that rect
+  // only ~1.4% walkable. The user's hand-drawn top-strip must win; we
+  // accept some sprite/cabinet overlap when standing directly in front
+  // of a machine — the foot anchor still stops on floor tiles.
 
-  // Right-side cabinets / speakers below the arcade
-  { x: 1120, y: 260, w: 136, h: 220 },
+  // Right-side cabinets / speakers below the arcade. Shrunk eastward
+  // from x:1120 → x:1160 so the games right-walkway rect
+  // ({x:1109,y:250,w:78,h:402}) is substantially walkable instead of
+  // being ~50% blocked by the speaker footprint.
+  { x: 1160, y: 260, w: 96, h: 220 },
 
   // DJ booth / speaker stack on lower-right of dance floor
   { x: 1040, y: 500, w: 200, h: 90 },
