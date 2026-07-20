@@ -138,6 +138,30 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
 
         <EmberField />
 
+        {/* Bartender NPC — static GIF, browser-native loop. Clipped to hide legs so the counter art occludes naturally. */}
+        <div
+          aria-hidden
+          className="absolute pointer-events-none overflow-hidden"
+          style={{
+            left: `${(148 / ROOM_WIDTH) * 100}%`,
+            top: `${(8 / ROOM_HEIGHT) * 100}%`,
+            width: `${(64 / ROOM_WIDTH) * 100}%`,
+            height: `${(43 / ROOM_HEIGHT) * 100}%`,
+          }}
+        >
+          <img
+            src="/assets/npcs/bartender-idle-east.gif"
+            alt=""
+            style={{
+              width: "100%",
+              height: `${(64 / 43) * 100}%`,
+              imageRendering: "pixelated",
+              display: "block",
+            }}
+            draggable={false}
+          />
+        </div>
+
         {/* Remote players */}
         {remotePlayers
           .filter((p) => p.id !== localId)
