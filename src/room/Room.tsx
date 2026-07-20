@@ -96,11 +96,13 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
         onClick={handleClick}
         className="absolute inset-0 overflow-hidden rounded-2xl border cursor-crosshair"
         style={{
-          background: BACKGROUND_URL
-            ? `center / 100% 100% no-repeat url(${BACKGROUND_URL})`
-            : BACKGROUND_COLOR,
-          backgroundColor: BACKGROUND_COLOR as unknown as string,
+          backgroundColor: "#14110D",
+          backgroundImage: BACKGROUND_URL ? `url(${BACKGROUND_URL})` : undefined,
+          backgroundSize: "100% 100%",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
           imageRendering: "pixelated",
+          ...(BACKGROUND_URL ? {} : { background: BACKGROUND_COLOR }),
           borderColor: "var(--glass-border)",
           boxShadow: "inset 0 0 120px rgba(0,0,0,0.55), 0 30px 80px -30px rgba(0,0,0,0.7)",
         }}
