@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarCreator } from "@/avatar/AvatarCreator";
 import { defaultAvatarConfig, type AvatarConfig } from "@/avatar/types";
-import { upsertOwnProfile } from "@/lib/profile.functions";
+import { getOwnProfile, upsertOwnProfile } from "@/lib/profile.functions";
 
 export const Route = createFileRoute("/create")({
   component: Create,
@@ -15,27 +16,51 @@ function Create() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       const { data: sess } = await supabase.auth.getSession();
+      if (cancelled) return;
       if (!sess.session) {
-        navigate({ to: "/" });
+        navigate({ to: "/", replace: true });
         return;
       }
-      const { data } = await supabase
-        .from("profiles")
-        .select("avatar_config")
-        .eq("id", sess.session.user.id)
-        .maybeSingle();
-      setInitial(((data?.avatar_config as unknown as AvatarConfig) ?? null) || defaultAvatarConfig());
+      try {
+        const res = await getOwnProfile();
+        if (cancelled) return;
+        const cfg = (res?.profile?.avatar_config as unknown as AvatarConfig) ?? null;
+        setInitial(cfg || defaultAvatarConfig());
+      } catch (err) {
+        console.error("[create] getOwnProfile failed, falling back to defaults", err);
+        if (cancelled) return;
+        setInitial(defaultAvatarConfig());
+      }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [navigate]);
 
   const onSave = async (cfg: AvatarConfig) => {
+    if (saving) return;
     setSaving(true);
-    const { data: sess } = await supabase.auth.getSession();
-    if (!sess.session) return;
-    await upsertOwnProfile({ data: { avatarConfig: cfg } });
-    navigate({ to: "/room" });
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      if (!sess.session) {
+        toast.error("Session expired — please sign in again");
+        setSaving(false);
+        navigate({ to: "/", replace: true });
+        return;
+      }
+      const toSave: AvatarConfig = { ...cfg, preset: "blaze-original" };
+      console.log("[create] saving avatar", { userId: sess.session.user.id });
+      await upsertOwnProfile({ data: { avatarConfig: toSave } });
+      console.log("[create] avatar saved OK");
+      navigate({ to: "/room", replace: true });
+    } catch (err) {
+      console.error("[create] upsertOwnProfile failed", err);
+      toast.error("Couldn't save your avatar — try again");
+      setSaving(false);
+    }
   };
 
   if (!initial) {
