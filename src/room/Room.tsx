@@ -188,8 +188,9 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
           aria-hidden
           className="absolute pointer-events-none overflow-hidden"
           style={{
-            left: `${(148 / ROOM_WIDTH) * 100}%`,
-            top: `${(8 / ROOM_HEIGHT) * 100}%`,
+            // Staff lane behind the vertical bar counter on the left side.
+            left: `${(150 / ROOM_WIDTH) * 100}%`,
+            top: `${(360 / ROOM_HEIGHT) * 100}%`,
             width: `${((64 * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100}%`,
             height: `${((43 * PLAYER_SPRITE_SCALE) / ROOM_HEIGHT) * 100}%`,
           }}
