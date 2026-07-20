@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Room } from "@/room/Room";
 import { Chat } from "@/room/Chat";
 import { useRoomChannel, type LocalPresence } from "@/realtime/useRoomChannel";
-import { defaultAvatarConfig, type AvatarConfig } from "@/avatar/types";
+import { type AvatarConfig } from "@/avatar/types";
+import { getOwnProfile } from "@/lib/profile.functions";
 import { ROOM_WIDTH, ROOM_HEIGHT, ZONES } from "@/room/zones";
 import { zoneAt } from "@/room/zones";
 
@@ -16,36 +17,57 @@ export const Route = createFileRoute("/room")({
 function RoomPage() {
   const navigate = useNavigate();
   const [initial, setInitial] = useState<LocalPresence | null>(null);
+  const [loadState, setLoadState] = useState<"loading" | "error">("loading");
+  const [reloadKey, setReloadKey] = useState(0);
   const [bartenderOpen, setBartenderOpen] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+    setLoadState("loading");
     (async () => {
       const { data: sess } = await supabase.auth.getSession();
+      if (cancelled) return;
       if (!sess.session) {
-        navigate({ to: "/" });
+        navigate({ to: "/", replace: true });
         return;
       }
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("username, display_name, avatar_config")
-        .eq("id", sess.session.user.id)
-        .maybeSingle();
-      if (!profile?.avatar_config) {
-        navigate({ to: "/create" });
-        return;
+      const userId = sess.session.user.id;
+      try {
+        const res = await getOwnProfile();
+        if (cancelled) return;
+        const profile = res?.profile ?? null;
+        console.log("[room] profile loaded", {
+          userId,
+          hasAvatarConfig: !!profile?.avatar_config,
+        });
+        if (!profile?.avatar_config) {
+          navigate({ to: "/create", replace: true });
+          return;
+        }
+        const raw = profile.avatar_config as unknown as AvatarConfig;
+        const config: AvatarConfig = raw.preset
+          ? raw
+          : { ...raw, preset: "blaze-original" };
+        setInitial({
+          id: userId,
+          username: profile.display_name ?? profile.username ?? "Player",
+          config,
+          x: ROOM_WIDTH / 2,
+          y: ROOM_HEIGHT / 2,
+          direction: "south",
+          facing: "right",
+          state: "idle",
+        });
+      } catch (err) {
+        console.error("[room] getOwnProfile failed", { userId, err });
+        if (cancelled) return;
+        setLoadState("error");
       }
-      setInitial({
-        id: sess.session.user.id,
-        username: profile.display_name ?? profile.username ?? "Player",
-        config: profile.avatar_config as unknown as AvatarConfig,
-        x: ROOM_WIDTH / 2,
-        y: ROOM_HEIGHT / 2,
-        direction: "south",
-        facing: "right",
-        state: "idle",
-      });
     })();
-  }, [navigate]);
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate, reloadKey]);
 
   const { players, messages, updatePresence, sendChat } = useRoomChannel("main", initial);
 
@@ -102,6 +124,20 @@ function RoomPage() {
   }, [bartenderOpen]);
 
   const remote = useMemo(() => players, [players]);
+
+  if (loadState === "error") {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background text-muted-foreground">
+        <p>Couldn't load your profile.</p>
+        <button
+          className="hud-chip px-4 py-2 text-primary/90"
+          onClick={() => setReloadKey((k) => k + 1)}
+        >
+          Retry
+        </button>
+      </main>
+    );
+  }
 
   if (!initial) {
     return (
