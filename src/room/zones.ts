@@ -3,7 +3,7 @@ export interface Zone {
   label: string;
   actionLabel: string;
   comingSoon?: boolean;
-  rect: { x: number; y: number; w: number; h: number };
+  rects: { x: number; y: number; w: number; h: number }[];
   color: string;
   border: string;
 }
@@ -17,53 +17,44 @@ export const ZONES: Zone[] = [
     label: "Bar",
     actionLabel: "Grab a drink",
     // Widened east to x=440 to cover the walking corridor between the
-    // left bar counter and the staff-area collision buffer. The staff
-    // boundary's expanded east edge sits at x≈373 (inside the dance zone
-    // rect), so a player walking from the dance floor toward the bar
-    // gets parked at ~x=373, visually against the counter but with the
-    // foot anchor east of the old bar rect — that's why "Dance" kept
-    // showing at the bar. bar is first in ZONES, so this strip takes
-    // priority over the overlapping dance rect.
-    rect: { x: 60, y: 60, w: 380, h: 300 },
+    // left bar counter and the staff-area collision buffer. Left as-is
+    // per this pass — only dance/games boundaries were re-traced.
+    rects: [{ x: 60, y: 60, w: 380, h: 300 }],
     color: "var(--zone-bar)",
     border: "var(--zone-bar-border)",
-  },
-  {
-    id: "dance",
-    label: "Dance Floor",
-    actionLabel: "Dance",
-    // Shrunk on both sides so it no longer overlaps the bar rect
-    // (x:60..440) or the games rect (x:900..1232). Previously the
-    // dance rect ran x:348..1048, overlapping bar by 92px on the west
-    // and, more importantly, covering the 900..1056 strip in front of
-    // the arcade cabinets — a player standing at the leftmost cabinet
-    // was inside dance's x-range and outside games's, so zoneAt()
-    // returned "dance" and the HUD showed "Dance" at the arcade. New
-    // rect x:440..900 is exactly bounded by its two neighbors.
-    rect: { x: 440, y: 44, w: 460, h: 440 },
-    color: "var(--zone-dance)",
-    border: "var(--zone-dance-border)",
   },
   {
     id: "games",
     label: "Games",
     actionLabel: "Insert Coin",
-    // West edge pulled to x:900 to match the arcade cabinet + approach
-    // blocker's west edge. The 900..1056 strip is reachable floor
-    // directly in front of the leftmost cabinet; keeping games's west
-    // edge at 1056 left that strip inside the dance rect, so "Dance"
-    // showed at the arcade. South edge stays at y=520 to cover the
-    // approach corridor between cabinets and speakers.
-    rect: { x: 900, y: 60, w: 332, h: 460 },
+    // Hand-traced L-shape (two rects) matching the walkable floor in
+    // front of the arcade cabinets and the walkway extending south along
+    // the right wall. Listed BEFORE dance in ZONES so the ~x:899-1048,
+    // y:174-250 overlap with the dance rect resolves to "games" — a
+    // player there is standing in front of a cabinet, not on the floor.
+    rects: [
+      { x: 899, y: 174, w: 288, h: 76 }, // top strip in front of cabinets
+      { x: 1109, y: 250, w: 78, h: 402 }, // right-side walkway extending down
+    ],
     color: "var(--zone-games)",
     border: "var(--zone-games-border)",
+  },
+  {
+    id: "dance",
+    label: "Dance Floor",
+    actionLabel: "Dance",
+    // Hand-traced against the fuchsia border baked into the room art.
+    rects: [{ x: 348, y: 44, w: 700, h: 440 }],
+    color: "var(--zone-dance)",
+    border: "var(--zone-dance-border)",
   },
 ];
 
 export function zoneAt(x: number, y: number): Zone | null {
   for (const z of ZONES) {
-    const { x: zx, y: zy, w, h } = z.rect;
-    if (x >= zx && x <= zx + w && y >= zy && y <= zy + h) return z;
+    for (const r of z.rects) {
+      if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return z;
+    }
   }
   return null;
 }
