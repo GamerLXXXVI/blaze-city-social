@@ -338,9 +338,9 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
             config: localConfig,
             x: pos.x,
             y: pos.y,
-            direction,
+            direction: renderDirection,
             facing,
-            state,
+            state: renderState,
           }}
           isLocal
           bubble={bubbleFor(localId, localUsername)}
@@ -360,6 +360,21 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
           </button>
         </div>
       )}
+
+      <div className="absolute bottom-4 right-4 z-10">
+        <button
+          onClick={startDance}
+          aria-pressed={mode === "dance"}
+          className="hud-chip px-4 py-2 text-sm text-primary/90 hover:brightness-110 active:scale-[0.98]"
+          style={
+            mode === "dance"
+              ? { background: "var(--primary)", color: "var(--primary-foreground)", borderColor: "transparent" }
+              : undefined
+          }
+        >
+          {mode === "dance" ? "Stop" : "Dance"}
+        </button>
+      </div>
     </div>
   );
 }
