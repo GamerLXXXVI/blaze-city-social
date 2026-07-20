@@ -349,11 +349,12 @@ function ChatBubble({
         zIndex: message.ts,
         opacity,
         transition: "opacity 120ms linear",
+        width: "max-content",
+        maxWidth: BUBBLE_MAX_WIDTH_PX,
       }}
     >
       <div
         style={{
-          maxWidth: BUBBLE_MAX_WIDTH_PX,
           background: "#f8f1e4",
           color: "#1a1410",
           border: "1px solid #1a1410",
