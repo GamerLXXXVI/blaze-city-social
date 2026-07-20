@@ -280,10 +280,10 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
         <EmberField />
 
         {/* Bartender NPC — static GIF, browser-native loop. Positioned on the
-            dark staff aisle floor LEFT of the vertical bar counter. Foot
-            anchor at world (80, 420). Clip includes feet (rows 0–47) since
-            he now stands on open floor rather than being tucked into a wall
-            alcove. */}
+            top-left alcove of the bar structure — a distinct recessed tile
+            in the wall/counter art with a hanging bulb directly above.
+            Foot anchor at world (100, 155). Clip includes feet (rows 0–47).
+            */}
         {(() => {
           const NPC_X = 100;
           const NPC_Y = 155;
@@ -291,23 +291,6 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
           const NPC_SRC_ROWS = 64;
           return (
             <>
-              {/* TEMP anchor marker — remove after visual confirmation */}
-              <div
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  left: `${(NPC_X / ROOM_WIDTH) * 100}%`,
-                  top: `${(NPC_Y / ROOM_HEIGHT) * 100}%`,
-                  width: 10,
-                  height: 10,
-                  background: "#ff00ff",
-                  border: "2px solid #fff",
-                  borderRadius: "50%",
-                  transform: "translate(-50%, -50%)",
-                  zIndex: 9999,
-                  pointerEvents: "none",
-                }}
-              />
               <div
                 aria-hidden
                 className="absolute pointer-events-none overflow-hidden"
