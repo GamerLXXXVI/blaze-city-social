@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Room } from "@/room/Room";
@@ -10,6 +10,8 @@ import { getOwnProfile } from "@/lib/profile.functions";
 import { ROOM_WIDTH, ROOM_HEIGHT, ZONES } from "@/room/zones";
 import { zoneAt } from "@/room/zones";
 import { BlazeBlaster } from "@/games/BlazeBlaster";
+import { useBackgroundMusic } from "@/room/useBackgroundMusic";
+import { MusicControls } from "@/room/MusicControls";
 
 export const Route = createFileRoute("/room")({
   component: RoomPage,
@@ -22,6 +24,29 @@ function RoomPage() {
   const [reloadKey, setReloadKey] = useState(0);
   const [bartenderOpen, setBartenderOpen] = useState(false);
   const [gameOpen, setGameOpen] = useState(false);
+  const music = useBackgroundMusic();
+
+  // Attempt autoplay on mount; fall back to first click if blocked.
+  useEffect(() => {
+    if (!initial) return;
+    let cancelled = false;
+    void music.start().then((ok) => {
+      if (cancelled || ok) return;
+      const onClick = () => {
+        void music.start();
+      };
+      window.addEventListener("click", onClick, { once: true, capture: true });
+      // store cleanup on element via closure
+      cleanupRef.current = () => window.removeEventListener("click", onClick, true);
+    });
+    return () => {
+      cancelled = true;
+      cleanupRef.current?.();
+      cleanupRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initial]);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -165,6 +190,12 @@ function RoomPage() {
                 {remote.length} online
               </span>
               <span className="hud-chip px-3 py-1 text-muted-foreground">@{initial.username}</span>
+              <MusicControls
+                volume={music.volume}
+                muted={music.muted}
+                onVolumeChange={music.setVolume}
+                onToggleMute={music.toggleMute}
+              />
             </div>
           </div>
           <Room
