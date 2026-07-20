@@ -7,7 +7,7 @@ export const AVATAR_SIZE = 96; // logical avatar frame size in room pixels
 // Visual scale multiplier for player + bartender sprites. World-position
 // anchors (movement, collision, zone hit-testing) are UNAFFECTED — this
 // only enlarges the drawn art around its bottom-center foot anchor.
-export const PLAYER_SPRITE_SCALE = 1.75;
+export const PLAYER_SPRITE_SCALE = 2.4;
 
 // Bartender-specific render scale. His visible content (head-to-feet, rows
 // 18–47 of the 64px source ≈ 29px) is a smaller fraction of his sprite than
