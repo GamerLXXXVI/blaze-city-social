@@ -282,11 +282,11 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
         {/* Bartender NPC — static GIF, browser-native loop. Positioned on the
             top-left alcove of the bar structure — a distinct recessed tile
             in the wall/counter art with a hanging bulb directly above.
-            Foot anchor at world (141, 413). Clip includes feet (rows 0–47).
+            Foot anchor at world (141, 425). Clip includes feet (rows 0–47).
             */}
         {(() => {
           const NPC_X = 141;
-          const NPC_Y = 413;
+          const NPC_Y = 425;
           const NPC_CLIP_ROWS = 48; // rows 0..47 → include feet at row 47
           const NPC_SRC_ROWS = 64;
           return (
