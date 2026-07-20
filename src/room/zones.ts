@@ -16,7 +16,15 @@ export const ZONES: Zone[] = [
     id: "bar",
     label: "Bar",
     actionLabel: "Grab a drink",
-    rect: { x: 60, y: 60, w: 280, h: 280 },
+    // Widened east to x=440 to cover the walking corridor between the
+    // left bar counter and the staff-area collision buffer. The staff
+    // boundary's expanded east edge sits at x≈373 (inside the dance zone
+    // rect), so a player walking from the dance floor toward the bar
+    // gets parked at ~x=373, visually against the counter but with the
+    // foot anchor east of the old bar rect — that's why "Dance" kept
+    // showing at the bar. bar is first in ZONES, so this strip takes
+    // priority over the overlapping dance rect.
+    rect: { x: 60, y: 60, w: 380, h: 300 },
     color: "var(--zone-bar)",
     border: "var(--zone-bar-border)",
   },
@@ -32,7 +40,14 @@ export const ZONES: Zone[] = [
     id: "games",
     label: "Games",
     actionLabel: "Insert Coin",
-    rect: { x: 1056, y: 60, w: 176, h: 280 },
+    // Extended south to y=520 to cover the reachable strip in front of
+    // the arcade cabinets. The cabinet + approach blockers occupy
+    // y:24..304, and the speakers blocker occupies x:1120..1256
+    // y:260..480, leaving only x:1056..1119, y:305..~600 walkable
+    // inside the arcade column. Old h=280 stopped at y=340, so most
+    // clicks near the cabinets were either rejected (inside speakers)
+    // or landed south of the games rect and never triggered the action.
+    rect: { x: 1056, y: 60, w: 176, h: 460 },
     color: "var(--zone-games)",
     border: "var(--zone-games-border)",
   },
