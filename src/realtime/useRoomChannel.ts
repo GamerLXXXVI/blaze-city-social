@@ -22,17 +22,24 @@ export function useRoomChannel(roomId: string, initial: LocalPresence | null) {
   const presenceRef = useRef<LocalPresence | null>(initial);
   const pendingRef = useRef(false);
   const lastSentAtRef = useRef(0);
+  const lastSentSnapshotRef = useRef<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Supabase Realtime enforces a client-presence rate limit (~10/s). Movement
-  // ticks fire far more often than that, so we throttle track() to ~5/s and
-  // coalesce the latest presenceRef state into a single trailing send.
-  const MIN_INTERVAL_MS = 200;
+  // Realtime presence has a low per-client track() rate limit. Movement ticks
+  // fire far more often than that, so we throttle track() and coalesce the
+  // latest presenceRef state into a single trailing send.
+  const MIN_INTERVAL_MS = 500;
 
   const flushTrack = () => {
     const ch = channelRef.current;
     if (!ch || !presenceRef.current) return;
+    const snapshot = JSON.stringify(presenceRef.current);
+    if (snapshot === lastSentSnapshotRef.current) {
+      pendingRef.current = false;
+      return;
+    }
     pendingRef.current = false;
+    lastSentSnapshotRef.current = snapshot;
     lastSentAtRef.current = Date.now();
     void ch.track(presenceRef.current);
   };
@@ -84,6 +91,7 @@ export function useRoomChannel(roomId: string, initial: LocalPresence | null) {
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED" && presenceRef.current) {
           lastSentAtRef.current = Date.now();
+        lastSentSnapshotRef.current = JSON.stringify(presenceRef.current);
           await channel.track(presenceRef.current);
         }
       });
@@ -93,6 +101,7 @@ export function useRoomChannel(roomId: string, initial: LocalPresence | null) {
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = null;
       pendingRef.current = false;
+      lastSentSnapshotRef.current = null;
       supabase.removeChannel(channel);
       channelRef.current = null;
     };
@@ -102,7 +111,9 @@ export function useRoomChannel(roomId: string, initial: LocalPresence | null) {
   const updatePresence = useCallback((partial: Partial<LocalPresence>) => {
     const ch = channelRef.current;
     if (!ch || !presenceRef.current) return;
-    presenceRef.current = { ...presenceRef.current, ...partial };
+    const next = { ...presenceRef.current, ...partial };
+    if (JSON.stringify(next) === JSON.stringify(presenceRef.current)) return;
+    presenceRef.current = next;
     scheduleTrack();
   }, []);
 
