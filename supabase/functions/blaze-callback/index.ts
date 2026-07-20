@@ -42,6 +42,16 @@ Deno.serve(async (req) => {
     }
     const supabaseUserId = userRes.user.id;
 
+    const clientId = Deno.env.get("BLAZE_CLIENT_ID")!;
+    const clientSecret = Deno.env.get("BLAZE_CLIENT_SECRET")!;
+    const redirectUri = Deno.env.get("BLAZE_REDIRECT_URI")!;
+    console.log("blaze-callback: env check", {
+      hasClientId: !!clientId,
+      clientIdLength: clientId?.length ?? 0,
+      hasClientSecret: !!clientSecret,
+      redirectUriHost: redirectUri ? new URL(redirectUri).host : null,
+    });
+
     const { data: stateRow, error: stateErr } = await supabase
       .from("oauth_states")
       .select("code_verifier")
@@ -53,16 +63,6 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "content-type": "application/json" },
       });
     }
-
-    const clientId = Deno.env.get("BLAZE_CLIENT_ID")!;
-    const clientSecret = Deno.env.get("BLAZE_CLIENT_SECRET")!;
-    const redirectUri = Deno.env.get("BLAZE_REDIRECT_URI")!;
-    console.log("blaze-callback: env check", {
-      hasClientId: !!clientId,
-      clientIdLength: clientId?.length ?? 0,
-      hasClientSecret: !!clientSecret,
-      redirectUriHost: redirectUri ? new URL(redirectUri).host : null,
-    });
 
     const tokenRes = await fetch("https://blaze.stream/bapi/oauth2/token", {
       method: "POST",
