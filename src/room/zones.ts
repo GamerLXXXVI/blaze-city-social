@@ -76,6 +76,17 @@ export const BLOCKERS: Blocker[] = [
   // Arcade cabinets (upper-right)
   { x: 900, y: 24, w: 356, h: 140 },
 
+  // Arcade approach boundary — invisible blocker just south of the cabinets.
+  // The cabinet blocker above (south edge y=164) stops the player's foot
+  // anchor at that line, but the ~137px-tall visible body at
+  // PLAYER_SPRITE_SCALE = 2.4 then overlaps the cabinet art. This new
+  // boundary (same footprint, ~140px tall) pushes the natural stopping
+  // point down to ~y=305, matching where a player visually lands when
+  // approaching the machines. Stopping point stays inside the games zone
+  // rect (x:1056..1232, y:60..340) so the "Insert Coin" action still
+  // triggers from the approach position.
+  { x: 900, y: 164, w: 356, h: 140 },
+
   // Right-side cabinets / speakers below the arcade
   { x: 1120, y: 260, w: 136, h: 220 },
 
