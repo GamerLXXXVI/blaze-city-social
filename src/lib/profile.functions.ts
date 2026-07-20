@@ -18,10 +18,10 @@ export const upsertOwnProfile = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const row = {
       id: context.userId,
-      username: data.username ?? null,
-      display_name: data.displayName ?? null,
-      avatar_url: data.avatarUrl ?? null,
-      blaze_user_id: data.blazeUserId ?? null,
+      ...(data.username !== undefined ? { username: data.username } : {}),
+      ...(data.displayName !== undefined ? { display_name: data.displayName } : {}),
+      ...(data.avatarUrl !== undefined ? { avatar_url: data.avatarUrl } : {}),
+      ...(data.blazeUserId !== undefined ? { blaze_user_id: data.blazeUserId } : {}),
       ...(data.avatarConfig !== undefined
         ? { avatar_config: data.avatarConfig as never }
         : {}),
