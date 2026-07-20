@@ -1,5 +1,5 @@
 import type { AvatarConfig, Direction, AnimState, Facing } from "./types";
-import { LAYER_ORDER, AVATAR_SIZE, pathFor } from "./manifest";
+import { LAYER_ORDER, AVATAR_SIZE, pathFor, presetPathFor } from "./manifest";
 import { loadAvatarImage } from "./loader";
 
 function cacheKey(
@@ -56,11 +56,28 @@ export async function compositeFrame(
   canvas.height = size;
   const ctx = canvas.getContext("2d")!;
 
+  const presetPath = presetPathFor(cfg, direction, state, frame);
+  if (presetPath) {
+    const image = await loadAvatarImage(presetPath);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(image, 0, 0, size, size);
+    composited.set(key, canvas);
+    evictIfNeeded();
+    return canvas;
+  }
+
+  const layerDirection =
+    direction === "north" || direction.startsWith("north-")
+      ? "up"
+      : direction === "east" || direction === "west"
+        ? "side"
+        : "down";
+
   const layerImages = await Promise.all(
     LAYER_ORDER.map((layer) => loadAvatarImage(pathFor(layer, cfg, direction, frameState))),
   );
 
-  if (facing === "left" && direction === "side") {
+  if (direction === "west" || (facing === "left" && layerDirection === "side")) {
     ctx.save();
     ctx.translate(size, 0);
     ctx.scale(-1, 1);
