@@ -18,7 +18,7 @@ export const PLAYER_SPRITE_SCALE = 1.75;
 // visible span is 29 source rows, so scale ≈ 99.75/29 ≈ 3.44. Bumped to
 // 3.8 after visual A/B: the player's rendered figure still read taller at
 // 3.4 because his head/hair extend above row 8.
-export const NPC_RENDER_SCALE = 3.2;
+export const NPC_RENDER_SCALE = 3.6;
 
 export type LayerDirection = "down" | "up" | "side";
 
