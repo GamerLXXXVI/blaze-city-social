@@ -4,6 +4,11 @@ import type { AvatarConfig, Direction, AnimState } from "./types";
 
 export const AVATAR_SIZE = 96; // logical avatar frame size in room pixels
 
+// Visual scale multiplier for player + bartender sprites. World-position
+// anchors (movement, collision, zone hit-testing) are UNAFFECTED — this
+// only enlarges the drawn art around its bottom-center foot anchor.
+export const PLAYER_SPRITE_SCALE = 1.75;
+
 export type LayerDirection = "down" | "up" | "side";
 
 export const DEFAULT_AVATAR_PRESET = "blaze-original" as const;
