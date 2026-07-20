@@ -7,6 +7,7 @@ import { Chat } from "@/room/Chat";
 import { useRoomChannel, type LocalPresence } from "@/realtime/useRoomChannel";
 import { defaultAvatarConfig, type AvatarConfig } from "@/avatar/types";
 import { ROOM_WIDTH, ROOM_HEIGHT, ZONES } from "@/room/zones";
+import { zoneAt } from "@/room/zones";
 
 export const Route = createFileRoute("/room")({
   component: RoomPage,
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/room")({
 function RoomPage() {
   const navigate = useNavigate();
   const [initial, setInitial] = useState<LocalPresence | null>(null);
+  const [bartenderOpen, setBartenderOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -55,6 +57,10 @@ function RoomPage() {
       state: "idle" | "walk",
     ) => {
       updatePresence({ x: pos.x, y: pos.y, direction, facing, state });
+      const z = zoneAt(pos.x, pos.y);
+      if (z?.id !== "bar") {
+        setBartenderOpen((open) => (open ? false : open));
+      }
     },
     [updatePresence],
   );
@@ -64,7 +70,14 @@ function RoomPage() {
       const zoneId = (e as CustomEvent<string>).detail;
       const zone = ZONES.find((z) => z.id === zoneId);
       if (!zone) return;
-      if (zone.comingSoon) {
+      if (zone.id === "bar") {
+        setBartenderOpen(true);
+        window.dispatchEvent(
+          new CustomEvent("spark-burst", {
+            detail: { x: 50, y: 60, count: 20, hue: "gold" },
+          }),
+        );
+      } else if (zone.comingSoon) {
         toast.info(`${zone.label} — coming soon`);
       } else {
         toast.success(`${zone.actionLabel}!`);
@@ -78,6 +91,15 @@ function RoomPage() {
     window.addEventListener("zone-action", handler);
     return () => window.removeEventListener("zone-action", handler);
   }, []);
+
+  useEffect(() => {
+    if (!bartenderOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setBartenderOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [bartenderOpen]);
 
   const remote = useMemo(() => players, [players]);
 
@@ -120,6 +142,44 @@ function RoomPage() {
           <Chat messages={messages} onSend={sendChat} />
         </div>
       </div>
+
+      {bartenderOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4 pointer-events-none"
+          role="dialog"
+          aria-modal="false"
+          aria-label="Bartender"
+        >
+          <div className="hud-panel pointer-events-auto max-w-md w-full p-5 relative">
+            <button
+              onClick={() => setBartenderOpen(false)}
+              aria-label="Close"
+              className="absolute right-3 top-3 text-muted-foreground hover:text-foreground text-lg leading-none"
+            >
+              ×
+            </button>
+            <div className="flex items-start gap-4">
+              <img
+                src="/assets/npcs/bartender-idle-east.gif"
+                alt=""
+                aria-hidden
+                width={64}
+                height={64}
+                style={{ imageRendering: "pixelated" }}
+                className="shrink-0"
+              />
+              <div>
+                <div className="font-mono-display text-[10px] uppercase tracking-[0.25em] text-primary/80 mb-1">
+                  Bartender
+                </div>
+                <p className="text-sm text-foreground/90 leading-snug">
+                  Welcome to Blaze City. Drinks are on the house tonight.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
