@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AvatarSprite } from "@/avatar/AvatarSprite";
-import { AVATAR_SIZE } from "@/avatar/manifest";
+import { AVATAR_SIZE, PLAYER_SPRITE_SCALE } from "@/avatar/manifest";
 import type { AvatarConfig, Direction, Facing } from "@/avatar/types";
 import { ROOM_HEIGHT, ROOM_WIDTH, ZONES, zoneAt } from "./zones";
 import { isBlocked } from "./zones";
@@ -184,8 +184,8 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
           style={{
             left: `${(148 / ROOM_WIDTH) * 100}%`,
             top: `${(8 / ROOM_HEIGHT) * 100}%`,
-            width: `${(64 / ROOM_WIDTH) * 100}%`,
-            height: `${(43 / ROOM_HEIGHT) * 100}%`,
+            width: `${((64 * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100}%`,
+            height: `${((43 * PLAYER_SPRITE_SCALE) / ROOM_HEIGHT) * 100}%`,
           }}
         >
           <img
@@ -198,6 +198,11 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
               display: "block",
             }}
             draggable={false}
+            onError={(e) => {
+              const src = (e.currentTarget as HTMLImageElement).src;
+              // eslint-disable-next-line no-console
+              console.error("[bartender] failed to load NPC sprite", src);
+            }}
           />
         </div>
 
