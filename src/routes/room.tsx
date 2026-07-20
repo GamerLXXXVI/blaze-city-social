@@ -38,7 +38,7 @@ function RoomPage() {
         config: profile.avatar_config as unknown as AvatarConfig,
         x: ROOM_WIDTH / 2,
         y: ROOM_HEIGHT / 2,
-        direction: "down",
+        direction: "south",
         facing: "right",
         state: "idle",
       });

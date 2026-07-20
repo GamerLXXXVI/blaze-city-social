@@ -17,8 +17,17 @@ export function stepToward(current: Vec2, target: Vec2, dt: number): Vec2 {
 }
 
 export function facingFromDelta(dx: number, dy: number): { direction: Direction; facing: Facing } {
-  if (Math.abs(dx) > Math.abs(dy)) {
-    return { direction: "side", facing: dx < 0 ? "left" : "right" };
-  }
-  return { direction: dy < 0 ? "up" : "down", facing: "right" };
+  const octant = Math.round(Math.atan2(dy, dx) / (Math.PI / 4));
+  const directions: Record<number, Direction> = {
+    [-4]: "west",
+    [-3]: "north-west",
+    [-2]: "north",
+    [-1]: "north-east",
+    0: "east",
+    1: "south-east",
+    2: "south",
+    3: "south-west",
+    4: "west",
+  };
+  return { direction: directions[octant], facing: dx < 0 ? "left" : "right" };
 }
