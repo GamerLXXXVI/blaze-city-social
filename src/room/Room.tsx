@@ -104,7 +104,14 @@ const TURN_FRAME_MS = 90;
 // available if we later validate direction strings from remote peers.
 void DIRECTIONS;
 
-export function Room({ localId, localConfig, localUsername, remotePlayers, messages, onLocalMove }: Props) {
+export function Room({
+  localId,
+  localConfig,
+  localUsername,
+  remotePlayers,
+  messages,
+  onLocalMove,
+}: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [pos, setPos] = useState<Vec2>({ x: ROOM_WIDTH / 2, y: ROOM_HEIGHT / 2 });
   const [target, setTarget] = useState<Vec2>({ x: ROOM_WIDTH / 2, y: ROOM_HEIGHT / 2 });
@@ -327,6 +334,10 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
       >
         {/* Zones — restrained outline; artwork stays fully visible. Highlight only the player's current zone. */}
         {ZONES.map((z) => {
+          // The dance floor already has its fuchsia border baked into the room
+          // art, so any UI outline/glow here duplicates it. Skip rendering the
+          // dance zone entirely while still keeping its hit-test rect intact.
+          if (z.id === "dance") return null;
           const isCurrent = currentZone?.id === z.id;
           return (
             <div
@@ -404,7 +415,12 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
         {remotePlayers
           .filter((p) => p.id !== localId)
           .map((p) => (
-            <PlayerMarker key={p.id} player={p} bubble={bubbleFor(p.id, p.username)} now={tickNow} />
+            <PlayerMarker
+              key={p.id}
+              player={p}
+              bubble={bubbleFor(p.id, p.username)}
+              now={tickNow}
+            />
           ))}
 
         {/* Local player */}
@@ -431,9 +447,7 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
             onClick={() =>
               currentZone.id === "dance"
                 ? startDance()
-                : window.dispatchEvent(
-                    new CustomEvent("zone-action", { detail: currentZone.id }),
-                  )
+                : window.dispatchEvent(new CustomEvent("zone-action", { detail: currentZone.id }))
             }
             className="btn-ember rounded-full px-7 py-3 text-sm hover:brightness-110 active:scale-[0.98]"
           >
@@ -503,8 +517,7 @@ function PlayerMarker({
           transform: "translate(-50%, -50%)",
           width: "45%",
           height: "10px",
-          background:
-            "radial-gradient(ellipse, rgba(0,0,0,0.55) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse, rgba(0,0,0,0.55) 0%, transparent 70%)",
           filter: "blur(2px)",
           zIndex: -1,
         }}
@@ -523,9 +536,7 @@ function PlayerMarker({
         }}
       >
         <div className="relative flex flex-col items-center">
-          {bubble && (
-            <ChatBubble message={bubble} playerX={player.x} now={now ?? Date.now()} />
-          )}
+          {bubble && <ChatBubble message={bubble} playerX={player.x} now={now ?? Date.now()} />}
           <span
             className={`hud-chip px-2 py-0.5 ${
               isLocal
