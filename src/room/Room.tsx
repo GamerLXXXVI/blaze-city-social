@@ -94,7 +94,9 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
         onClick={handleClick}
         className="absolute inset-0 overflow-hidden rounded-2xl border cursor-crosshair"
         style={{
-          background: BACKGROUND_URL ? `center / cover no-repeat url(${BACKGROUND_URL})` : BACKGROUND_COLOR,
+          background: BACKGROUND_URL
+            ? `center / cover no-repeat url(${BACKGROUND_URL})`
+            : BACKGROUND_COLOR,
           borderColor: "var(--glass-border)",
           boxShadow: "inset 0 0 120px rgba(0,0,0,0.55), 0 30px 80px -30px rgba(0,0,0,0.7)",
         }}
