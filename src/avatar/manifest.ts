@@ -13,9 +13,12 @@ export const PLAYER_SPRITE_SCALE = 1.75;
 // 18–47 of the 64px source ≈ 29px) is a smaller fraction of his sprite than
 // the player's, so reusing PLAYER_SPRITE_SCALE makes him appear ~60% of the
 // player's height. This scale is tuned so his full head-to-feet extent
-// matches the player's on-screen head-to-feet height (~99.75px, measured as
-// 38/64 of the scaled 168px sprite box). 99.75 / 29 ≈ 3.4.
-export const NPC_RENDER_SCALE = 3.4;
+// matches the player's on-screen head-to-feet height. Player visible body
+// spans ~38/64 of the scaled 168px sprite box ≈ 99.75 world px. Bartender
+// visible span is 29 source rows, so scale ≈ 99.75/29 ≈ 3.44. Bumped to
+// 3.8 after visual A/B: the player's rendered figure still read taller at
+// 3.4 because his head/hair extend above row 8.
+export const NPC_RENDER_SCALE = 3.8;
 
 export type LayerDirection = "down" | "up" | "side";
 
