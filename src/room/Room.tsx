@@ -6,6 +6,13 @@ import { ROOM_HEIGHT, ROOM_WIDTH, ZONES, zoneAt } from "./zones";
 import { isBlocked } from "./zones";
 import { facingFromDelta, stepToward, type Vec2 } from "./movement";
 import { EmberField } from "./EmberField";
+import type { ChatMessage } from "./Chat";
+
+const BUBBLE_VISIBLE_MS = 6000;
+const BUBBLE_FADE_MS = 1000;
+const BUBBLE_MAX_CHARS = 120;
+const BUBBLE_MAX_WIDTH_PX = 200;
+const BUBBLE_EDGE_THRESHOLD = 100;
 
 // 320x180 source scaled 4x nearest-neighbor to fill the 1280x720 logical room.
 const BACKGROUND_URL: string | null = "/assets/rooms/blaze-city-main.png";
@@ -27,10 +34,11 @@ interface Props {
   localConfig: AvatarConfig;
   localUsername: string;
   remotePlayers: RemotePlayer[];
+  messages: ChatMessage[];
   onLocalMove: (pos: Vec2, direction: Direction, facing: Facing, state: "idle" | "walk") => void;
 }
 
-export function Room({ localId, localConfig, localUsername, remotePlayers, onLocalMove }: Props) {
+export function Room({ localId, localConfig, localUsername, remotePlayers, messages, onLocalMove }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [pos, setPos] = useState<Vec2>({ x: ROOM_WIDTH / 2, y: ROOM_HEIGHT / 2 });
   const [target, setTarget] = useState<Vec2>({ x: ROOM_WIDTH / 2, y: ROOM_HEIGHT / 2 });
@@ -88,6 +96,37 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
   };
 
   const currentZone = useMemo(() => zoneAt(pos.x, pos.y), [pos.x, pos.y]);
+
+  // Ticks re-renders so bubbles can expire/fade without per-bubble timers.
+  const [tickNow, setTickNow] = useState(() => Date.now());
+  useEffect(() => {
+    const iv = window.setInterval(() => setTickNow(Date.now()), 200);
+    return () => window.clearInterval(iv);
+  }, []);
+
+  // Latest chat message per player (by senderId, falling back to username).
+  const latestByPlayer = useMemo(() => {
+    const map = new Map<string, ChatMessage>();
+    const byUsername = new Map<string, ChatMessage>();
+    for (const m of messages) {
+      if (m.senderId) {
+        const prev = map.get(m.senderId);
+        if (!prev || m.ts > prev.ts) map.set(m.senderId, m);
+      } else {
+        const prev = byUsername.get(m.username);
+        if (!prev || m.ts > prev.ts) byUsername.set(m.username, m);
+      }
+    }
+    return { byId: map, byUsername };
+  }, [messages]);
+
+  const bubbleFor = (playerId: string, username: string): ChatMessage | null => {
+    const m = latestByPlayer.byId.get(playerId) ?? latestByPlayer.byUsername.get(username);
+    if (!m) return null;
+    const age = tickNow - m.ts;
+    if (age >= BUBBLE_VISIBLE_MS) return null;
+    return m;
+  };
 
   return (
     <div className="relative w-full" style={{ aspectRatio: `${ROOM_WIDTH} / ${ROOM_HEIGHT}` }}>
@@ -166,7 +205,7 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
         {remotePlayers
           .filter((p) => p.id !== localId)
           .map((p) => (
-            <PlayerMarker key={p.id} player={p} />
+            <PlayerMarker key={p.id} player={p} bubble={bubbleFor(p.id, p.username)} now={tickNow} />
           ))}
 
         {/* Local player */}
@@ -182,6 +221,8 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
             state,
           }}
           isLocal
+          bubble={bubbleFor(localId, localUsername)}
+          now={tickNow}
         />
       </div>
 
@@ -201,7 +242,17 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
   );
 }
 
-function PlayerMarker({ player, isLocal }: { player: RemotePlayer; isLocal?: boolean }) {
+function PlayerMarker({
+  player,
+  isLocal,
+  bubble,
+  now,
+}: {
+  player: RemotePlayer;
+  isLocal?: boolean;
+  bubble?: ChatMessage | null;
+  now?: number;
+}) {
   return (
     <div
       className="absolute pointer-events-none transition-[left,top] duration-100 ease-linear"
@@ -213,6 +264,13 @@ function PlayerMarker({ player, isLocal }: { player: RemotePlayer; isLocal?: boo
       }}
     >
       <div className="relative flex flex-col items-center">
+        {bubble && (
+          <ChatBubble
+            message={bubble}
+            playerX={player.x}
+            now={now ?? Date.now()}
+          />
+        )}
         <span
           className={`hud-chip mb-1 px-2 py-0.5 ${
             isLocal
@@ -245,6 +303,97 @@ function PlayerMarker({ player, isLocal }: { player: RemotePlayer; isLocal?: boo
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+function ChatBubble({
+  message,
+  playerX,
+  now,
+}: {
+  message: ChatMessage;
+  playerX: number;
+  now: number;
+}) {
+  const age = now - message.ts;
+  const remaining = BUBBLE_VISIBLE_MS - age;
+  const opacity = remaining >= BUBBLE_FADE_MS ? 1 : Math.max(0, remaining / BUBBLE_FADE_MS);
+
+  const truncated =
+    message.text.length > BUBBLE_MAX_CHARS
+      ? message.text.slice(0, BUBBLE_MAX_CHARS - 1).trimEnd() + "…"
+      : message.text;
+
+  // Edge handling: anchor bubble to keep it within the room bounds.
+  // "left" edge = bubble grows right (pointer on its left side).
+  // "right" edge = bubble grows left (pointer on its right side).
+  // "center" = bubble centered above avatar, pointer bottom-center.
+  let side: "left" | "right" | "center" = "center";
+  if (playerX < BUBBLE_EDGE_THRESHOLD) side = "left";
+  else if (playerX > ROOM_WIDTH - BUBBLE_EDGE_THRESHOLD) side = "right";
+
+  const positionStyle: React.CSSProperties =
+    side === "center"
+      ? { left: "50%", transform: "translateX(-50%)" }
+      : side === "left"
+        ? { left: "50%" }
+        : { right: "50%" };
+
+  return (
+    <div
+      className="absolute pointer-events-none"
+      style={{
+        bottom: "calc(100% + 6px)",
+        ...positionStyle,
+        zIndex: message.ts,
+        opacity,
+        transition: "opacity 120ms linear",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: BUBBLE_MAX_WIDTH_PX,
+          background: "#f8f1e4",
+          color: "#1a1410",
+          border: "1px solid #1a1410",
+          borderRadius: 10,
+          padding: "6px 10px",
+          fontSize: 12,
+          lineHeight: 1.3,
+          fontFamily: "var(--font-body, inherit)",
+          overflow: "hidden",
+          display: "-webkit-box",
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: "vertical",
+          wordBreak: "break-word",
+          overflowWrap: "anywhere",
+          whiteSpace: "normal",
+          boxShadow: "0 2px 0 rgba(0,0,0,0.25)",
+          position: "relative",
+        }}
+      >
+        {truncated}
+      </div>
+      {/* Pointer — a small square rotated 45°, positioned per side. */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          width: 8,
+          height: 8,
+          background: "#f8f1e4",
+          borderRight: "1px solid #1a1410",
+          borderBottom: "1px solid #1a1410",
+          transform: "rotate(45deg)",
+          bottom: -5,
+          ...(side === "center"
+            ? { left: "50%", marginLeft: -4 }
+            : side === "left"
+              ? { left: 10 }
+              : { right: 10 }),
+        }}
+      />
     </div>
   );
 }
