@@ -352,29 +352,20 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
           <button
             onClick={() =>
-              window.dispatchEvent(new CustomEvent("zone-action", { detail: currentZone.id }))
+              currentZone.id === "dance"
+                ? startDance()
+                : window.dispatchEvent(
+                    new CustomEvent("zone-action", { detail: currentZone.id }),
+                  )
             }
             className="btn-ember rounded-full px-7 py-3 text-sm hover:brightness-110 active:scale-[0.98]"
           >
-            {currentZone.actionLabel}
+            {currentZone.id === "dance" && mode === "dance"
+              ? "Stop dancing"
+              : currentZone.actionLabel}
           </button>
         </div>
       )}
-
-      <div className="absolute bottom-4 right-4 z-10">
-        <button
-          onClick={startDance}
-          aria-pressed={mode === "dance"}
-          className="hud-chip px-4 py-2 text-sm text-primary/90 hover:brightness-110 active:scale-[0.98]"
-          style={
-            mode === "dance"
-              ? { background: "var(--primary)", color: "var(--primary-foreground)", borderColor: "transparent" }
-              : undefined
-          }
-        >
-          {mode === "dance" ? "Stop" : "Dance"}
-        </button>
-      </div>
     </div>
   );
 }
