@@ -39,6 +39,9 @@ export function presetPathFor(
   if (state === "dance") {
     return `${root}/dance/south/frame-${String(frame % DANCE_FRAME_COUNT).padStart(2, "0")}.png`;
   }
+  if (state === "sit") {
+    return `${root}/sit/${direction}.png`;
+  }
   return state === "walk"
     ? `${root}/walk/${direction}/frame-${String(frame % WALK_FRAME_COUNT).padStart(2, "0")}.png`
     : `${root}/idle/${direction}.png`;
