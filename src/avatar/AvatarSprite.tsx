@@ -23,7 +23,7 @@ export function AvatarSprite({
   direction,
   state,
   facing = "right",
-  size = AVATAR_SIZE,
+  size,
   className,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -69,12 +69,22 @@ export function AvatarSprite({
     };
   }, [config, direction, state, frame, facing]);
 
+  // If a `size` prop is provided, render at that fixed CSS pixel size
+  // (used by the avatar creator preview). Otherwise, fill the parent —
+  // PlayerMarker sizes the parent with a percentage of the room so the
+  // sprite scales with the responsive room, and passing a world-pixel
+  // `size` here would override the parent and misalign the anchor.
+  const style: React.CSSProperties = { imageRendering: "pixelated" };
+  if (size != null) {
+    style.width = size;
+    style.height = size;
+  }
   return (
     <canvas
       ref={canvasRef}
       width={AVATAR_SIZE}
       height={AVATAR_SIZE}
-      style={{ width: size, height: size, imageRendering: "pixelated" }}
+      style={style}
       className={className}
     />
   );
