@@ -30,3 +30,18 @@ export const upsertOwnProfile = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// Reads the caller's own profile using service-role, since anonymous users
+// are excluded from direct read access to public.profiles by RLS.
+export const getOwnProfile = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("profiles")
+      .select("username, display_name, avatar_config")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return { profile: data };
+  });
