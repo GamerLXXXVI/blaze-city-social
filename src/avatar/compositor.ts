@@ -59,11 +59,6 @@ export async function compositeFrame(
   const presetPath = presetPathFor(cfg, direction, state, frame);
   if (presetPath) {
     const image = await loadAvatarImage(presetPath);
-    if (state === "dance") {
-      // Temporary diagnostic: verify per-frame path resolution + image identity.
-      // eslint-disable-next-line no-console
-      console.log("[compositeFrame dance]", { frame, direction, presetPath, imgW: image.naturalWidth });
-    }
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(image, 0, 0, size, size);
     composited.set(key, canvas);
