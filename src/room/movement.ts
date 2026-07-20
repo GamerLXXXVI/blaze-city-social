@@ -6,7 +6,7 @@ export interface Vec2 {
   y: number;
 }
 
-export const WALK_SPEED = 220; // px per second
+export const WALK_SPEED = 120; // px per second
 
 export function stepToward(current: Vec2, target: Vec2, dt: number): Vec2 {
   const dx = target.x - current.x;
