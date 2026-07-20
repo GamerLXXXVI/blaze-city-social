@@ -411,7 +411,6 @@ function PlayerMarker({
         state={player.state}
         size={AVATAR_SIZE * PLAYER_SPRITE_SCALE}
         className="w-full h-full block"
-        debugShowFrameOverlay={isLocal}
       />
 
       {/* Soft shadow centered exactly on the foot anchor. */}
