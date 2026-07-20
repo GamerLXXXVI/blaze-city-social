@@ -3,11 +3,12 @@ import { AvatarSprite } from "@/avatar/AvatarSprite";
 import { AVATAR_SIZE } from "@/avatar/manifest";
 import type { AvatarConfig, Direction, Facing } from "@/avatar/types";
 import { ROOM_HEIGHT, ROOM_WIDTH, ZONES, zoneAt } from "./zones";
+import { isBlocked } from "./zones";
 import { facingFromDelta, stepToward, type Vec2 } from "./movement";
 import { EmberField } from "./EmberField";
 
-// Swap to a URL when real background art lands — that's the single-line change.
-const BACKGROUND_URL: string | null = null;
+// 320x180 source scaled 4x nearest-neighbor to fill the 1280x720 logical room.
+const BACKGROUND_URL: string | null = "/assets/rooms/blaze-city-main.png";
 const BACKGROUND_COLOR = "var(--room-floor)";
 
 export interface RemotePlayer {
@@ -79,10 +80,11 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
     const scale = rect.width / ROOM_WIDTH;
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
-    setTarget({
-      x: Math.max(AVATAR_SIZE / 2, Math.min(ROOM_WIDTH - AVATAR_SIZE / 2, x)),
-      y: Math.max(AVATAR_SIZE / 2, Math.min(ROOM_HEIGHT - AVATAR_SIZE / 2, y)),
-    });
+    const cx = Math.max(AVATAR_SIZE / 2, Math.min(ROOM_WIDTH - AVATAR_SIZE / 2, x));
+    const cy = Math.max(AVATAR_SIZE / 2, Math.min(ROOM_HEIGHT - AVATAR_SIZE / 2, y));
+    // Reject click targets that fall inside a blocker.
+    if (isBlocked(cx, cy)) return;
+    setTarget({ x: cx, y: cy });
   };
 
   const currentZone = useMemo(() => zoneAt(pos.x, pos.y), [pos.x, pos.y]);
@@ -94,47 +96,45 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, onLoc
         onClick={handleClick}
         className="absolute inset-0 overflow-hidden rounded-2xl border cursor-crosshair"
         style={{
-          background: BACKGROUND_URL
-            ? `center / cover no-repeat url(${BACKGROUND_URL})`
-            : BACKGROUND_COLOR,
+          backgroundColor: "#14110D",
+          backgroundImage: BACKGROUND_URL ? `url(${BACKGROUND_URL})` : undefined,
+          backgroundSize: "100% 100%",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          imageRendering: "pixelated",
+          ...(BACKGROUND_URL ? {} : { background: BACKGROUND_COLOR }),
           borderColor: "var(--glass-border)",
           boxShadow: "inset 0 0 120px rgba(0,0,0,0.55), 0 30px 80px -30px rgba(0,0,0,0.7)",
         }}
       >
-        {/* subtle grid + vignette */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-
-        {/* Zones */}
-        {ZONES.map((z) => (
-          <div
-            key={z.id}
-            className="absolute rounded-2xl border-2 backdrop-blur-[2px] transition-shadow"
-            style={{
-              left: `${(z.rect.x / ROOM_WIDTH) * 100}%`,
-              top: `${(z.rect.y / ROOM_HEIGHT) * 100}%`,
-              width: `${(z.rect.w / ROOM_WIDTH) * 100}%`,
-              height: `${(z.rect.h / ROOM_HEIGHT) * 100}%`,
-              background: z.color,
-              borderColor: z.border,
-              boxShadow: `inset 0 0 60px ${z.color}, 0 0 24px -8px ${z.border}`,
-            }}
-          >
-            <span
-              className="hud-chip absolute left-3 top-3 px-2.5 py-1 text-foreground/90"
-              style={{ borderColor: z.border }}
+        {/* Zones — restrained outline; artwork stays fully visible. Highlight only the player's current zone. */}
+        {ZONES.map((z) => {
+          const isCurrent = currentZone?.id === z.id;
+          return (
+            <div
+              key={z.id}
+              className="absolute rounded-xl border transition-all pointer-events-none"
+              style={{
+                left: `${(z.rect.x / ROOM_WIDTH) * 100}%`,
+                top: `${(z.rect.y / ROOM_HEIGHT) * 100}%`,
+                width: `${(z.rect.w / ROOM_WIDTH) * 100}%`,
+                height: `${(z.rect.h / ROOM_HEIGHT) * 100}%`,
+                background: isCurrent ? z.color : "transparent",
+                borderColor: z.border,
+                borderWidth: isCurrent ? 2 : 1,
+                boxShadow: isCurrent ? `0 0 24px -6px ${z.border}` : "none",
+                opacity: isCurrent ? 1 : 0.55,
+              }}
             >
-              {z.label}
-            </span>
-          </div>
-        ))}
+              <span
+                className="hud-chip absolute left-2 top-2 px-2 py-0.5 text-foreground/90"
+                style={{ borderColor: z.border }}
+              >
+                {z.label}
+              </span>
+            </div>
+          );
+        })}
 
         <EmberField />
 
