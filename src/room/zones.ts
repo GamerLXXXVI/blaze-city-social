@@ -63,9 +63,16 @@ export const BLOCKERS: Blocker[] = [
   { x: 0, y: ROOM_HEIGHT - 24, w: 540, h: 24 }, // bottom-left wall
   { x: 740, y: ROOM_HEIGHT - 24, w: ROOM_WIDTH - 740, h: 24 }, // bottom-right wall
 
-  // Bar counter cluster (upper-left L-shape)
-  { x: 24, y: 24, w: 340, h: 56 }, // top counter run
-  { x: 24, y: 24, w: 56, h: 260 }, // left counter run
+  // Bar counter cluster (upper-left L-shape).
+  // Expanded outward from the original {56 tall / 56 wide} runs because
+  // PLAYER_SPRITE_SCALE grew from 1.75 → 2.4 (sprite box ≈ 230 world px
+  // tall/wide, visible body ≈ 137 tall × ~55 wide). A blocker sized to the
+  // counter art alone let the sprite's torso overlap the counter surface
+  // even though the collision point stopped correctly. These now cover
+  // the full counter body (top run: y=24..194; left run: x=24..194) so
+  // the character's visible body clears the counter edge on approach.
+  { x: 24, y: 24, w: 340, h: 170 }, // top counter run
+  { x: 24, y: 24, w: 170, h: 260 }, // left counter run
 
   // Arcade cabinets (upper-right)
   { x: 900, y: 24, w: 356, h: 140 },
@@ -76,12 +83,16 @@ export const BLOCKERS: Blocker[] = [
   // DJ booth / speaker stack on lower-right of dance floor
   { x: 1040, y: 500, w: 200, h: 90 },
 
-  // Staff area boundary behind the bar — stepped path traced from art.
-  // Blocks players from walking behind the counter where the bartender stands.
-  { x: 362, y: 176, w: 10, h: 55 }, // top vertical
-  { x: 206, y: 226, w: 167, h: 10 }, // horizontal connector
-  { x: 205, y: 231, w: 10, h: 370 }, // long vertical run
-  { x: 64, y: 603, w: 147, h: 10 }, // bottom horizontal
+  // Staff area boundary behind the bar — stepped path traced from art,
+  // then thickened outward (into the customer side) so the player's
+  // ~137px-tall visible body no longer overlaps the counter face when
+  // pressed against it. Same scale-vs-margin correction as the counter
+  // cluster above; each segment is expanded ~60 world px away from the
+  // staff side (east for verticals, south for horizontals).
+  { x: 362, y: 176, w: 70, h: 55 }, // top vertical (expanded east)
+  { x: 206, y: 226, w: 167, h: 70 }, // horizontal connector (expanded south)
+  { x: 205, y: 231, w: 70, h: 370 }, // long vertical run (expanded east)
+  { x: 64, y: 603, w: 147, h: 70 }, // bottom horizontal (expanded south)
 ];
 
 export function isBlocked(x: number, y: number): boolean {
