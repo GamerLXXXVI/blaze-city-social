@@ -20,6 +20,34 @@ export function useRoomChannel(roomId: string, initial: LocalPresence | null) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const presenceRef = useRef<LocalPresence | null>(initial);
+  const pendingRef = useRef(false);
+  const lastSentAtRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Supabase Realtime enforces a client-presence rate limit (~10/s). Movement
+  // ticks fire far more often than that, so we throttle track() to ~5/s and
+  // coalesce the latest presenceRef state into a single trailing send.
+  const MIN_INTERVAL_MS = 200;
+
+  const flushTrack = () => {
+    const ch = channelRef.current;
+    if (!ch || !presenceRef.current) return;
+    pendingRef.current = false;
+    lastSentAtRef.current = Date.now();
+    void ch.track(presenceRef.current);
+  };
+
+  const scheduleTrack = () => {
+    if (pendingRef.current) return;
+    const elapsed = Date.now() - lastSentAtRef.current;
+    if (elapsed >= MIN_INTERVAL_MS) {
+      flushTrack();
+      return;
+    }
+    pendingRef.current = true;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(flushTrack, MIN_INTERVAL_MS - elapsed);
+  };
 
   useEffect(() => {
     if (!initial) return;
@@ -55,12 +83,16 @@ export function useRoomChannel(roomId: string, initial: LocalPresence | null) {
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED" && presenceRef.current) {
+          lastSentAtRef.current = Date.now();
           await channel.track(presenceRef.current);
         }
       });
 
     channelRef.current = channel;
     return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = null;
+      pendingRef.current = false;
       supabase.removeChannel(channel);
       channelRef.current = null;
     };
@@ -71,7 +103,7 @@ export function useRoomChannel(roomId: string, initial: LocalPresence | null) {
     const ch = channelRef.current;
     if (!ch || !presenceRef.current) return;
     presenceRef.current = { ...presenceRef.current, ...partial };
-    void ch.track(presenceRef.current);
+    scheduleTrack();
   }, []);
 
   const sendChat = useCallback((text: string) => {
