@@ -192,7 +192,7 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
             // the bottom-center foot anchor in world coords; translate so the
             // clipped sprite box sits with its feet on that point.
             left: `${(215 / ROOM_WIDTH) * 100}%`,
-            top: `${(250 / ROOM_HEIGHT) * 100}%`,
+            top: `${(415 / ROOM_HEIGHT) * 100}%`,
             width: `${((64 * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100}%`,
             height: `${((43 * PLAYER_SPRITE_SCALE) / ROOM_HEIGHT) * 100}%`,
             transform: "translate(-50%, -100%)",
