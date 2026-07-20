@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { upsertOwnProfile } from "@/lib/profile.functions";
 
 export const Route = createFileRoute("/")({
   component: Login,
@@ -66,11 +67,7 @@ function Login() {
         userId = signIn.user!.id;
       }
       const username = randomHandle();
-      await supabase.from("profiles").upsert({
-        id: userId,
-        username,
-        display_name: username,
-      });
+      await upsertOwnProfile({ data: { username, displayName: username } });
       navigate({ to: "/create" });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Couldn't create test profile.");
