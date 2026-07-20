@@ -48,7 +48,12 @@ function RoomPage() {
   const { players, messages, updatePresence, sendChat } = useRoomChannel("main", initial);
 
   const handleMove = useCallback(
-    (pos: { x: number; y: number }, direction: LocalPresence["direction"], facing: LocalPresence["facing"], state: "idle" | "walk") => {
+    (
+      pos: { x: number; y: number },
+      direction: LocalPresence["direction"],
+      facing: LocalPresence["facing"],
+      state: "idle" | "walk",
+    ) => {
       updatePresence({ x: pos.x, y: pos.y, direction, facing, state });
     },
     [updatePresence],
@@ -97,9 +102,7 @@ function RoomPage() {
                 <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--primary)] align-middle" />
                 {remote.length} online
               </span>
-              <span className="hud-chip px-3 py-1 text-muted-foreground">
-                @{initial.username}
-              </span>
+              <span className="hud-chip px-3 py-1 text-muted-foreground">@{initial.username}</span>
             </div>
           </div>
           <Room
