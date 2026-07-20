@@ -14,6 +14,12 @@ const BUBBLE_MAX_CHARS = 120;
 const BUBBLE_MAX_WIDTH_PX = 200;
 const BUBBLE_EDGE_THRESHOLD = 100;
 
+// Measured foot row on the 64px source sprite (bottom-most non-transparent
+// pixel is consistently at row 46 across all 8 idle directions and every
+// walk frame). Sprites are drawn full-canvas in the compositor so this
+// fraction applies directly to the rendered sprite box.
+const FOOT_ANCHOR_PCT = 46 / 64; // 0.71875
+
 // 320x180 source scaled 4x nearest-neighbor to fill the 1280x720 logical room.
 const BACKGROUND_URL: string | null = "/assets/rooms/blaze-city-main.png";
 const BACKGROUND_COLOR = "var(--room-floor)";
