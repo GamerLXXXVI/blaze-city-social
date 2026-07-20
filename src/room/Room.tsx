@@ -334,11 +334,35 @@ export function Room({
       >
         {/* Zones — restrained outline; artwork stays fully visible. Highlight only the player's current zone. */}
         {ZONES.map((z) => {
-          // The dance floor already has its fuchsia border baked into the room
-          // art, so any UI outline/glow here duplicates it. Skip rendering the
-          // dance zone entirely while still keeping its hit-test rect intact.
-          if (z.id === "dance") return null;
+          // Dance floor and bar counter both have their borders/shapes baked
+          // into the room art, so a UI rectangle duplicates them. Skip the
+          // rendered outline/highlight for those two while keeping the hit-test
+          // rects intact and the "BAR" label chip visible.
+          const isArtBaked = z.id === "dance" || z.id === "bar";
           const isCurrent = currentZone?.id === z.id;
+          if (isArtBaked) {
+            return (
+              <div
+                key={z.id}
+                className="absolute pointer-events-none"
+                style={{
+                  left: `${(z.rect.x / ROOM_WIDTH) * 100}%`,
+                  top: `${(z.rect.y / ROOM_HEIGHT) * 100}%`,
+                  width: `${(z.rect.w / ROOM_WIDTH) * 100}%`,
+                  height: `${(z.rect.h / ROOM_HEIGHT) * 100}%`,
+                }}
+              >
+                {z.id === "bar" && (
+                  <span
+                    className="hud-chip absolute left-2 top-2 px-2 py-0.5 text-foreground/90"
+                    style={{ borderColor: z.border }}
+                  >
+                    {z.label}
+                  </span>
+                )}
+              </div>
+            );
+          }
           return (
             <div
               key={z.id}
