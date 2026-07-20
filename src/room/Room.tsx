@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AvatarSprite } from "@/avatar/AvatarSprite";
 import { AVATAR_SIZE, PLAYER_SPRITE_SCALE, NPC_RENDER_SCALE } from "@/avatar/manifest";
-import type { AvatarConfig, Direction, Facing } from "@/avatar/types";
+import type { AvatarConfig, Direction, Facing, AnimState } from "@/avatar/types";
+import { DIRECTIONS } from "@/avatar/types";
 import { ROOM_HEIGHT, ROOM_WIDTH, ZONES, zoneAt } from "./zones";
 import { isBlocked } from "./zones";
 import { facingFromDelta, stepToward, type Vec2 } from "./movement";
@@ -32,7 +33,7 @@ export interface RemotePlayer {
   y: number;
   direction: Direction;
   facing: Facing;
-  state: "idle" | "walk";
+  state: "idle" | "walk" | "dance";
 }
 
 interface Props {
@@ -41,8 +42,29 @@ interface Props {
   localUsername: string;
   remotePlayers: RemotePlayer[];
   messages: ChatMessage[];
-  onLocalMove: (pos: Vec2, direction: Direction, facing: Facing, state: "idle" | "walk") => void;
+  onLocalMove: (
+    pos: Vec2,
+    direction: Direction,
+    facing: Facing,
+    state: "idle" | "walk" | "dance",
+  ) => void;
 }
+
+type Mode = "idle" | "walk" | "turning" | "dance";
+const DIRECTION_ORDER: Direction[] = [
+  "south",
+  "south-west",
+  "west",
+  "north-west",
+  "north",
+  "north-east",
+  "east",
+  "south-east",
+];
+const TURN_FRAME_MS = 90;
+// Silence unused-import lint on DIRECTIONS while keeping the type source
+// available if we later validate direction strings from remote peers.
+void DIRECTIONS;
 
 export function Room({ localId, localConfig, localUsername, remotePlayers, messages, onLocalMove }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -50,7 +72,24 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
   const [target, setTarget] = useState<Vec2>({ x: ROOM_WIDTH / 2, y: ROOM_HEIGHT / 2 });
   const [direction, setDirection] = useState<Direction>("south");
   const [facing, setFacing] = useState<Facing>("right");
-  const state: "idle" | "walk" = pos.x === target.x && pos.y === target.y ? "idle" : "walk";
+  const [mode, setMode] = useState<Mode>("idle");
+  const modeRef = useRef<Mode>("idle");
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
+  const walkOrIdleState: "idle" | "walk" =
+    pos.x === target.x && pos.y === target.y ? "idle" : "walk";
+  const renderState: AnimState =
+    mode === "dance" ? "dance" : mode === "turning" ? "idle" : walkOrIdleState;
+  const renderDirection: Direction = mode === "dance" ? "south" : direction;
+  const turnTimerRef = useRef<number | null>(null);
+  const clearTurnTimer = useCallback(() => {
+    if (turnTimerRef.current !== null) {
+      window.clearTimeout(turnTimerRef.current);
+      turnTimerRef.current = null;
+    }
+  }, []);
+  useEffect(() => () => clearTurnTimer(), [clearTurnTimer]);
 
   const lastBroadcastRef = useRef(0);
 
@@ -61,6 +100,12 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
+      // While turning / dancing the local position is frozen; skip stepping
+      // and broadcasting so we don't overwrite the emote state on the wire.
+      if (modeRef.current === "turning" || modeRef.current === "dance") {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       setPos((p) => {
         const next = stepToward(p, target, dt);
         if (next.x !== p.x || next.y !== p.y) {
@@ -72,7 +117,7 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
             lastBroadcastRef.current = nowMs;
             onLocalMove(next, d, f, "walk");
           }
-        } else if (state === "idle") {
+        } else if (walkOrIdleState === "idle") {
           const nowMs = performance.now();
           if (nowMs - lastBroadcastRef.current > 250) {
             lastBroadcastRef.current = nowMs;
@@ -85,7 +130,7 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [target, direction, facing, state, onLocalMove]);
+  }, [target, direction, facing, walkOrIdleState, onLocalMove]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = containerRef.current;
@@ -98,8 +143,59 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
     const cy = Math.max(AVATAR_SIZE / 2, Math.min(ROOM_HEIGHT - AVATAR_SIZE / 2, y));
     // Reject click targets that fall inside a blocker.
     if (isBlocked(cx, cy)) return;
+    // Floor click interrupts a turning/dance emote and starts walking.
+    if (mode === "turning" || mode === "dance") {
+      clearTurnTimer();
+      setMode("idle");
+    }
     setTarget({ x: cx, y: cy });
   };
+
+  const startDance = useCallback(() => {
+    // Guard against re-entering turning or spamming presses.
+    if (mode === "turning") return;
+    if (mode === "dance") {
+      // Toggle off: snap to south idle.
+      clearTurnTimer();
+      setMode("idle");
+      setDirection("south");
+      setTarget(pos);
+      onLocalMove(pos, "south", facing, "idle");
+      return;
+    }
+    // Freeze position so the rAF loop settles to idle (dist becomes 0).
+    setTarget(pos);
+    const currentIdx = Math.max(0, DIRECTION_ORDER.indexOf(direction));
+    const forwardSteps = (0 - currentIdx + 8) % 8;
+    const backwardSteps = currentIdx;
+    const steps: Direction[] = [];
+    if (forwardSteps <= backwardSteps) {
+      for (let s = 1; s <= forwardSteps; s++) {
+        steps.push(DIRECTION_ORDER[(currentIdx + s) % 8]);
+      }
+    } else {
+      for (let s = 1; s <= backwardSteps; s++) {
+        steps.push(DIRECTION_ORDER[(currentIdx - s + 8) % 8]);
+      }
+    }
+    setMode("turning");
+    let i = 0;
+    const tick = () => {
+      if (i < steps.length) {
+        const d = steps[i++];
+        setDirection(d);
+        onLocalMove(pos, d, facing, "idle");
+        turnTimerRef.current = window.setTimeout(tick, TURN_FRAME_MS);
+      } else {
+        turnTimerRef.current = window.setTimeout(() => {
+          setDirection("south");
+          setMode("dance");
+          onLocalMove(pos, "south", facing, "dance");
+        }, TURN_FRAME_MS);
+      }
+    };
+    tick();
+  }, [mode, direction, facing, pos, onLocalMove, clearTurnTimer]);
 
   const currentZone = useMemo(() => zoneAt(pos.x, pos.y), [pos.x, pos.y]);
 
