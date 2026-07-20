@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AvatarSprite } from "@/avatar/AvatarSprite";
-import { AVATAR_SIZE } from "@/avatar/manifest";
+import { AVATAR_SIZE, PLAYER_SPRITE_SCALE } from "@/avatar/manifest";
 import type { AvatarConfig, Direction, Facing } from "@/avatar/types";
 import { ROOM_HEIGHT, ROOM_WIDTH, ZONES, zoneAt } from "./zones";
 import { isBlocked } from "./zones";
@@ -184,8 +184,8 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
           style={{
             left: `${(148 / ROOM_WIDTH) * 100}%`,
             top: `${(8 / ROOM_HEIGHT) * 100}%`,
-            width: `${(64 / ROOM_WIDTH) * 100}%`,
-            height: `${(43 / ROOM_HEIGHT) * 100}%`,
+            width: `${((64 * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100}%`,
+            height: `${((43 * PLAYER_SPRITE_SCALE) / ROOM_HEIGHT) * 100}%`,
           }}
         >
           <img
@@ -198,6 +198,11 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
               display: "block",
             }}
             draggable={false}
+            onError={(e) => {
+              const src = (e.currentTarget as HTMLImageElement).src;
+              // eslint-disable-next-line no-console
+              console.error("[bartender] failed to load NPC sprite", src);
+            }}
           />
         </div>
 
@@ -292,15 +297,30 @@ function PlayerMarker({
             filter: "blur(2px)",
           }}
         />
-        <div style={{ width: "100%", aspectRatio: "1 / 1" }}>
-          <AvatarSprite
-            config={player.config}
-            direction={player.direction}
-            facing={player.facing}
-            state={player.state}
-            size={AVATAR_SIZE}
-            className="w-full h-full"
-          />
+        {/* Sprite wrapper reserves the original 1:1 slot so the username
+            label above stays where it always was; the actual art is
+            absolutely positioned inside, scaled outward from bottom-center
+            so the world-coordinate foot anchor is preserved. */}
+        <div style={{ width: "100%", aspectRatio: "1 / 1", position: "relative" }}>
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              bottom: 0,
+              transform: "translateX(-50%)",
+              width: `${PLAYER_SPRITE_SCALE * 100}%`,
+              aspectRatio: "1 / 1",
+            }}
+          >
+            <AvatarSprite
+              config={player.config}
+              direction={player.direction}
+              facing={player.facing}
+              state={player.state}
+              size={AVATAR_SIZE * PLAYER_SPRITE_SCALE}
+              className="w-full h-full"
+            />
+          </div>
         </div>
       </div>
     </div>
