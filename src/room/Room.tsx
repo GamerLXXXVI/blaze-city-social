@@ -14,6 +14,12 @@ const BUBBLE_MAX_CHARS = 120;
 const BUBBLE_MAX_WIDTH_PX = 200;
 const BUBBLE_EDGE_THRESHOLD = 100;
 
+// Measured foot row on the 64px source sprite (bottom-most non-transparent
+// pixel is consistently at row 46 across all 8 idle directions and every
+// walk frame). Sprites are drawn full-canvas in the compositor so this
+// fraction applies directly to the rendered sprite box.
+const FOOT_ANCHOR_PCT = 46 / 64; // 0.71875
+
 // 320x180 source scaled 4x nearest-neighbor to fill the 1280x720 logical room.
 const BACKGROUND_URL: string | null = "/assets/rooms/blaze-city-main.png";
 const BACKGROUND_COLOR = "var(--room-floor)";
@@ -182,8 +188,9 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
           aria-hidden
           className="absolute pointer-events-none overflow-hidden"
           style={{
-            left: `${(148 / ROOM_WIDTH) * 100}%`,
-            top: `${(8 / ROOM_HEIGHT) * 100}%`,
+            // Staff lane behind the vertical bar counter on the left side.
+            left: `${(150 / ROOM_WIDTH) * 100}%`,
+            top: `${(360 / ROOM_HEIGHT) * 100}%`,
             width: `${((64 * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100}%`,
             height: `${((43 * PLAYER_SPRITE_SCALE) / ROOM_HEIGHT) * 100}%`,
           }}
@@ -258,69 +265,75 @@ function PlayerMarker({
   bubble?: ChatMessage | null;
   now?: number;
 }) {
+  // The marker div IS the scaled sprite box. Its top-left is placed at the
+  // player's world coord, then translated so the sprite's measured foot row
+  // (FOOT_ANCHOR_PCT down from the top of the box) lands exactly on that
+  // coord. Because PLAYER_SPRITE_SCALE grows the whole box uniformly, the
+  // scaled sprite's feet also land on the anchor.
+  const scaledWidthPct = ((AVATAR_SIZE * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100;
   return (
     <div
       className="absolute pointer-events-none transition-[left,top] duration-100 ease-linear"
       style={{
         left: `${(player.x / ROOM_WIDTH) * 100}%`,
         top: `${(player.y / ROOM_HEIGHT) * 100}%`,
-        transform: "translate(-50%, -85%)",
-        width: `${(AVATAR_SIZE / ROOM_WIDTH) * 100}%`,
+        width: `${scaledWidthPct}%`,
+        aspectRatio: "1 / 1",
+        transform: `translate(-50%, -${FOOT_ANCHOR_PCT * 100}%)`,
       }}
     >
-      <div className="relative flex flex-col items-center">
-        {bubble && (
-          <ChatBubble
-            message={bubble}
-            playerX={player.x}
-            now={now ?? Date.now()}
-          />
-        )}
-        <span
-          className={`hud-chip mb-1 px-2 py-0.5 ${
-            isLocal
-              ? "!bg-[color:var(--primary)] !text-[color:var(--primary-foreground)] !border-transparent"
-              : "text-foreground/90"
-          }`}
-        >
-          {player.username}
-        </span>
-        {/* soft shadow under avatar */}
-        <div
-          aria-hidden
-          className="absolute left-1/2 -translate-x-1/2"
-          style={{
-            bottom: "-6px",
-            width: "60%",
-            height: "10px",
-            background: "radial-gradient(ellipse, rgba(0,0,0,0.55) 0%, transparent 70%)",
-            filter: "blur(2px)",
-          }}
-        />
-        {/* Sprite wrapper reserves the original 1:1 slot so the username
-            label above stays where it always was; the actual art is
-            absolutely positioned inside, scaled outward from bottom-center
-            so the world-coordinate foot anchor is preserved. */}
-        <div style={{ width: "100%", aspectRatio: "1 / 1", position: "relative" }}>
-          <div
-            style={{
-              position: "absolute",
-              left: "50%",
-              bottom: 0,
-              transform: "translateX(-50%)",
-              width: `${PLAYER_SPRITE_SCALE * 100}%`,
-              aspectRatio: "1 / 1",
-            }}
+      {/* Sprite fills the marker box. */}
+      <AvatarSprite
+        config={player.config}
+        direction={player.direction}
+        facing={player.facing}
+        state={player.state}
+        size={AVATAR_SIZE * PLAYER_SPRITE_SCALE}
+        className="w-full h-full block"
+      />
+
+      {/* Soft shadow centered exactly on the foot anchor. */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: `${FOOT_ANCHOR_PCT * 100}%`,
+          transform: "translate(-50%, -50%)",
+          width: "45%",
+          height: "10px",
+          background:
+            "radial-gradient(ellipse, rgba(0,0,0,0.55) 0%, transparent 70%)",
+          filter: "blur(2px)",
+          zIndex: -1,
+        }}
+      />
+
+      {/* Label stack (bubble + username) floats just above the sprite box,
+          anchored to sprite-box top-center. ChatBubble is absolute-positioned
+          relative to this wrapper, matching its previous behavior. */}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          bottom: "100%",
+          transform: "translateX(-50%)",
+          paddingBottom: 4,
+        }}
+      >
+        <div className="relative flex flex-col items-center">
+          {bubble && (
+            <ChatBubble message={bubble} playerX={player.x} now={now ?? Date.now()} />
+          )}
+          <span
+            className={`hud-chip px-2 py-0.5 ${
+              isLocal
+                ? "!bg-[color:var(--primary)] !text-[color:var(--primary-foreground)] !border-transparent"
+                : "text-foreground/90"
+            }`}
           >
-            <AvatarSprite
-              config={player.config}
-              direction={player.direction}
-              facing={player.facing}
-              state={player.state}
-              size={AVATAR_SIZE * PLAYER_SPRITE_SCALE}
-              className="w-full h-full"
-            />
-          </div>
+            {player.username}
+          </span>
         </div>
       </div>
     </div>
