@@ -43,8 +43,14 @@ export const ZONES: Zone[] = [
     id: "dance",
     label: "Dance Floor",
     actionLabel: "Dance",
-    // Hand-traced against the fuchsia border baked into the room art.
-    rects: [{ x: 348, y: 44, w: 700, h: 440 }],
+    // Re-traced against the actual pink dance-floor tile border baked
+    // into the room art (source pixels x:87-212, y:52-121 → world ×4).
+    // The previous rect ({x:348,y:44,w:700,h:440}) extended east past
+    // x=900, causing the "Dance" action to appear while the player was
+    // visibly standing at the arcade cabinets. This tight rect ends at
+    // x=852, well clear of the games top-strip (x≥899) and right-walkway
+    // (x≥1109) — verified: no overlap with either games rect.
+    rects: [{ x: 348, y: 208, w: 504, h: 280 }],
     color: "var(--zone-dance)",
     border: "var(--zone-dance-border)",
   },
