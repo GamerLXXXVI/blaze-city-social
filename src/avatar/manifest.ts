@@ -13,8 +13,9 @@ export const PLAYER_SPRITE_SCALE = 1.75;
 // 18–47 of the 64px source ≈ 29px) is a smaller fraction of his sprite than
 // the player's, so reusing PLAYER_SPRITE_SCALE makes him appear ~60% of the
 // player's height. This scale is tuned so his full head-to-feet extent
-// matches the player's on-screen height (~73.5px). 73.5 / 29 ≈ 2.53.
-export const NPC_RENDER_SCALE = 2.53;
+// matches the player's on-screen head-to-feet height (~99.75px, measured as
+// 38/64 of the scaled 168px sprite box). 99.75 / 29 ≈ 3.4.
+export const NPC_RENDER_SCALE = 3.4;
 
 export type LayerDirection = "down" | "up" | "side";
 
