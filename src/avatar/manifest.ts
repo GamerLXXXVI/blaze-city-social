@@ -20,6 +20,8 @@ export type LayerDirection = "down" | "up" | "side";
 
 export const DEFAULT_AVATAR_PRESET = "blaze-original" as const;
 export const WALK_FRAME_COUNT = 4;
+export const DANCE_FRAME_COUNT = 16;
+export const DANCE_FRAME_MS = 165;
 
 export function presetPathFor(
   cfg: AvatarConfig,
@@ -30,6 +32,9 @@ export function presetPathFor(
   const preset = cfg.preset ?? DEFAULT_AVATAR_PRESET;
   if (preset !== "blaze-original") return null;
   const root = `/assets/avatars/presets/${preset}`;
+  if (state === "dance") {
+    return `${root}/dance/south/frame-${String(frame % DANCE_FRAME_COUNT).padStart(2, "0")}.png`;
+  }
   return state === "walk"
     ? `${root}/walk/${direction}/frame-${String(frame % WALK_FRAME_COUNT).padStart(2, "0")}.png`
     : `${root}/idle/${direction}.png`;
