@@ -32,7 +32,15 @@ export const ZONES: Zone[] = [
     id: "dance",
     label: "Dance Floor",
     actionLabel: "Dance",
-    rect: { x: 348, y: 44, w: 700, h: 440 },
+    // Shrunk on both sides so it no longer overlaps the bar rect
+    // (x:60..440) or the games rect (x:900..1232). Previously the
+    // dance rect ran x:348..1048, overlapping bar by 92px on the west
+    // and, more importantly, covering the 900..1056 strip in front of
+    // the arcade cabinets — a player standing at the leftmost cabinet
+    // was inside dance's x-range and outside games's, so zoneAt()
+    // returned "dance" and the HUD showed "Dance" at the arcade. New
+    // rect x:440..900 is exactly bounded by its two neighbors.
+    rect: { x: 440, y: 44, w: 460, h: 440 },
     color: "var(--zone-dance)",
     border: "var(--zone-dance-border)",
   },
@@ -40,14 +48,13 @@ export const ZONES: Zone[] = [
     id: "games",
     label: "Games",
     actionLabel: "Insert Coin",
-    // Extended south to y=520 to cover the reachable strip in front of
-    // the arcade cabinets. The cabinet + approach blockers occupy
-    // y:24..304, and the speakers blocker occupies x:1120..1256
-    // y:260..480, leaving only x:1056..1119, y:305..~600 walkable
-    // inside the arcade column. Old h=280 stopped at y=340, so most
-    // clicks near the cabinets were either rejected (inside speakers)
-    // or landed south of the games rect and never triggered the action.
-    rect: { x: 1056, y: 60, w: 176, h: 460 },
+    // West edge pulled to x:900 to match the arcade cabinet + approach
+    // blocker's west edge. The 900..1056 strip is reachable floor
+    // directly in front of the leftmost cabinet; keeping games's west
+    // edge at 1056 left that strip inside the dance rect, so "Dance"
+    // showed at the arcade. South edge stays at y=520 to cover the
+    // approach corridor between cabinets and speakers.
+    rect: { x: 900, y: 60, w: 332, h: 460 },
     color: "var(--zone-games)",
     border: "var(--zone-games-border)",
   },
