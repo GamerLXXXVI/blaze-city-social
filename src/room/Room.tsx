@@ -223,23 +223,6 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
                   }}
                 />
               </div>
-              {/* TEMP foot-anchor marker (remove after visual verification) */}
-              <div
-                aria-hidden
-                data-testid="bartender-anchor"
-                className="absolute pointer-events-none"
-                style={{
-                  left: `${(NPC_X / ROOM_WIDTH) * 100}%`,
-                  top: `${(NPC_Y / ROOM_HEIGHT) * 100}%`,
-                  width: 8,
-                  height: 8,
-                  transform: "translate(-50%, -50%)",
-                  background: "#ff00aa",
-                  borderRadius: 9999,
-                  boxShadow: "0 0 6px #ff00aa",
-                  zIndex: 9999,
-                }}
-              />
             </>
           );
         })()}
