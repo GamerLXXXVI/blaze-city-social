@@ -31,8 +31,7 @@ export const ZONES: Zone[] = [
   {
     id: "games",
     label: "Games",
-    actionLabel: "Play (coming soon)",
-    comingSoon: true,
+    actionLabel: "Insert Coin",
     rect: { x: 1056, y: 60, w: 176, h: 280 },
     color: "var(--zone-games)",
     border: "var(--zone-games-border)",

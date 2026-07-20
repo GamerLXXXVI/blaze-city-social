@@ -9,6 +9,7 @@ import { type AvatarConfig } from "@/avatar/types";
 import { getOwnProfile } from "@/lib/profile.functions";
 import { ROOM_WIDTH, ROOM_HEIGHT, ZONES } from "@/room/zones";
 import { zoneAt } from "@/room/zones";
+import { BlazeBlaster } from "@/games/BlazeBlaster";
 
 export const Route = createFileRoute("/room")({
   component: RoomPage,
@@ -20,6 +21,7 @@ function RoomPage() {
   const [loadState, setLoadState] = useState<"loading" | "error">("loading");
   const [reloadKey, setReloadKey] = useState(0);
   const [bartenderOpen, setBartenderOpen] = useState(false);
+  const [gameOpen, setGameOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -99,6 +101,8 @@ function RoomPage() {
             detail: { x: 50, y: 60, count: 20, hue: "gold" },
           }),
         );
+      } else if (zone.id === "games") {
+        setGameOpen(true);
       } else if (zone.comingSoon) {
         toast.info(`${zone.label} — coming soon`);
       } else {
@@ -217,6 +221,8 @@ function RoomPage() {
           </div>
         </div>
       )}
+
+      {gameOpen && <BlazeBlaster onExit={() => setGameOpen(false)} />}
     </main>
   );
 }
