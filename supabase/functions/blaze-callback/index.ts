@@ -57,6 +57,12 @@ Deno.serve(async (req) => {
     const clientId = Deno.env.get("BLAZE_CLIENT_ID")!;
     const clientSecret = Deno.env.get("BLAZE_CLIENT_SECRET")!;
     const redirectUri = Deno.env.get("BLAZE_REDIRECT_URI")!;
+    console.log("blaze-callback: env check", {
+      hasClientId: !!clientId,
+      clientIdLength: clientId?.length ?? 0,
+      hasClientSecret: !!clientSecret,
+      redirectUriHost: redirectUri ? new URL(redirectUri).host : null,
+    });
 
     const tokenRes = await fetch("https://blaze.stream/bapi/oauth2/token", {
       method: "POST",
@@ -139,13 +145,22 @@ Deno.serve(async (req) => {
         username,
         hasDisplayName: !!displayName,
       });
-      await supabase.from("profiles").upsert({
+      const { error: profileUpsertError } = await supabase.from("profiles").upsert({
         id: supabaseUserId,
         blaze_user_id: blazeUserId ? String(blazeUserId) : null,
         username,
         display_name: displayName,
         avatar_url: avatarUrl,
       });
+      if (profileUpsertError) {
+        console.error("blaze-callback: profile upsert failed", profileUpsertError);
+      } else {
+        console.log("blaze-callback: profile upsert saved", {
+          supabaseUserId,
+          blazeUserId: blazeUserId ? String(blazeUserId) : null,
+          username,
+        });
+      }
     } else {
       console.warn("blaze-callback: no profile fetched; row left without name", { supabaseUserId });
     }
