@@ -9,6 +9,13 @@ export const AVATAR_SIZE = 96; // logical avatar frame size in room pixels
 // only enlarges the drawn art around its bottom-center foot anchor.
 export const PLAYER_SPRITE_SCALE = 1.75;
 
+// Bartender-specific render scale. His visible content (head-to-feet, rows
+// 18–47 of the 64px source ≈ 29px) is a smaller fraction of his sprite than
+// the player's, so reusing PLAYER_SPRITE_SCALE makes him appear ~60% of the
+// player's height. This scale is tuned so his full head-to-feet extent
+// matches the player's on-screen height (~73.5px). 73.5 / 29 ≈ 2.53.
+export const NPC_RENDER_SCALE = 2.53;
+
 export type LayerDirection = "down" | "up" | "side";
 
 export const DEFAULT_AVATAR_PRESET = "blaze-original" as const;
