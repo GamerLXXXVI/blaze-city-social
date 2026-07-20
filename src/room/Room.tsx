@@ -297,15 +297,30 @@ function PlayerMarker({
             filter: "blur(2px)",
           }}
         />
-        <div style={{ width: "100%", aspectRatio: "1 / 1" }}>
-          <AvatarSprite
-            config={player.config}
-            direction={player.direction}
-            facing={player.facing}
-            state={player.state}
-            size={AVATAR_SIZE}
-            className="w-full h-full"
-          />
+        {/* Sprite wrapper reserves the original 1:1 slot so the username
+            label above stays where it always was; the actual art is
+            absolutely positioned inside, scaled outward from bottom-center
+            so the world-coordinate foot anchor is preserved. */}
+        <div style={{ width: "100%", aspectRatio: "1 / 1", position: "relative" }}>
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              bottom: 0,
+              transform: "translateX(-50%)",
+              width: `${PLAYER_SPRITE_SCALE * 100}%`,
+              aspectRatio: "1 / 1",
+            }}
+          >
+            <AvatarSprite
+              config={player.config}
+              direction={player.direction}
+              facing={player.facing}
+              state={player.state}
+              size={AVATAR_SIZE}
+              className="w-full h-full"
+            />
+          </div>
         </div>
       </div>
     </div>
