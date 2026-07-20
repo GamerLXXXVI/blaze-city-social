@@ -5,6 +5,7 @@ export interface ChatMessage {
   username: string;
   text: string;
   ts: number;
+  senderId?: string;
 }
 
 interface Props {
