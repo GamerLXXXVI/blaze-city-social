@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarCreator } from "@/avatar/AvatarCreator";
 import { defaultAvatarConfig, type AvatarConfig } from "@/avatar/types";
+import { upsertOwnProfile } from "@/lib/profile.functions";
 
 export const Route = createFileRoute("/create")({
   component: Create,
@@ -33,10 +34,7 @@ function Create() {
     setSaving(true);
     const { data: sess } = await supabase.auth.getSession();
     if (!sess.session) return;
-    await supabase.from("profiles").upsert({
-      id: sess.session.user.id,
-      avatar_config: cfg as never,
-    });
+    await upsertOwnProfile({ data: { avatarConfig: cfg } });
     navigate({ to: "/room" });
   };
 
