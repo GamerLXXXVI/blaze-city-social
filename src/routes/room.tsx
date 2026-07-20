@@ -196,6 +196,16 @@ function RoomPage() {
                 onVolumeChange={music.setVolume}
                 onToggleMute={music.toggleMute}
               />
+              <button
+                className="hud-chip px-3 py-1 text-muted-foreground hover:text-ember transition-colors"
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  navigate({ to: "/", replace: true });
+                }}
+                title="Sign out"
+              >
+                Log out
+              </button>
             </div>
           </div>
           <Room
