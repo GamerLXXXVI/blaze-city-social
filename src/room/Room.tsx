@@ -400,7 +400,6 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
           );
         })()}
 
-        {/* DEBUG stool markers */}
         {/* Remote players */}
         {remotePlayers
           .filter((p) => p.id !== localId)
