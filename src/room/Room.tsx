@@ -317,7 +317,7 @@ function PlayerMarker({
               direction={player.direction}
               facing={player.facing}
               state={player.state}
-              size={AVATAR_SIZE}
+              size={AVATAR_SIZE * PLAYER_SPRITE_SCALE}
               className="w-full h-full"
             />
           </div>
