@@ -337,9 +337,10 @@ export function Room({
           // Dance floor and bar counter both have their borders/shapes baked
           // into the room art, so a UI rectangle duplicates them. Skip the
           // rendered outline/highlight for those two while keeping the hit-test
-          // rects intact and the "BAR" label chip visible.
+          // rects intact. The bar label chip is also removed here.
           const isArtBaked = z.id === "dance" || z.id === "bar";
           const isCurrent = currentZone?.id === z.id;
+          if (z.id === "bar") return null;
           if (isArtBaked) {
             return (
               <div
@@ -351,16 +352,7 @@ export function Room({
                   width: `${(z.rect.w / ROOM_WIDTH) * 100}%`,
                   height: `${(z.rect.h / ROOM_HEIGHT) * 100}%`,
                 }}
-              >
-                {z.id === "bar" && (
-                  <span
-                    className="hud-chip absolute left-2 top-2 px-2 py-0.5 text-foreground/90"
-                    style={{ borderColor: z.border }}
-                  >
-                    {z.label}
-                  </span>
-                )}
-              </div>
+              />
             );
           }
           return (
