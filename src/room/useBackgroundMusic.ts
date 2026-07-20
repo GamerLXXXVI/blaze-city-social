@@ -152,10 +152,7 @@ export function useBackgroundMusic() {
   }, [started, applyVolumes]);
 
   const setVolume = useCallback((v: number) => {
-    const clamped = Math.min(1, Math.max(0, v));
-    setVolumeState(clamped);
-    // adjusting volume should implicitly unmute
-    if (clamped > 0) setMutedState(false);
+    setVolumeState(Math.min(1, Math.max(0, v)));
   }, []);
 
   const toggleMute = useCallback(() => setMutedState((m) => !m), []);
