@@ -76,7 +76,7 @@ function RoomPage() {
       pos: { x: number; y: number },
       direction: LocalPresence["direction"],
       facing: LocalPresence["facing"],
-      state: "idle" | "walk" | "dance",
+      state: "idle" | "walk" | "dance" | "sit",
     ) => {
       updatePresence({ x: pos.x, y: pos.y, direction, facing, state });
       const z = zoneAt(pos.x, pos.y);

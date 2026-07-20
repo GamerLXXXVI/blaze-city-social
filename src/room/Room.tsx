@@ -21,6 +21,44 @@ const BUBBLE_EDGE_THRESHOLD = 100;
 // fraction applies directly to the rendered sprite box.
 const FOOT_ANCHOR_PCT = 46 / 64; // 0.71875
 
+// Seat anchor for the sit pose — the row on the 64px source sprite where
+// the hip/butt makes contact with the stool. Calibrated by inspecting the
+// west sit sprite (hip row ≈ 40 in the padded 64x64 canvas) and cross-
+// checked against the south sit; each stool's world Y is placed at the
+// visible seat-top pixel of the stool art so this anchor lands the player
+// squarely on the seat.
+const SIT_ANCHOR_PCT = 40 / 64; // 0.625
+
+// Stool world coordinates, measured directly against the room art:
+// scanned column x=68-70 (source px) of blaze-city-main.png for reddish
+// seat pixels and identified four stool tops at source rows 58, 73, 89,
+// and 107. Source→world = ×4, so seat centers land at world x=276 and
+// y=232, 292, 356, 428. Players face west when seated so they look toward
+// the bar counter (which sits immediately west at world x≈248).
+interface Stool {
+  id: string;
+  seat: Vec2;
+}
+const STOOLS: Stool[] = [
+  { id: "stool-1", seat: { x: 276, y: 232 } },
+  { id: "stool-2", seat: { x: 276, y: 292 } },
+  { id: "stool-3", seat: { x: 276, y: 356 } },
+  { id: "stool-4", seat: { x: 276, y: 428 } },
+];
+const STOOL_HITBOX_HALF_W = 20;
+const STOOL_HITBOX_HALF_H = 24;
+function stoolAt(x: number, y: number): Stool | null {
+  for (const s of STOOLS) {
+    if (
+      Math.abs(x - s.seat.x) <= STOOL_HITBOX_HALF_W &&
+      Math.abs(y - s.seat.y) <= STOOL_HITBOX_HALF_H
+    ) {
+      return s;
+    }
+  }
+  return null;
+}
+
 // 320x180 source scaled 4x nearest-neighbor to fill the 1280x720 logical room.
 const BACKGROUND_URL: string | null = "/assets/rooms/blaze-city-main.png";
 const BACKGROUND_COLOR = "var(--room-floor)";
@@ -33,7 +71,7 @@ export interface RemotePlayer {
   y: number;
   direction: Direction;
   facing: Facing;
-  state: "idle" | "walk" | "dance";
+  state: "idle" | "walk" | "dance" | "sit";
 }
 
 interface Props {
@@ -46,11 +84,11 @@ interface Props {
     pos: Vec2,
     direction: Direction,
     facing: Facing,
-    state: "idle" | "walk" | "dance",
+    state: "idle" | "walk" | "dance" | "sit",
   ) => void;
 }
 
-type Mode = "idle" | "walk" | "turning" | "dance";
+type Mode = "idle" | "walk" | "turning" | "dance" | "sit";
 const DIRECTION_ORDER: Direction[] = [
   "south",
   "south-west",
@@ -77,10 +115,20 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
   useEffect(() => {
     modeRef.current = mode;
   }, [mode]);
+  // When set, indicates the local player is walking toward a stool and
+  // should snap into "sit" mode upon arrival. Ref (not state) so the rAF
+  // loop can read/clear it without re-subscribing.
+  const pendingSitRef = useRef<Stool | null>(null);
   const walkOrIdleState: "idle" | "walk" =
     pos.x === target.x && pos.y === target.y ? "idle" : "walk";
   const renderState: AnimState =
-    mode === "dance" ? "dance" : mode === "turning" ? "idle" : walkOrIdleState;
+    mode === "dance"
+      ? "dance"
+      : mode === "sit"
+        ? "sit"
+        : mode === "turning"
+          ? "idle"
+          : walkOrIdleState;
   const renderDirection: Direction = mode === "dance" ? "south" : direction;
   const turnTimerRef = useRef<number | null>(null);
   const clearTurnTimer = useCallback(() => {
@@ -106,6 +154,10 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
         raf = requestAnimationFrame(tick);
         return;
       }
+      if (modeRef.current === "sit") {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       setPos((p) => {
         const next = stepToward(p, target, dt);
         if (next.x !== p.x || next.y !== p.y) {
@@ -118,6 +170,16 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
             onLocalMove(next, d, f, "walk");
           }
         } else if (walkOrIdleState === "idle") {
+          // Arrived. If we were en route to a stool, snap into sit.
+          const pending = pendingSitRef.current;
+          if (pending && next.x === pending.seat.x && next.y === pending.seat.y) {
+            pendingSitRef.current = null;
+            setDirection("west");
+            setFacing("left");
+            setMode("sit");
+            onLocalMove(next, "west", "left", "sit");
+            return next;
+          }
           const nowMs = performance.now();
           if (nowMs - lastBroadcastRef.current > 250) {
             lastBroadcastRef.current = nowMs;
@@ -139,13 +201,28 @@ export function Room({ localId, localConfig, localUsername, remotePlayers, messa
     const scale = rect.width / ROOM_WIDTH;
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
+    // Stool click — walk to the stool's seat and snap into sit on arrival.
+    // Test BEFORE the blocker check because stool hitboxes may overlap the
+    // bar counter blocker; we allow the target regardless (movement will
+    // still slide around blockers en route).
+    const stool = stoolAt(x, y);
+    if (stool) {
+      if (mode === "turning" || mode === "dance" || mode === "sit") {
+        clearTurnTimer();
+        setMode("idle");
+      }
+      pendingSitRef.current = stool;
+      setTarget({ x: stool.seat.x, y: stool.seat.y });
+      return;
+    }
     const cx = Math.max(AVATAR_SIZE / 2, Math.min(ROOM_WIDTH - AVATAR_SIZE / 2, x));
     const cy = Math.max(AVATAR_SIZE / 2, Math.min(ROOM_HEIGHT - AVATAR_SIZE / 2, y));
     // Reject click targets that fall inside a blocker.
     if (isBlocked(cx, cy)) return;
-    // Floor click interrupts a turning/dance emote and starts walking.
-    if (mode === "turning" || mode === "dance") {
+    // Floor click interrupts a turning/dance/sit emote and starts walking.
+    if (mode === "turning" || mode === "dance" || mode === "sit") {
       clearTurnTimer();
+      pendingSitRef.current = null;
       setMode("idle");
     }
     setTarget({ x: cx, y: cy });
@@ -387,6 +464,10 @@ function PlayerMarker({
   // coord. Because PLAYER_SPRITE_SCALE grows the whole box uniformly, the
   // scaled sprite's feet also land on the anchor.
   const scaledWidthPct = ((AVATAR_SIZE * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100;
+  // Sitting sprites contact the stool at the hip row (SIT_ANCHOR_PCT),
+  // not the standing foot row. Switch anchors so the same world coord
+  // means "seat contact" while sitting and "foot contact" otherwise.
+  const anchorPct = player.state === "sit" ? SIT_ANCHOR_PCT : FOOT_ANCHOR_PCT;
   // Local player: no CSS transition — rAF loop drives smooth motion frame by
   // frame, and a transition here would fight the loop and roughly double
   // perceived speed while smearing the target. Remote players still need the
@@ -400,7 +481,7 @@ function PlayerMarker({
         top: `${(player.y / ROOM_HEIGHT) * 100}%`,
         width: `${scaledWidthPct}%`,
         aspectRatio: "1 / 1",
-        transform: `translate(-50%, -${FOOT_ANCHOR_PCT * 100}%)`,
+        transform: `translate(-50%, -${anchorPct * 100}%)`,
       }}
     >
       {/* Sprite fills the marker box. */}
@@ -419,7 +500,7 @@ function PlayerMarker({
         style={{
           position: "absolute",
           left: "50%",
-          top: `${FOOT_ANCHOR_PCT * 100}%`,
+          top: `${anchorPct * 100}%`,
           transform: "translate(-50%, -50%)",
           width: "45%",
           height: "10px",

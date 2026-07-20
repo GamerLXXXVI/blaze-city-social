@@ -12,7 +12,7 @@ export const DIRECTIONS = [
 ] as const;
 export type Direction = (typeof DIRECTIONS)[number];
 export type Facing = "left" | "right";
-export type AnimState = "idle" | "walk" | "dance";
+export type AnimState = "idle" | "walk" | "dance" | "sit";
 export type AvatarPreset = "blaze-original";
 
 export function normalizeDirection(direction: string, facing: Facing = "right"): Direction {

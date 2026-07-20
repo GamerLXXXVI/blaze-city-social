@@ -12,7 +12,7 @@ export interface LocalPresence {
   y: number;
   direction: Direction;
   facing: Facing;
-  state: "idle" | "walk" | "dance";
+  state: "idle" | "walk" | "dance" | "sit";
 }
 
 export function useRoomChannel(roomId: string, initial: LocalPresence | null) {
