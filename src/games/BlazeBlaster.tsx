@@ -145,6 +145,17 @@ export function BlazeBlaster({ onExit }: { onExit: () => void }) {
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [phase, setPhase] = useState<Phase>("playing");
+  const [isTouch, setIsTouch] = useState(false);
+  const onExitRef = useRef(onExit);
+  useEffect(() => { onExitRef.current = onExit; }, [onExit]);
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mql = window.matchMedia("(pointer: coarse)");
+    const update = () => setIsTouch(mql.matches);
+    update();
+    mql.addEventListener?.("change", update);
+    return () => mql.removeEventListener?.("change", update);
+  }, []);
   const [highScore, setHighScore] = useState<number>(() => {
     if (typeof window === "undefined") return 0;
     const raw = window.localStorage.getItem(HS_KEY);
@@ -169,6 +180,8 @@ export function BlazeBlaster({ onExit }: { onExit: () => void }) {
   const phaseRef = useRef<Phase>("playing");
   const runIdRef = useRef(0);
   const sfxRef = useRef<SFX>(new SFX());
+  // Gamepad: track prior Start button state for edge-triggered exit
+  const prevStartRef = useRef(false);
 
   const startRun = useCallback(() => {
     runIdRef.current++;
@@ -227,6 +240,42 @@ export function BlazeBlaster({ onExit }: { onExit: () => void }) {
       window.removeEventListener("keyup", up);
     };
   }, [onExit]);
+
+  // Gamepad polling — runs alongside the main loop, feeds keysRef
+  useEffect(() => {
+    let raf = 0;
+    const DEAD = 0.25;
+    const poll = () => {
+      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+      let gp: Gamepad | null = null;
+      for (const p of pads) {
+        if (p && p.connected) { gp = p; break; }
+      }
+      if (gp) {
+        const keys = keysRef.current;
+        const axisX = gp.axes[0] ?? 0;
+        const dpadL = gp.buttons[14]?.pressed ?? false;
+        const dpadR = gp.buttons[15]?.pressed ?? false;
+        keys["ArrowLeft"] = dpadL || axisX < -DEAD;
+        keys["ArrowRight"] = dpadR || axisX > DEAD;
+        keys["ArrowUp"] =
+          (gp.buttons[0]?.pressed ?? false) ||
+          (gp.buttons[7]?.pressed ?? false) ||
+          (gp.buttons[7]?.value ?? 0) > 0.3;
+        keys[" "] =
+          (gp.buttons[2]?.pressed ?? false) ||
+          (gp.buttons[5]?.pressed ?? false);
+        const start = gp.buttons[9]?.pressed ?? false;
+        if (start && !prevStartRef.current) onExitRef.current();
+        prevStartRef.current = start;
+      } else {
+        prevStartRef.current = false;
+      }
+      raf = requestAnimationFrame(poll);
+    };
+    raf = requestAnimationFrame(poll);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   // Main loop
   useEffect(() => {
@@ -508,9 +557,64 @@ export function BlazeBlaster({ onExit }: { onExit: () => void }) {
           )}
         </div>
         <div className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">
-          ← → rotate · ↑ thrust · space fire · esc exit
+          ← → rotate · ↑ thrust · space fire · esc exit — touch & gamepad supported
         </div>
+        {isTouch && phase === "playing" && (
+          <TouchControls keysRef={keysRef} onExit={onExit} />
+        )}
       </div>
     </div>
+  );
+}
+
+function TouchControls({
+  keysRef,
+  onExit,
+}: {
+  keysRef: React.MutableRefObject<Record<string, boolean>>;
+  onExit: () => void;
+}) {
+  const bind = (key: string) => ({
+    onPointerDown: (e: React.PointerEvent) => {
+      e.preventDefault();
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+      keysRef.current[key] = true;
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      e.preventDefault();
+      keysRef.current[key] = false;
+    },
+    onPointerCancel: () => {
+      keysRef.current[key] = false;
+    },
+    onPointerLeave: (e: React.PointerEvent) => {
+      if ((e.buttons & 1) === 0) keysRef.current[key] = false;
+    },
+    onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
+  });
+  const btn =
+    "select-none touch-none flex items-center justify-center rounded-full border border-white/30 bg-black/40 backdrop-blur-sm text-white/90 font-mono text-lg active:bg-primary/40 active:border-primary/70";
+  return (
+    <>
+      {/* Exit — top-right */}
+      <button
+        type="button"
+        onClick={onExit}
+        aria-label="Exit game"
+        className="absolute right-2 top-8 z-10 h-10 w-10 rounded-full border border-white/30 bg-black/50 text-white text-xl leading-none flex items-center justify-center active:bg-white/20"
+      >
+        ×
+      </button>
+      {/* Rotate cluster — bottom-left */}
+      <div className="absolute left-3 bottom-4 z-10 flex gap-3">
+        <button type="button" aria-label="Rotate left" className={`${btn} h-16 w-16`} {...bind("ArrowLeft")}>◀</button>
+        <button type="button" aria-label="Rotate right" className={`${btn} h-16 w-16`} {...bind("ArrowRight")}>▶</button>
+      </div>
+      {/* Thrust + Fire — bottom-right */}
+      <div className="absolute right-3 bottom-4 z-10 flex gap-3">
+        <button type="button" aria-label="Thrust" className={`${btn} h-16 w-16`} {...bind("ArrowUp")}>▲</button>
+        <button type="button" aria-label="Fire" className={`${btn} h-16 w-16 text-sm`} {...bind(" ")}>FIRE</button>
+      </div>
+    </>
   );
 }
