@@ -36,6 +36,13 @@ export function presetPathFor(
   const preset = cfg.preset ?? DEFAULT_AVATAR_PRESET;
   if (preset !== "blaze-original") return null;
   const root = `/assets/avatars/presets/${preset}`;
+  const gender = cfg.gender ?? "male";
+  // Female art currently only has an idle set. Walk/dance/sit fall through to
+  // the male sprites below as a TEMPORARY fallback — remove this comment and
+  // add female branches once female walk/dance/sit frames are generated.
+  if (gender === "female" && state === "idle") {
+    return `${root}/idle-female/${direction}.png`;
+  }
   if (state === "dance") {
     return `${root}/dance/south/frame-${String(frame % DANCE_FRAME_COUNT).padStart(2, "0")}.png`;
   }
