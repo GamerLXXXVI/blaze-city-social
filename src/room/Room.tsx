@@ -48,10 +48,34 @@ interface Stool {
   seatOffsetY?: number;
 }
 const STOOLS: Stool[] = [
-  { id: "stool-1", seat: { x: 276, y: 232 }, sitDirection: "west", sitFacing: "left", seatOffsetY: 0 },
-  { id: "stool-2", seat: { x: 276, y: 292 }, sitDirection: "west", sitFacing: "left", seatOffsetY: 0 },
-  { id: "stool-3", seat: { x: 276, y: 356 }, sitDirection: "west", sitFacing: "left", seatOffsetY: 0 },
-  { id: "stool-4", seat: { x: 276, y: 428 }, sitDirection: "west", sitFacing: "left", seatOffsetY: 0 },
+  {
+    id: "stool-1",
+    seat: { x: 276, y: 232 },
+    sitDirection: "west",
+    sitFacing: "left",
+    seatOffsetY: 0,
+  },
+  {
+    id: "stool-2",
+    seat: { x: 276, y: 292 },
+    sitDirection: "west",
+    sitFacing: "left",
+    seatOffsetY: 0,
+  },
+  {
+    id: "stool-3",
+    seat: { x: 276, y: 356 },
+    sitDirection: "west",
+    sitFacing: "left",
+    seatOffsetY: 0,
+  },
+  {
+    id: "stool-4",
+    seat: { x: 276, y: 428 },
+    sitDirection: "west",
+    sitFacing: "left",
+    seatOffsetY: 0,
+  },
 ];
 const STOOL_HITBOX_HALF_W = 20;
 const STOOL_HITBOX_HALF_H = 24;
