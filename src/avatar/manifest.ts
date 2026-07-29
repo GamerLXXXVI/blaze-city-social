@@ -156,15 +156,19 @@ export function preloadFemaleWalkFrames() {
       .then((keys) =>
         Promise.all(
           keys.map((key) =>
-            window.caches.open(key).then((cache) =>
-              cache.keys().then((requests) =>
-                Promise.all(
-                  requests
-                    .filter((request) => request.url.includes("/idle-female/"))
-                    .map((request) => cache.delete(request)),
-                ),
+            window.caches
+              .open(key)
+              .then((cache) =>
+                cache
+                  .keys()
+                  .then((requests) =>
+                    Promise.all(
+                      requests
+                        .filter((request) => request.url.includes("/idle-female/"))
+                        .map((request) => cache.delete(request)),
+                    ),
+                  ),
               ),
-            ),
           ),
         ),
       )
@@ -179,7 +183,9 @@ export function preloadFemaleWalkFrames() {
   const idleRoot = `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/idle-female`;
   for (const direction of DIRECTIONS) {
     for (let i = 0; i < FEMALE_IDLE_FRAME_COUNT; i++) {
-      void loadAvatarImage(`${idleRoot}/${direction}/frame-${String(i + 1).padStart(2, "0")}.png?v=${FEMALE_SELECTOR_IDLE_VERSION}`);
+      void loadAvatarImage(
+        `${idleRoot}/${direction}/frame-${String(i + 1).padStart(2, "0")}.png?v=${FEMALE_SELECTOR_IDLE_VERSION}`,
+      );
     }
   }
 }
