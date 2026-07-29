@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AvatarSprite } from "./AvatarSprite";
-import { DIRECTIONS, defaultAvatarConfig, type AvatarConfig, type Direction } from "./types";
+import {
+  DIRECTIONS,
+  defaultAvatarConfig,
+  type AvatarConfig,
+  type Direction,
+  type Gender,
+} from "./types";
 
 interface Props {
   initial?: AvatarConfig;
@@ -21,9 +27,10 @@ const DIRECTION_LABEL: Record<Direction, string> = {
 };
 
 export function AvatarCreator({ initial, onSave, saving }: Props) {
-  const [cfg] = useState<AvatarConfig>({
+  const [cfg, setCfg] = useState<AvatarConfig>({
     ...defaultAvatarConfig(),
     ...initial,
+    gender: initial?.gender ?? "male",
     preset: "blaze-original",
   });
   const [direction, setDirection] = useState<Direction>("south");
@@ -67,8 +74,27 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
       </div>
 
       <div className="space-y-4">
+        <div className="hud-panel p-4">
+          <p className="font-mono-display text-[11px] text-muted-foreground uppercase tracking-[0.2em]">
+            Gender
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            {(["male", "female"] as Gender[]).map((g) => (
+              <Button
+                key={g}
+                variant={cfg.gender === g ? "default" : "secondary"}
+                size="sm"
+                aria-pressed={cfg.gender === g}
+                onClick={() => setCfg((c) => ({ ...c, gender: g }))}
+              >
+                {g === "male" ? "Male" : "Female"}
+              </Button>
+            ))}
+          </div>
+        </div>
         <div className="hud-panel divide-y divide-border/50">
           <PresetDetail label="Character" value="Blaze Original" />
+          <PresetDetail label="Gender" value={cfg.gender === "female" ? "Female" : "Male"} />
           <PresetDetail label="Style" value="Amber Night" />
           <PresetDetail label="Directions" value="8" />
           <PresetDetail label="Walk cycle" value="4 frames" />
