@@ -34,6 +34,19 @@ export const FEMALE_WALK_FRAME_MS = 111;
 export const FEMALE_IDLE_FRAME_COUNT = 4;
 export const FEMALE_IDLE_FRAME_MS = 500;
 export const FEMALE_SELECTOR_IDLE_VERSION = "female-selector-idle-v2";
+// The V2 female idle art is authored full-bleed in its 64px frame (body rows
+// 3–62), while every world sprite (male idle/walk, female walk) draws its body
+// in rows 17–46 of the same 64px frame. Drawing the selector art untouched in
+// the world makes her ~2x too tall. In the WORLD renderer only, the idle frame
+// is blitted into the shared 64px canvas at half size with a whole-pixel
+// offset so her feet land on row 46 and her body height matches the walk art.
+// The selector preview does NOT go through this path (see
+// FemaleSelectorIdleSprite), so it keeps its native 128x128 rendering.
+export const FEMALE_WORLD_IDLE_DRAW = { size: 32, dx: 16, dy: 15 } as const;
+
+export function isFemaleIdlePath(path: string): boolean {
+  return path.includes("/idle-female/");
+}
 export const DANCE_FRAME_COUNT = 16;
 export const DANCE_FRAME_MS = 165;
 
