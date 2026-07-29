@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AvatarSprite } from "./AvatarSprite";
+import { FemaleSelectorIdleSprite } from "./FemaleSelectorIdleSprite";
 import {
   DIRECTIONS,
   defaultAvatarConfig,
@@ -47,12 +48,18 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
             boxShadow: "inset 0 0 40px rgba(0,0,0,0.55)",
           }}
         >
-          <AvatarSprite
-            config={cfg}
-            direction={direction}
-            state={walking ? "walk" : "idle"}
-            size={192}
-          />
+          <div className="flex h-48 w-48 items-center justify-center">
+            {cfg.gender === "female" && !walking ? (
+              <FemaleSelectorIdleSprite direction={direction} />
+            ) : (
+              <AvatarSprite
+                config={cfg}
+                direction={direction}
+                state={walking ? "walk" : "idle"}
+                size={192}
+              />
+            )}
+          </div>
         </div>
         <div className="grid w-full grid-cols-4 gap-1">
           {DIRECTIONS.map((d) => (
