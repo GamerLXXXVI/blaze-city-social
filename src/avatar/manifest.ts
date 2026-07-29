@@ -66,14 +66,15 @@ export function femaleSitPath(direction: Direction): string {
 export const DANCE_FRAME_COUNT = 16;
 export const DANCE_FRAME_MS = 165;
 
-// Female-specific dance animation ("Amber Night" twerk). 8 native 64px frames,
-// authored full-bleed (body rows 3–63) like the V2 idle art, so the WORLD
-// renderer normalizes them with the same metrics as the idle frames.
-export const FEMALE_DANCE_ID = "amber-night-twerk" as const;
-export const FEMALE_DANCE_NAME = "Twerk" as const;
-export const FEMALE_DANCE_FRAME_COUNT = 8;
-export const FEMALE_DANCE_FRAME_MS = 130;
-export const FEMALE_DANCE_VERSION = "amber-night-twerk-v1";
+// Female-specific dance animation ("Amber Night" smooth dance). 24 native 64px
+// frames, authored full-bleed (body rows 3–62) like the V2 idle art, so the
+// WORLD renderer normalizes them with the same metrics as the idle frames.
+// The previous 8-frame twerk set is fully replaced — frames are never mixed.
+export const FEMALE_DANCE_ID = "amber-night-dance-smooth" as const;
+export const FEMALE_DANCE_NAME = "Smooth Dance" as const;
+export const FEMALE_DANCE_FRAME_COUNT = 24;
+export const FEMALE_DANCE_FRAME_MS = 70;
+export const FEMALE_DANCE_VERSION = "amber-night-dance-smooth-24f-v1";
 export const FEMALE_WORLD_DANCE_DRAW = FEMALE_WORLD_IDLE_DRAW;
 
 export function isFemaleDancePath(path: string): boolean {
