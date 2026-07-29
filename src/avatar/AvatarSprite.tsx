@@ -65,7 +65,7 @@ export function AvatarSprite({
       return () => window.clearInterval(id);
     }
     setFrame(0);
-    if (idleCount > 1) {
+    if (state === "idle" && idleCount > 1) {
       const id = window.setInterval(() => setFrame((f) => (f + 1) % idleCount), idleMs);
       return () => window.clearInterval(id);
     }
