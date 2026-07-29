@@ -4,9 +4,10 @@ import type { Direction } from "./types";
 
 interface Props {
   direction: Direction;
+  resetKey: number;
 }
 
-export function FemaleSelectorIdleSprite({ direction }: Props) {
+export function FemaleSelectorIdleSprite({ direction, resetKey }: Props) {
   const [frame, setFrame] = useState(0);
 
   useEffect(() => {
@@ -16,7 +17,7 @@ export function FemaleSelectorIdleSprite({ direction }: Props) {
       FEMALE_IDLE_FRAME_MS,
     );
     return () => window.clearInterval(id);
-  }, [direction]);
+  }, [direction, resetKey]);
 
   const src = femaleIdleFramePath(direction, frame);
 
