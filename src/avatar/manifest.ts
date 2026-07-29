@@ -42,7 +42,16 @@ export const FEMALE_SELECTOR_IDLE_VERSION = "female-selector-idle-v2";
 // offset so her feet land on row 46 and her body height matches the walk art.
 // The selector preview does NOT go through this path (see
 // FemaleSelectorIdleSprite), so it keeps its native 128x128 rendering.
-export const FEMALE_WORLD_IDLE_DRAW = { size: 32, dx: 16, dy: 15 } as const;
+// The single source of truth for how ANY full-bleed 64px female frame
+// (idle, dance) is blitted into the shared world sprite canvas. Every state
+// uses this same draw size — only the source frame changes.
+export const FEMALE_WORLD_DRAW_SIZE = 32;
+export const FEMALE_WORLD_DRAW_DX = 16;
+export const FEMALE_WORLD_IDLE_DRAW = {
+  size: FEMALE_WORLD_DRAW_SIZE,
+  dx: FEMALE_WORLD_DRAW_DX,
+  dy: 15,
+} as const;
 
 export function isFemaleIdlePath(path: string): boolean {
   return path.includes("/idle-female/");
@@ -75,7 +84,15 @@ export const FEMALE_DANCE_NAME = "Three-Angle Dance" as const;
 export const FEMALE_DANCE_FRAME_COUNT = 72;
 export const FEMALE_DANCE_FRAME_MS = 70;
 export const FEMALE_DANCE_VERSION = "amber-night-dance-three-angle-72f-v1";
-export const FEMALE_WORLD_DANCE_DRAW = FEMALE_WORLD_IDLE_DRAW;
+// Identical draw size to idle/walk — there is NO dance-specific scale. The
+// dance art is authored one row lower in its frame (body rows 3–63 vs the
+// idle art's 3–62), so only the vertical anchor is nudged 1px up to keep the
+// foot row on 46. Width/height/scale are shared.
+export const FEMALE_WORLD_DANCE_DRAW = {
+  size: FEMALE_WORLD_DRAW_SIZE,
+  dx: FEMALE_WORLD_DRAW_DX,
+  dy: FEMALE_WORLD_IDLE_DRAW.dy - 1,
+} as const;
 
 export function isFemaleDancePath(path: string): boolean {
   return path.includes("/dance-female/");
