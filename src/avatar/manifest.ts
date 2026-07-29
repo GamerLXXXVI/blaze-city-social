@@ -86,6 +86,19 @@ export function femaleDancePath(frame: number): string {
   return `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/dance-female/frame-${f}.png?v=${FEMALE_DANCE_VERSION}`;
 }
 
+// Decodes all 24 dance frames once. Playback waits on this so the first loop
+// never stalls on a network fetch.
+let femaleDancePreload: Promise<void> | null = null;
+export function preloadFemaleDanceFrames(): Promise<void> {
+  if (!femaleDancePreload) {
+    invalidateAvatarImageCache((url) => url.includes("/dance-female/"));
+    femaleDancePreload = Promise.all(
+      Array.from({ length: FEMALE_DANCE_FRAME_COUNT }, (_, i) => loadAvatarImage(femaleDancePath(i))),
+    ).then(() => undefined);
+  }
+  return femaleDancePreload;
+}
+
 export function danceFrameCount(cfg: AvatarConfig): number {
   return (cfg.gender ?? "male") === "female" ? FEMALE_DANCE_FRAME_COUNT : DANCE_FRAME_COUNT;
 }
