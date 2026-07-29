@@ -166,6 +166,11 @@ export function Room({
   // should snap into "sit" mode upon arrival. Ref (not state) so the rAF
   // loop can read/clear it without re-subscribing.
   const pendingSitRef = useRef<Stool | null>(null);
+  // World coordinate captured the moment Dance is pressed. While the emote
+  // runs, position is hard-locked to this point: no stepping, no target
+  // updates, no click-to-walk. Frame-to-frame sprite direction changes are
+  // drawn into the art and never touch movement.
+  const danceOriginRef = useRef<Vec2 | null>(null);
   const walkOrIdleState: "idle" | "walk" =
     pos.x === target.x && pos.y === target.y ? "idle" : "walk";
   const renderState: AnimState =
@@ -198,6 +203,10 @@ export function Room({
       // While turning / dancing the local position is frozen; skip stepping
       // and broadcasting so we don't overwrite the emote state on the wire.
       if (modeRef.current === "turning" || modeRef.current === "dance") {
+        const origin = danceOriginRef.current;
+        if (origin) {
+          setPos((p) => (p.x === origin.x && p.y === origin.y ? p : origin));
+        }
         raf = requestAnimationFrame(tick);
         return;
       }
@@ -247,6 +256,10 @@ export function Room({
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = containerRef.current;
     if (!el) return;
+    // While turning into / performing the dance emote, click-to-walk is
+    // ignored entirely. The dance is cancelled with the "Stop dancing"
+    // button, which is the only intentional exit.
+    if (mode === "turning" || mode === "dance") return;
     const rect = el.getBoundingClientRect();
     const scale = rect.width / ROOM_WIDTH;
     const x = (e.clientX - rect.left) / scale;
@@ -257,7 +270,7 @@ export function Room({
     // still slide around blockers en route).
     const stool = stoolAt(x, y);
     if (stool) {
-      if (mode === "turning" || mode === "dance" || mode === "sit") {
+      if (mode === "sit") {
         clearTurnTimer();
         setMode("idle");
       }
@@ -270,7 +283,7 @@ export function Room({
     // Reject click targets that fall inside a blocker.
     if (isBlocked(cx, cy)) return;
     // Floor click interrupts a turning/dance/sit emote and starts walking.
-    if (mode === "turning" || mode === "dance" || mode === "sit") {
+    if (mode === "sit") {
       clearTurnTimer();
       pendingSitRef.current = null;
       setMode("idle");
@@ -282,16 +295,22 @@ export function Room({
     // Guard against re-entering turning or spamming presses.
     if (mode === "turning") return;
     if (mode === "dance") {
-      // Toggle off: snap to south idle.
+      // Toggle off: release the position lock at the exact dance origin and
+      // return to the female idle animation there.
+      const origin = danceOriginRef.current ?? pos;
+      danceOriginRef.current = null;
       clearTurnTimer();
       setMode("idle");
       setDirection("south");
-      setTarget(pos);
-      onLocalMove(pos, "south", facing, "idle");
+      setPos(origin);
+      setTarget(origin);
+      onLocalMove(origin, "south", facing, "idle");
       return;
     }
     // Freeze position so the rAF loop settles to idle (dist becomes 0).
-    setTarget(pos);
+    const danceOrigin: Vec2 = { x: pos.x, y: pos.y };
+    danceOriginRef.current = danceOrigin;
+    setTarget(danceOrigin);
     const currentIdx = Math.max(0, DIRECTION_ORDER.indexOf(direction));
     const forwardSteps = (0 - currentIdx + 8) % 8;
     const backwardSteps = currentIdx;
@@ -311,13 +330,13 @@ export function Room({
       if (i < steps.length) {
         const d = steps[i++];
         setDirection(d);
-        onLocalMove(pos, d, facing, "idle");
+        onLocalMove(danceOrigin, d, facing, "idle");
         turnTimerRef.current = window.setTimeout(tick, TURN_FRAME_MS);
       } else {
         turnTimerRef.current = window.setTimeout(() => {
           setDirection("south");
           setMode("dance");
-          onLocalMove(pos, "south", facing, "dance");
+          onLocalMove(danceOrigin, "south", facing, "dance");
         }, TURN_FRAME_MS);
       }
     };
