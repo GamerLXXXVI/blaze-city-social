@@ -38,12 +38,20 @@ const SIT_ANCHOR_PCT = 40 / 64; // 0.625
 interface Stool {
   id: string;
   seat: Vec2;
+  // Direction the seated player faces on this stool. If a seat ever omits
+  // this, the caller keeps the player's last-facing direction instead.
+  sitDirection?: Direction;
+  sitFacing?: Facing;
+  // Per-seat visual-only nudge (world px) applied to the seated sprite so the
+  // hips line up with this seat's surface. Never affects the player's
+  // collision/occupied position, which stays at `seat`.
+  seatOffsetY?: number;
 }
 const STOOLS: Stool[] = [
-  { id: "stool-1", seat: { x: 276, y: 232 } },
-  { id: "stool-2", seat: { x: 276, y: 292 } },
-  { id: "stool-3", seat: { x: 276, y: 356 } },
-  { id: "stool-4", seat: { x: 276, y: 428 } },
+  { id: "stool-1", seat: { x: 276, y: 232 }, sitDirection: "west", sitFacing: "left", seatOffsetY: 0 },
+  { id: "stool-2", seat: { x: 276, y: 292 }, sitDirection: "west", sitFacing: "left", seatOffsetY: 0 },
+  { id: "stool-3", seat: { x: 276, y: 356 }, sitDirection: "west", sitFacing: "left", seatOffsetY: 0 },
+  { id: "stool-4", seat: { x: 276, y: 428 }, sitDirection: "west", sitFacing: "left", seatOffsetY: 0 },
 ];
 const STOOL_HITBOX_HALF_W = 20;
 const STOOL_HITBOX_HALF_H = 24;
@@ -57,6 +65,14 @@ function stoolAt(x: number, y: number): Stool | null {
     }
   }
   return null;
+}
+
+// Visual-only seat offset for a seated player at this world coord. Derived
+// from the seat config so local and remote clients agree without adding it
+// to the presence payload.
+function seatOffsetYAt(x: number, y: number): number {
+  const s = stoolAt(x, y);
+  return s?.seatOffsetY ?? 0;
 }
 
 // 320x180 source scaled 4x nearest-neighbor to fill the 1280x720 logical room.
@@ -181,10 +197,13 @@ export function Room({
           const pending = pendingSitRef.current;
           if (pending && next.x === pending.seat.x && next.y === pending.seat.y) {
             pendingSitRef.current = null;
-            setDirection("west");
-            setFacing("left");
+            // Seat orientation wins; otherwise keep the last-facing direction.
+            const sitDir = pending.sitDirection ?? direction;
+            const sitFacing = pending.sitFacing ?? facing;
+            setDirection(sitDir);
+            setFacing(sitFacing);
             setMode("sit");
-            onLocalMove(next, "west", "left", "sit");
+            onLocalMove(next, sitDir, sitFacing, "sit");
             return next;
           }
           const nowMs = performance.now();
