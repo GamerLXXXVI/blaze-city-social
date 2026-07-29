@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { femaleIdleFramePath, FEMALE_IDLE_FRAME_COUNT, FEMALE_IDLE_FRAME_MS } from "./manifest";
+import {
+  femaleIdleFramePath,
+  FEMALE_IDLE_FRAME_COUNT,
+  FEMALE_IDLE_FRAME_MS,
+  preloadFemaleWalkFrames,
+} from "./manifest";
 import type { Direction } from "./types";
 
 interface Props {
@@ -9,6 +14,10 @@ interface Props {
 
 export function FemaleSelectorIdleSprite({ direction, resetKey }: Props) {
   const [frame, setFrame] = useState(0);
+
+  useEffect(() => {
+    preloadFemaleWalkFrames();
+  }, []);
 
   useEffect(() => {
     setFrame(0);
