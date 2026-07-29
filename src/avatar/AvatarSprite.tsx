@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { compositeFrame } from "./compositor";
 import {
   AVATAR_SIZE,
-  DANCE_FRAME_COUNT,
-  DANCE_FRAME_MS,
+  danceFrameCount,
+  danceFrameMs,
   idleFrameCount,
   idleFrameMs,
   preloadFemaleWalkFrames,
@@ -47,6 +47,8 @@ export function AvatarSprite({
   const walkMs = walkFrameMs(config);
   const idleCount = idleFrameCount(config);
   const idleMs = idleFrameMs(config);
+  const danceCount = danceFrameCount(config);
+  const danceMs = danceFrameMs(config);
 
   // Restarts only when the animation state or the facing direction changes —
   // position updates alone must not reset the cycle.
@@ -57,11 +59,11 @@ export function AvatarSprite({
       return () => window.clearInterval(id);
     }
     if (state === "dance") {
-      setFrame(0);
-      const id = window.setInterval(
-        () => setFrame((f) => (f + 1) % DANCE_FRAME_COUNT),
-        DANCE_FRAME_MS,
-      );
+      // Wall-clock derived so every connected client shows roughly the same
+      // frame of the loop at the same moment.
+      const at = () => Math.floor(Date.now() / danceMs) % danceCount;
+      setFrame(at());
+      const id = window.setInterval(() => setFrame(at()), danceMs);
       return () => window.clearInterval(id);
     }
     setFrame(0);
@@ -69,7 +71,7 @@ export function AvatarSprite({
       const id = window.setInterval(() => setFrame((f) => (f + 1) % idleCount), idleMs);
       return () => window.clearInterval(id);
     }
-  }, [state, direction, facing, walkCount, walkMs, idleCount, idleMs]);
+  }, [state, direction, facing, walkCount, walkMs, idleCount, idleMs, danceCount, danceMs]);
 
   useEffect(() => {
     let cancelled = false;
