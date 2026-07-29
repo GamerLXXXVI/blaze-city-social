@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { compositeFrame } from "./compositor";
-import { AVATAR_SIZE, WALK_FRAME_COUNT, DANCE_FRAME_COUNT, DANCE_FRAME_MS } from "./manifest";
+import {
+  AVATAR_SIZE,
+  DANCE_FRAME_COUNT,
+  DANCE_FRAME_MS,
+  preloadFemaleWalkFrames,
+  walkFrameCount,
+  walkFrameMs,
+} from "./manifest";
 import {
   normalizeDirection,
   type AvatarConfig,
@@ -29,10 +36,20 @@ export function AvatarSprite({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [frame, setFrame] = useState(0);
 
+  const gender = config.gender;
+  useEffect(() => {
+    if (gender === "female") preloadFemaleWalkFrames();
+  }, [gender]);
+
+  const walkCount = walkFrameCount(config);
+  const walkMs = walkFrameMs(config);
+
+  // Restarts only when the animation state or the facing direction changes —
+  // position updates alone must not reset the cycle.
   useEffect(() => {
     if (state === "walk") {
       setFrame(0);
-      const id = window.setInterval(() => setFrame((f) => (f + 1) % WALK_FRAME_COUNT), 125);
+      const id = window.setInterval(() => setFrame((f) => (f + 1) % walkCount), walkMs);
       return () => window.clearInterval(id);
     }
     if (state === "dance") {
@@ -44,7 +61,7 @@ export function AvatarSprite({
       return () => window.clearInterval(id);
     }
     setFrame(0);
-  }, [state]);
+  }, [state, direction, facing, walkCount, walkMs]);
 
   useEffect(() => {
     let cancelled = false;
