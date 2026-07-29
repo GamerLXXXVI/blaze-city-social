@@ -1,6 +1,8 @@
 // Builds the exact asset paths for each layer as specified.
 // Real art can drop into /public/assets/... at these exact URLs and just work.
 import type { AvatarConfig, Direction, AnimState } from "./types";
+import { DIRECTIONS } from "./types";
+import { loadAvatarImage } from "./loader";
 
 export const AVATAR_SIZE = 96; // logical avatar frame size in room pixels
 
@@ -106,5 +108,19 @@ export function pathFor(
       return `/assets/avatars/parts/shirt/${cfg.shirt}/${cfg.gender}/${cfg.body_type}/${suffix}`;
     case "pants":
       return `/assets/avatars/parts/pants/${cfg.pants}/${cfg.gender}/${cfg.body_type}/${suffix}`;
+  }
+}
+
+// Preload + cache all 48 female walk frames once so direction changes never
+// flicker or re-hit the network.
+let femaleWalkPreloaded = false;
+export function preloadFemaleWalkFrames() {
+  if (femaleWalkPreloaded || typeof window === "undefined") return;
+  femaleWalkPreloaded = true;
+  const root = `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/walk-female`;
+  for (const direction of DIRECTIONS) {
+    for (let i = 0; i < FEMALE_WALK_FRAME_COUNT; i++) {
+      void loadAvatarImage(`${root}/${direction}/frame-${String(i).padStart(2, "0")}.png`);
+    }
   }
 }
