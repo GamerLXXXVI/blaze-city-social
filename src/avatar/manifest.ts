@@ -253,7 +253,5 @@ export function preloadFemaleWalkFrames() {
       );
     }
   }
-  for (let i = 0; i < FEMALE_DANCE_FRAME_COUNT; i++) {
-    void loadAvatarImage(femaleDancePath(i));
-  }
+  void preloadFemaleDanceFrames();
 }
