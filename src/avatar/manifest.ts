@@ -70,11 +70,11 @@ export const DANCE_FRAME_MS = 165;
 // frames, authored full-bleed (body rows 3–62) like the V2 idle art, so the
 // WORLD renderer normalizes them with the same metrics as the idle frames.
 // The previous 8-frame twerk set is fully replaced — frames are never mixed.
-export const FEMALE_DANCE_ID = "amber-night-dance-smooth" as const;
-export const FEMALE_DANCE_NAME = "Smooth Dance" as const;
-export const FEMALE_DANCE_FRAME_COUNT = 24;
+export const FEMALE_DANCE_ID = "amber-night-dance-three-angle" as const;
+export const FEMALE_DANCE_NAME = "Three-Angle Dance" as const;
+export const FEMALE_DANCE_FRAME_COUNT = 72;
 export const FEMALE_DANCE_FRAME_MS = 70;
-export const FEMALE_DANCE_VERSION = "amber-night-dance-smooth-24f-v1";
+export const FEMALE_DANCE_VERSION = "amber-night-dance-three-angle-72f-v1";
 export const FEMALE_WORLD_DANCE_DRAW = FEMALE_WORLD_IDLE_DRAW;
 
 export function isFemaleDancePath(path: string): boolean {
