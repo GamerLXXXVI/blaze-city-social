@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AvatarSprite } from "./AvatarSprite";
+import { FemaleSelectorIdleSprite } from "./FemaleSelectorIdleSprite";
 import {
   DIRECTIONS,
   defaultAvatarConfig,
@@ -35,6 +36,19 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
   });
   const [direction, setDirection] = useState<Direction>("south");
   const [walking, setWalking] = useState(false);
+  const [idleResetKey, setIdleResetKey] = useState(0);
+
+  const chooseDirection = (d: Direction) => {
+    setDirection(d);
+    setIdleResetKey((key) => key + 1);
+  };
+
+  const toggleWalking = () => {
+    setWalking((isWalking) => {
+      if (isWalking) setIdleResetKey((key) => key + 1);
+      return !isWalking;
+    });
+  };
 
   return (
     <div className="grid gap-8 md:grid-cols-[280px_1fr] items-start">
@@ -47,12 +61,18 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
             boxShadow: "inset 0 0 40px rgba(0,0,0,0.55)",
           }}
         >
-          <AvatarSprite
-            config={cfg}
-            direction={direction}
-            state={walking ? "walk" : "idle"}
-            size={192}
-          />
+          <div className="flex h-48 w-48 items-center justify-center">
+            {cfg.gender === "female" && !walking ? (
+              <FemaleSelectorIdleSprite direction={direction} resetKey={idleResetKey} />
+            ) : (
+              <AvatarSprite
+                config={cfg}
+                direction={direction}
+                state={walking ? "walk" : "idle"}
+                size={192}
+              />
+            )}
+          </div>
         </div>
         <div className="grid w-full grid-cols-4 gap-1">
           {DIRECTIONS.map((d) => (
@@ -62,13 +82,13 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
               size="sm"
               title={d}
               aria-label={`Face ${d}`}
-              onClick={() => setDirection(d)}
+              onClick={() => chooseDirection(d)}
             >
               {DIRECTION_LABEL[d]}
             </Button>
           ))}
         </div>
-        <Button variant="outline" size="sm" onClick={() => setWalking((w) => !w)}>
+        <Button variant="outline" size="sm" onClick={toggleWalking}>
           {walking ? "Stop" : "Walk"}
         </Button>
       </div>
@@ -85,7 +105,10 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
                 variant={cfg.gender === g ? "default" : "secondary"}
                 size="sm"
                 aria-pressed={cfg.gender === g}
-                onClick={() => setCfg((c) => ({ ...c, gender: g }))}
+                onClick={() => {
+                  setCfg((c) => ({ ...c, gender: g }));
+                  setIdleResetKey((key) => key + 1);
+                }}
               >
                 {g === "male" ? "Male" : "Female"}
               </Button>
