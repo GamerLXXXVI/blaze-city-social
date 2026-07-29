@@ -1,5 +1,12 @@
 import type { AvatarConfig, Direction, AnimState, Facing } from "./types";
-import { LAYER_ORDER, AVATAR_SIZE, pathFor, presetPathFor } from "./manifest";
+import {
+  LAYER_ORDER,
+  AVATAR_SIZE,
+  pathFor,
+  presetPathFor,
+  FEMALE_WORLD_IDLE_DRAW,
+  isFemaleIdlePath,
+} from "./manifest";
 import { loadAvatarImage } from "./loader";
 
 function cacheKey(
@@ -60,7 +67,16 @@ export async function compositeFrame(
   if (presetPath) {
     const image = await loadAvatarImage(presetPath);
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(image, 0, 0, size, size);
+    if (isFemaleIdlePath(presetPath)) {
+      // Normalize the full-bleed selector idle art to world sprite metrics.
+      const s = (FEMALE_WORLD_IDLE_DRAW.size / 64) * (size / 64);
+      const dw = Math.round(64 * s);
+      const dx = Math.round(FEMALE_WORLD_IDLE_DRAW.dx * (size / 64));
+      const dy = Math.round(FEMALE_WORLD_IDLE_DRAW.dy * (size / 64));
+      ctx.drawImage(image, dx, dy, dw, dw);
+    } else {
+      ctx.drawImage(image, 0, 0, size, size);
+    }
     composited.set(key, canvas);
     evictIfNeeded();
     return canvas;
