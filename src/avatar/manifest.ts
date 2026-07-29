@@ -30,6 +30,9 @@ export const WALK_FRAME_MS = 125;
 // Female walk art ships 6 frames per direction, played at ~9 fps.
 export const FEMALE_WALK_FRAME_COUNT = 6;
 export const FEMALE_WALK_FRAME_MS = 111;
+// Female idle art ships 4 frames per direction, played at ~3 fps.
+export const FEMALE_IDLE_FRAME_COUNT = 4;
+export const FEMALE_IDLE_FRAME_MS = 333;
 export const DANCE_FRAME_COUNT = 16;
 export const DANCE_FRAME_MS = 165;
 
@@ -39,6 +42,14 @@ export function walkFrameCount(cfg: AvatarConfig): number {
 
 export function walkFrameMs(cfg: AvatarConfig): number {
   return (cfg.gender ?? "male") === "female" ? FEMALE_WALK_FRAME_MS : WALK_FRAME_MS;
+}
+
+export function idleFrameCount(cfg: AvatarConfig): number {
+  return (cfg.gender ?? "male") === "female" ? FEMALE_IDLE_FRAME_COUNT : 1;
+}
+
+export function idleFrameMs(cfg: AvatarConfig): number {
+  return FEMALE_IDLE_FRAME_MS;
 }
 
 export function presetPathFor(
@@ -54,7 +65,10 @@ export function presetPathFor(
   // Female art has dedicated idle + 8-direction 6-frame walk sets.
   // Dance/sit still fall through to the male sprites as a TEMPORARY fallback.
   if (gender === "female") {
-    if (state === "idle") return `${root}/idle-female/${direction}.png`;
+    if (state === "idle") {
+      const f = String(frame % FEMALE_IDLE_FRAME_COUNT).padStart(2, "0");
+      return `${root}/idle-female/${direction}/frame-${f}.png`;
+    }
     if (state === "walk") {
       const f = String(frame % FEMALE_WALK_FRAME_COUNT).padStart(2, "0");
       return `${root}/walk-female/${direction}/frame-${f}.png`;
@@ -121,6 +135,12 @@ export function preloadFemaleWalkFrames() {
   for (const direction of DIRECTIONS) {
     for (let i = 0; i < FEMALE_WALK_FRAME_COUNT; i++) {
       void loadAvatarImage(`${root}/${direction}/frame-${String(i).padStart(2, "0")}.png`);
+    }
+  }
+  const idleRoot = `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/idle-female`;
+  for (const direction of DIRECTIONS) {
+    for (let i = 0; i < FEMALE_IDLE_FRAME_COUNT; i++) {
+      void loadAvatarImage(`${idleRoot}/${direction}/frame-${String(i).padStart(2, "0")}.png`);
     }
   }
 }

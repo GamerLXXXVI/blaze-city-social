@@ -4,6 +4,8 @@ import {
   AVATAR_SIZE,
   DANCE_FRAME_COUNT,
   DANCE_FRAME_MS,
+  idleFrameCount,
+  idleFrameMs,
   preloadFemaleWalkFrames,
   walkFrameCount,
   walkFrameMs,
@@ -43,6 +45,8 @@ export function AvatarSprite({
 
   const walkCount = walkFrameCount(config);
   const walkMs = walkFrameMs(config);
+  const idleCount = idleFrameCount(config);
+  const idleMs = idleFrameMs(config);
 
   // Restarts only when the animation state or the facing direction changes —
   // position updates alone must not reset the cycle.
@@ -61,7 +65,11 @@ export function AvatarSprite({
       return () => window.clearInterval(id);
     }
     setFrame(0);
-  }, [state, direction, facing, walkCount, walkMs]);
+    if (state === "idle" && idleCount > 1) {
+      const id = window.setInterval(() => setFrame((f) => (f + 1) % idleCount), idleMs);
+      return () => window.clearInterval(id);
+    }
+  }, [state, direction, facing, walkCount, walkMs, idleCount, idleMs]);
 
   useEffect(() => {
     let cancelled = false;
