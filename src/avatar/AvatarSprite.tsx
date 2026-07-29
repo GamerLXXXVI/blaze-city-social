@@ -7,6 +7,7 @@ import {
   idleFrameCount,
   idleFrameMs,
   preloadFemaleWalkFrames,
+  preloadFemaleDanceFrames,
   walkFrameCount,
   walkFrameMs,
 } from "./manifest";
@@ -59,19 +60,33 @@ export function AvatarSprite({
       return () => window.clearInterval(id);
     }
     if (state === "dance") {
-      // Wall-clock derived so every connected client shows roughly the same
-      // frame of the loop at the same moment.
+      // Wall-clock derived so every connected client shows the same frame of
+      // the loop at the same moment. Playback starts only once every frame is
+      // decoded, so the first loop never pauses.
       const at = () => Math.floor(Date.now() / danceMs) % danceCount;
-      setFrame(at());
-      const id = window.setInterval(() => setFrame(at()), danceMs);
-      return () => window.clearInterval(id);
+      let id = 0;
+      let cancelled = false;
+      const start = () => {
+        if (cancelled) return;
+        setFrame(at());
+        id = window.setInterval(() => setFrame(at()), danceMs);
+      };
+      if (gender === "female") {
+        void preloadFemaleDanceFrames().then(start, start);
+      } else {
+        start();
+      }
+      return () => {
+        cancelled = true;
+        if (id) window.clearInterval(id);
+      };
     }
     setFrame(0);
     if (state === "idle" && idleCount > 1) {
       const id = window.setInterval(() => setFrame((f) => (f + 1) % idleCount), idleMs);
       return () => window.clearInterval(id);
     }
-  }, [state, direction, facing, walkCount, walkMs, idleCount, idleMs, danceCount, danceMs]);
+  }, [state, direction, facing, gender, walkCount, walkMs, idleCount, idleMs, danceCount, danceMs]);
 
   useEffect(() => {
     let cancelled = false;
