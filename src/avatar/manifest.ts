@@ -86,10 +86,14 @@ export const FEMALE_DANCE_FRAME_MS = 70;
 export const FEMALE_DANCE_VERSION = "amber-night-dance-three-angle-72f-v1";
 // Identical draw size AND anchor to idle — there is NO dance-specific scale.
 export const FEMALE_WORLD_DANCE_DRAW = FEMALE_WORLD_IDLE_DRAW;
-// The dance art is authored one source row lower in its frame (body rows
-// 3–63 vs the idle art's 3–62). This single rendered-pixel nudge keeps the
-// foot row identical to idle/walk; it changes position only, never size.
-export const FEMALE_WORLD_DANCE_FOOT_NUDGE_PX = -1;
+// Part of the dance art (the back/east sections, frames 25–72) is authored
+// one source row lower in its frame (body rows 3–63) than the idle art
+// (3–62). Those frames get a single rendered-pixel upward nudge so the foot
+// row is identical to idle/walk. Position only — never size.
+export function femaleDanceFootNudgePx(path: string): number {
+  const m = /frame-(\d+)\.png/.exec(path);
+  return m && Number(m[1]) >= 25 ? -1 : 0;
+}
 
 export function isFemaleDancePath(path: string): boolean {
   return path.includes("/dance-female/");
