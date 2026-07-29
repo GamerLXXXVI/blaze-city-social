@@ -24,8 +24,20 @@ export type LayerDirection = "down" | "up" | "side";
 
 export const DEFAULT_AVATAR_PRESET = "blaze-original" as const;
 export const WALK_FRAME_COUNT = 4;
+export const WALK_FRAME_MS = 125;
+// Female walk art ships 6 frames per direction, played at ~9 fps.
+export const FEMALE_WALK_FRAME_COUNT = 6;
+export const FEMALE_WALK_FRAME_MS = 111;
 export const DANCE_FRAME_COUNT = 16;
 export const DANCE_FRAME_MS = 165;
+
+export function walkFrameCount(cfg: AvatarConfig): number {
+  return (cfg.gender ?? "male") === "female" ? FEMALE_WALK_FRAME_COUNT : WALK_FRAME_COUNT;
+}
+
+export function walkFrameMs(cfg: AvatarConfig): number {
+  return (cfg.gender ?? "male") === "female" ? FEMALE_WALK_FRAME_MS : WALK_FRAME_MS;
+}
 
 export function presetPathFor(
   cfg: AvatarConfig,
@@ -37,11 +49,14 @@ export function presetPathFor(
   if (preset !== "blaze-original") return null;
   const root = `/assets/avatars/presets/${preset}`;
   const gender = cfg.gender ?? "male";
-  // Female art currently only has an idle set. Walk/dance/sit fall through to
-  // the male sprites below as a TEMPORARY fallback — remove this comment and
-  // add female branches once female walk/dance/sit frames are generated.
-  if (gender === "female" && state === "idle") {
-    return `${root}/idle-female/${direction}.png`;
+  // Female art has dedicated idle + 8-direction 6-frame walk sets.
+  // Dance/sit still fall through to the male sprites as a TEMPORARY fallback.
+  if (gender === "female") {
+    if (state === "idle") return `${root}/idle-female/${direction}.png`;
+    if (state === "walk") {
+      const f = String(frame % FEMALE_WALK_FRAME_COUNT).padStart(2, "0");
+      return `${root}/walk-female/${direction}/frame-${f}.png`;
+    }
   }
   if (state === "dance") {
     return `${root}/dance/south/frame-${String(frame % DANCE_FRAME_COUNT).padStart(2, "0")}.png`;
