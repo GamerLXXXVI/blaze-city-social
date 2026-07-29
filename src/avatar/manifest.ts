@@ -93,7 +93,9 @@ export function preloadFemaleDanceFrames(): Promise<void> {
   if (!femaleDancePreload) {
     invalidateAvatarImageCache((url) => url.includes("/dance-female/"));
     femaleDancePreload = Promise.all(
-      Array.from({ length: FEMALE_DANCE_FRAME_COUNT }, (_, i) => loadAvatarImage(femaleDancePath(i))),
+      Array.from({ length: FEMALE_DANCE_FRAME_COUNT }, (_, i) =>
+        loadAvatarImage(femaleDancePath(i)),
+      ),
     ).then(() => undefined);
   }
   return femaleDancePreload;
