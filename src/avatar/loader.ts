@@ -10,6 +10,15 @@ const inflight = new Map<string, Promise<HTMLImageElement>>();
 const FAILURE_TTL_MS = 5_000;
 const failureCache = new Map<string, { image: HTMLImageElement; expiresAt: number }>();
 
+export function invalidateAvatarImageCache(shouldInvalidate: (url: string) => boolean) {
+  for (const key of cache.keys()) {
+    if (shouldInvalidate(key)) cache.delete(key);
+  }
+  for (const key of failureCache.keys()) {
+    if (shouldInvalidate(key)) failureCache.delete(key);
+  }
+}
+
 export function loadAvatarImage(url: string): Promise<HTMLImageElement> {
   const c = cache.get(url);
   if (c) return Promise.resolve(c);
@@ -28,6 +37,9 @@ export function loadAvatarImage(url: string): Promise<HTMLImageElement> {
       resolve(img);
     };
     img.onerror = async () => {
+      if (url.includes("/idle-female/")) {
+        console.error("[avatar] Missing female selector idle sprite", url);
+      }
       const ph = await getPlaceholderImage(url);
       // Do NOT store the placeholder in the success cache — that poisons the
       // URL for the rest of the session. Keep failures in a separate cache
