@@ -476,6 +476,9 @@ function PlayerMarker({
   // not the standing foot row. Switch anchors so the same world coord
   // means "seat contact" while sitting and "foot contact" otherwise.
   const anchorPct = player.state === "sit" ? SIT_ANCHOR_PCT : FOOT_ANCHOR_PCT;
+  // Visual-only hip alignment nudge from the seat config (0 unless a seat
+  // defines one). Does not move the player's logical position.
+  const seatOffsetY = player.state === "sit" ? seatOffsetYAt(player.x, player.y) : 0;
   // Local player: no CSS transition — rAF loop drives smooth motion frame by
   // frame, and a transition here would fight the loop and roughly double
   // perceived speed while smearing the target. Remote players still need the
@@ -486,7 +489,7 @@ function PlayerMarker({
       className={`absolute pointer-events-none ${transitionClass}`}
       style={{
         left: `${(player.x / ROOM_WIDTH) * 100}%`,
-        top: `${(player.y / ROOM_HEIGHT) * 100}%`,
+        top: `${((player.y + seatOffsetY) / ROOM_HEIGHT) * 100}%`,
         width: `${scaledWidthPct}%`,
         aspectRatio: "1 / 1",
         transform: `translate(-50%, -${anchorPct * 100}%)`,
