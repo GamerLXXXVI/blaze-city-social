@@ -8,8 +8,10 @@ import {
   isFemaleIdlePath,
   FEMALE_WORLD_SIT_DRAW,
   isFemaleSitPath,
+  FEMALE_WORLD_DANCE_DRAW,
+  isFemaleDancePath,
 } from "./manifest";
-import { loadAvatarImage } from "./loader";
+import { loadAvatarImage, loadAvatarImageStrict } from "./loader";
 
 function cacheKey(
   cfg: AvatarConfig,
@@ -67,14 +69,26 @@ export async function compositeFrame(
 
   const presetPath = presetPathFor(cfg, direction, state, frame);
   if (presetPath) {
-    const image = await loadAvatarImage(presetPath);
+    let image: HTMLImageElement;
+    if (isFemaleDancePath(presetPath)) {
+      // If the female dance art is missing, preserve her idle sprite rather
+      // than silently substituting the male dance sprite.
+      try {
+        image = await loadAvatarImageStrict(presetPath);
+      } catch {
+        return compositeFrame(cfg, direction, "idle", 0, facing);
+      }
+    } else {
+      image = await loadAvatarImage(presetPath);
+    }
     ctx.imageSmoothingEnabled = false;
-    if (isFemaleIdlePath(presetPath)) {
+    if (isFemaleIdlePath(presetPath) || isFemaleDancePath(presetPath)) {
       // Normalize the full-bleed selector idle art to world sprite metrics.
-      const s = (FEMALE_WORLD_IDLE_DRAW.size / 64) * (size / 64);
+      const draw = isFemaleDancePath(presetPath) ? FEMALE_WORLD_DANCE_DRAW : FEMALE_WORLD_IDLE_DRAW;
+      const s = (draw.size / 64) * (size / 64);
       const dw = Math.round(64 * s);
-      const dx = Math.round(FEMALE_WORLD_IDLE_DRAW.dx * (size / 64));
-      const dy = Math.round(FEMALE_WORLD_IDLE_DRAW.dy * (size / 64));
+      const dx = Math.round(draw.dx * (size / 64));
+      const dy = Math.round(draw.dy * (size / 64));
       ctx.drawImage(image, dx, dy, dw, dw);
     } else if (isFemaleSitPath(presetPath)) {
       // Normalize the full-bleed sitting art to world sprite metrics so the

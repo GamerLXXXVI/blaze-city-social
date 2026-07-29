@@ -43,6 +43,9 @@ export function loadAvatarImage(url: string): Promise<HTMLImageElement> {
       if (url.includes("/sit-female/")) {
         console.error("[avatar] Missing female sitting sprite (no male fallback)", url);
       }
+      if (url.includes("/dance-female/")) {
+        console.error("[avatar] Missing female dance sprite (no male fallback)", url);
+      }
       const ph = await getPlaceholderImage(url);
       // Do NOT store the placeholder in the success cache — that poisons the
       // URL for the rest of the session. Keep failures in a separate cache
@@ -55,4 +58,23 @@ export function loadAvatarImage(url: string): Promise<HTMLImageElement> {
   });
   inflight.set(url, p);
   return p;
+}
+
+// Strict variant: rejects instead of resolving with a placeholder, so callers
+// can choose their own gender-correct fallback (e.g. keep the female idle).
+export function loadAvatarImageStrict(url: string): Promise<HTMLImageElement> {
+  const c = cache.get(url);
+  if (c) return Promise.resolve(c);
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      cache.set(url, img);
+      resolve(img);
+    };
+    img.onerror = () => {
+      console.error("[avatar] Missing female dance sprite (no male fallback)", url);
+      reject(new Error(`Missing avatar asset: ${url}`));
+    };
+    img.src = url;
+  });
 }

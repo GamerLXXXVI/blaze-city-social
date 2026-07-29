@@ -66,6 +66,33 @@ export function femaleSitPath(direction: Direction): string {
 export const DANCE_FRAME_COUNT = 16;
 export const DANCE_FRAME_MS = 165;
 
+// Female-specific dance animation ("Amber Night" twerk). 8 native 64px frames,
+// authored full-bleed (body rows 3–63) like the V2 idle art, so the WORLD
+// renderer normalizes them with the same metrics as the idle frames.
+export const FEMALE_DANCE_ID = "amber-night-twerk" as const;
+export const FEMALE_DANCE_NAME = "Twerk" as const;
+export const FEMALE_DANCE_FRAME_COUNT = 8;
+export const FEMALE_DANCE_FRAME_MS = 130;
+export const FEMALE_DANCE_VERSION = "amber-night-twerk-v1";
+export const FEMALE_WORLD_DANCE_DRAW = FEMALE_WORLD_IDLE_DRAW;
+
+export function isFemaleDancePath(path: string): boolean {
+  return path.includes("/dance-female/");
+}
+
+export function femaleDancePath(frame: number): string {
+  const f = String((frame % FEMALE_DANCE_FRAME_COUNT) + 1).padStart(2, "0");
+  return `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/dance-female/frame-${f}.png?v=${FEMALE_DANCE_VERSION}`;
+}
+
+export function danceFrameCount(cfg: AvatarConfig): number {
+  return (cfg.gender ?? "male") === "female" ? FEMALE_DANCE_FRAME_COUNT : DANCE_FRAME_COUNT;
+}
+
+export function danceFrameMs(cfg: AvatarConfig): number {
+  return (cfg.gender ?? "male") === "female" ? FEMALE_DANCE_FRAME_MS : DANCE_FRAME_MS;
+}
+
 export function walkFrameCount(cfg: AvatarConfig): number {
   return (cfg.gender ?? "male") === "female" ? FEMALE_WALK_FRAME_COUNT : WALK_FRAME_COUNT;
 }
@@ -102,6 +129,10 @@ export function presetPathFor(
   if (gender === "female") {
     if (state === "idle") {
       return femaleIdleFramePath(direction, frame);
+    }
+    if (state === "dance") {
+      // Never fall through to the male dance sprite for a female player.
+      return femaleDancePath(frame);
     }
     if (state === "walk") {
       const f = String(frame % FEMALE_WALK_FRAME_COUNT).padStart(2, "0");
