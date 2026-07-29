@@ -40,6 +40,9 @@ export function loadAvatarImage(url: string): Promise<HTMLImageElement> {
       if (url.includes("/idle-female/")) {
         console.error("[avatar] Missing female selector idle sprite", url);
       }
+      if (url.includes("/sit-female/")) {
+        console.error("[avatar] Missing female sitting sprite (no male fallback)", url);
+      }
       const ph = await getPlaceholderImage(url);
       // Do NOT store the placeholder in the success cache — that poisons the
       // URL for the rest of the session. Keep failures in a separate cache
