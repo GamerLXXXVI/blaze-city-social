@@ -6,6 +6,8 @@ import {
   presetPathFor,
   FEMALE_WORLD_IDLE_DRAW,
   isFemaleIdlePath,
+  FEMALE_WORLD_SIT_DRAW,
+  isFemaleSitPath,
 } from "./manifest";
 import { loadAvatarImage } from "./loader";
 
@@ -73,6 +75,14 @@ export async function compositeFrame(
       const dw = Math.round(64 * s);
       const dx = Math.round(FEMALE_WORLD_IDLE_DRAW.dx * (size / 64));
       const dy = Math.round(FEMALE_WORLD_IDLE_DRAW.dy * (size / 64));
+      ctx.drawImage(image, dx, dy, dw, dw);
+    } else if (isFemaleSitPath(presetPath)) {
+      // Normalize the full-bleed sitting art to world sprite metrics so the
+      // seated female matches her idle/walk scale.
+      const k = size / 64;
+      const dw = Math.round(FEMALE_WORLD_SIT_DRAW.size * k);
+      const dx = Math.round(FEMALE_WORLD_SIT_DRAW.dx * k);
+      const dy = Math.round(FEMALE_WORLD_SIT_DRAW.dy * k);
       ctx.drawImage(image, dx, dy, dw, dw);
     } else {
       ctx.drawImage(image, 0, 0, size, size);

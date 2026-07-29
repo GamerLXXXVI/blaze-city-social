@@ -47,6 +47,22 @@ export const FEMALE_WORLD_IDLE_DRAW = { size: 32, dx: 16, dy: 15 } as const;
 export function isFemaleIdlePath(path: string): boolean {
   return path.includes("/idle-female/");
 }
+
+// Female sitting art (8 directions, one frame each) is authored full-bleed in
+// its 64px frame (body rows 8–59). World sprites draw their body in rows
+// 17–47 of the same 64px frame, so the WORLD renderer blits the sit frame at
+// ~0.594 scale with a whole-pixel offset to match the male sit metrics.
+export const FEMALE_SIT_VERSION = "female-sit-8dir-v1";
+export const FEMALE_WORLD_SIT_DRAW = { size: 38, dx: 13, dy: 12 } as const;
+
+export function isFemaleSitPath(path: string): boolean {
+  return path.includes("/sit-female/");
+}
+
+export function femaleSitPath(direction: Direction): string {
+  return `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/sit-female/${direction}.png?v=${FEMALE_SIT_VERSION}`;
+}
+
 export const DANCE_FRAME_COUNT = 16;
 export const DANCE_FRAME_MS = 165;
 
@@ -90,6 +106,10 @@ export function presetPathFor(
     if (state === "walk") {
       const f = String(frame % FEMALE_WALK_FRAME_COUNT).padStart(2, "0");
       return `${root}/walk-female/${direction}/frame-${f}.png`;
+    }
+    if (state === "sit") {
+      // Never fall through to the male sit sprite for a female player.
+      return femaleSitPath(direction);
     }
   }
   if (state === "dance") {
