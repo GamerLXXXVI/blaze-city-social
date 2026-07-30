@@ -91,7 +91,7 @@ export const FEMALE_DANCE_VERSION = "amber-night-master-art-v12-216f";
 // the SAME shared 64px world canvas at ONE constant destination rectangle, so
 // the rendered body height and the foot row (46) are identical to idle/walk.
 // Constant for all 216 frames — no per-frame cropping, centering or nudging.
-export const FEMALE_WORLD_DANCE_DRAW = { size: FEMALE_WORLD_DRAW_SIZE, dx: FEMALE_WORLD_DRAW_DX, dy: FEMALE_WORLD_IDLE_DRAW.dy } as const;
+export const FEMALE_WORLD_DANCE_DRAW = { size: 33, dx: 15, dy: 14 } as const;
 
 export function isFemaleDancePath(path: string): boolean {
   return path.includes("/dance-female/");
