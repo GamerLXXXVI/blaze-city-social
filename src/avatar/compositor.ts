@@ -10,7 +10,6 @@ import {
   isFemaleSitPath,
   FEMALE_WORLD_DANCE_DRAW,
   isFemaleDancePath,
-  femaleDanceFootNudgePx,
 } from "./manifest";
 import { loadAvatarImage, loadAvatarImageStrict } from "./loader";
 
@@ -90,8 +89,7 @@ export async function compositeFrame(
       const s = (draw.size / 64) * (size / 64);
       const dw = Math.round(64 * s);
       const dx = Math.round(draw.dx * (size / 64));
-      const dy =
-        Math.round(draw.dy * (size / 64)) + (isDance ? femaleDanceFootNudgePx(presetPath) : 0);
+      const dy = Math.round(draw.dy * (size / 64));
       ctx.drawImage(image, dx, dy, dw, dw);
     } else if (isFemaleSitPath(presetPath)) {
       // Normalize the full-bleed sitting art to world sprite metrics so the
