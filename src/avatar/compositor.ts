@@ -84,7 +84,11 @@ export async function compositeFrame(
       image = await loadAvatarImage(presetPath);
     }
     ctx.imageSmoothingEnabled = false;
-    if (isFemaleIdlePath(presetPath) || isFemaleDancePath(presetPath) || isFemaleWalkPath(presetPath)) {
+    if (
+      isFemaleIdlePath(presetPath) ||
+      isFemaleDancePath(presetPath) ||
+      isFemaleWalkPath(presetPath)
+    ) {
       // Normalize the full-bleed selector idle art to world sprite metrics.
       const draw = isFemaleDancePath(presetPath)
         ? FEMALE_WORLD_DANCE_DRAW
