@@ -62,8 +62,12 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
           }}
         >
           <div className="flex h-48 w-48 items-center justify-center">
-            {cfg.gender === "female" && !walking ? (
-              <FemaleSelectorIdleSprite direction={direction} resetKey={idleResetKey} />
+            {cfg.gender === "female" ? (
+              <FemaleSelectorIdleSprite
+                direction={direction}
+                resetKey={idleResetKey}
+                walking={walking}
+              />
             ) : (
               <AvatarSprite
                 config={cfg}
