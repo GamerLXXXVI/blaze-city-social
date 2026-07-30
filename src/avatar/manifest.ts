@@ -27,13 +27,15 @@ export type LayerDirection = "down" | "up" | "side";
 export const DEFAULT_AVATAR_PRESET = "blaze-original" as const;
 export const WALK_FRAME_COUNT = 4;
 export const WALK_FRAME_MS = 125;
-// Female walk art ships 6 frames per direction, played at ~9 fps.
-export const FEMALE_WALK_FRAME_COUNT = 6;
-export const FEMALE_WALK_FRAME_MS = 111;
-// Female selector idle V2 ships 4 native 64px frames per direction, played at ~2 fps.
-export const FEMALE_IDLE_FRAME_COUNT = 4;
+// Female directional states V1: 8 idle sprites (one per direction) + 4 walk
+// frames per direction, all native 64px full-bleed frames.
+export const FEMALE_DIRECTIONAL_VERSION = "female-directional-states-v1";
+export const FEMALE_WALK_FRAME_COUNT = 4;
+export const FEMALE_WALK_FRAME_MS = 1000 / 12;
+// Idle is a single static sprite per direction.
+export const FEMALE_IDLE_FRAME_COUNT = 1;
 export const FEMALE_IDLE_FRAME_MS = 500;
-export const FEMALE_SELECTOR_IDLE_VERSION = "female-selector-idle-v2";
+export const FEMALE_SELECTOR_IDLE_VERSION = FEMALE_DIRECTIONAL_VERSION;
 // The V2 female idle art is authored full-bleed in its 64px frame (body rows
 // 3–62), while every world sprite (male idle/walk, female walk) draws its body
 // in rows 17–46 of the same 64px frame. Drawing the selector art untouched in
@@ -50,11 +52,29 @@ export const FEMALE_WORLD_DRAW_DX = 16;
 export const FEMALE_WORLD_IDLE_DRAW = {
   size: FEMALE_WORLD_DRAW_SIZE,
   dx: FEMALE_WORLD_DRAW_DX,
-  dy: 15,
+  dy: 16,
 } as const;
 
 export function isFemaleIdlePath(path: string): boolean {
   return path.includes("/idle-female/");
+}
+
+export function isFemaleWalkPath(path: string): boolean {
+  return path.includes("/walk-female/");
+}
+
+// Walk art is authored identically to the idle art (full-bleed 64px frame),
+// so it uses the exact same world draw rectangle — one fixed size and
+// bottom-center anchor for every direction and frame.
+export const FEMALE_WORLD_WALK_DRAW = {
+  size: FEMALE_WORLD_DRAW_SIZE,
+  dx: FEMALE_WORLD_DRAW_DX,
+  dy: 16,
+} as const;
+
+export function femaleWalkPath(direction: Direction, frame: number): string {
+  const f = String((frame % FEMALE_WALK_FRAME_COUNT) + 1).padStart(2, "0");
+  return `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/walk-female/${direction}/frame-${f}.png?v=${FEMALE_DIRECTIONAL_VERSION}`;
 }
 
 // Female sitting art (8 directions, one frame each) is authored full-bleed in
@@ -141,9 +161,8 @@ export function idleFrameMs(cfg: AvatarConfig): number {
   return FEMALE_IDLE_FRAME_MS;
 }
 
-export function femaleIdleFramePath(direction: Direction, frame: number): string {
-  const f = String((frame % FEMALE_IDLE_FRAME_COUNT) + 1).padStart(2, "0");
-  return `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/idle-female/${direction}/frame-${f}.png?v=${FEMALE_SELECTOR_IDLE_VERSION}`;
+export function femaleIdleFramePath(direction: Direction, _frame = 0): string {
+  return `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/idle-female/${direction}.png?v=${FEMALE_DIRECTIONAL_VERSION}`;
 }
 
 export function presetPathFor(
@@ -167,8 +186,7 @@ export function presetPathFor(
       return femaleDancePath(frame);
     }
     if (state === "walk") {
-      const f = String(frame % FEMALE_WALK_FRAME_COUNT).padStart(2, "0");
-      return `${root}/walk-female/${direction}/frame-${f}.png`;
+      return femaleWalkPath(direction, frame);
     }
     if (state === "sit") {
       // Never fall through to the male sit sprite for a female player.
@@ -228,11 +246,13 @@ export function pathFor(
 
 // Preload + cache all 48 female walk frames once so direction changes never
 // flicker or re-hit the network.
-let femaleWalkPreloaded = false;
-export function preloadFemaleWalkFrames() {
-  if (femaleWalkPreloaded || typeof window === "undefined") return;
-  femaleWalkPreloaded = true;
-  invalidateAvatarImageCache((url) => url.includes("/idle-female/"));
+let femaleWalkPreloaded: Promise<void> | null = null;
+export function preloadFemaleWalkFrames(): Promise<void> {
+  if (femaleWalkPreloaded) return femaleWalkPreloaded;
+  if (typeof window === "undefined") return Promise.resolve();
+  invalidateAvatarImageCache(
+    (url) => url.includes("/idle-female/") || url.includes("/walk-female/"),
+  );
   if ("caches" in window) {
     void window.caches
       .keys()
@@ -247,7 +267,11 @@ export function preloadFemaleWalkFrames() {
                   .then((requests) =>
                     Promise.all(
                       requests
-                        .filter((request) => request.url.includes("/idle-female/"))
+                        .filter(
+                          (request) =>
+                            request.url.includes("/idle-female/") ||
+                            request.url.includes("/walk-female/"),
+                        )
                         .map((request) => cache.delete(request)),
                     ),
                   ),
@@ -257,19 +281,12 @@ export function preloadFemaleWalkFrames() {
       )
       .catch((error) => console.warn("[avatar] Failed to clear old female idle cache", error));
   }
-  const root = `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/walk-female`;
+  const urls: string[] = [];
   for (const direction of DIRECTIONS) {
-    for (let i = 0; i < FEMALE_WALK_FRAME_COUNT; i++) {
-      void loadAvatarImage(`${root}/${direction}/frame-${String(i).padStart(2, "0")}.png`);
-    }
+    urls.push(femaleIdleFramePath(direction));
+    for (let i = 0; i < FEMALE_WALK_FRAME_COUNT; i++) urls.push(femaleWalkPath(direction, i));
   }
-  const idleRoot = `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/idle-female`;
-  for (const direction of DIRECTIONS) {
-    for (let i = 0; i < FEMALE_IDLE_FRAME_COUNT; i++) {
-      void loadAvatarImage(
-        `${idleRoot}/${direction}/frame-${String(i + 1).padStart(2, "0")}.png?v=${FEMALE_SELECTOR_IDLE_VERSION}`,
-      );
-    }
-  }
+  femaleWalkPreloaded = Promise.all(urls.map((url) => loadAvatarImage(url))).then(() => undefined);
   void preloadFemaleDanceFrames();
+  return femaleWalkPreloaded;
 }

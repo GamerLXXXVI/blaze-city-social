@@ -23,8 +23,7 @@ function shift(hex: string, hueSeed: number): string {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
-  const jitter = (v: number, s: number) =>
-    Math.max(0, Math.min(255, v + ((s % 60) - 30)));
+  const jitter = (v: number, s: number) => Math.max(0, Math.min(255, v + ((s % 60) - 30)));
   const nr = jitter(r, hueSeed);
   const ng = jitter(g, hueSeed >> 2);
   const nb = jitter(b, hueSeed >> 4);
@@ -85,9 +84,9 @@ function drawPlaceholder(
       // legs
       roundRect(cx - size * 0.16, size * 0.58 + dy, size * 0.32, size * 0.28, size * 0.09);
       // torso (rounded shoulders)
-      roundRect(cx - size * 0.20, size * 0.36 + dy, size * 0.40, size * 0.30, size * 0.14);
+      roundRect(cx - size * 0.2, size * 0.36 + dy, size * 0.4, size * 0.3, size * 0.14);
       // neck
-      roundRect(cx - size * 0.05, size * 0.30 + dy, size * 0.10, size * 0.06, size * 0.03);
+      roundRect(cx - size * 0.05, size * 0.3 + dy, size * 0.1, size * 0.06, size * 0.03);
       // head
       ctx.beginPath();
       ctx.arc(cx, size * 0.22 + dy, size * 0.13, 0, Math.PI * 2);
@@ -106,7 +105,7 @@ function drawPlaceholder(
       ctx.fill();
       break;
     case "mouth":
-      roundRect(cx - size * 0.05, size * 0.27 + dy, size * 0.10, size * 0.018, size * 0.009);
+      roundRect(cx - size * 0.05, size * 0.27 + dy, size * 0.1, size * 0.018, size * 0.009);
       break;
     case "eyes":
       if (direction !== "up") {
@@ -138,7 +137,13 @@ function drawPlaceholder(
     const gx = direction === "side" ? cx + size * 0.058 : cx + size * 0.005;
     ctx.beginPath();
     ctx.arc(gx, size * 0.215 + dy, 0.7, 0, Math.PI * 2);
-    ctx.arc(cx - size * 0.05 + (direction === "side" ? size * 0.008 : 0), size * 0.215 + dy, 0.7, 0, Math.PI * 2);
+    ctx.arc(
+      cx - size * 0.05 + (direction === "side" ? size * 0.008 : 0),
+      size * 0.215 + dy,
+      0.7,
+      0,
+      Math.PI * 2,
+    );
     ctx.fill();
   }
 }

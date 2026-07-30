@@ -10,6 +10,8 @@ import {
   isFemaleSitPath,
   FEMALE_WORLD_DANCE_DRAW,
   isFemaleDancePath,
+  FEMALE_WORLD_WALK_DRAW,
+  isFemaleWalkPath,
 } from "./manifest";
 import { loadAvatarImage, loadAvatarImageStrict } from "./loader";
 
@@ -82,10 +84,17 @@ export async function compositeFrame(
       image = await loadAvatarImage(presetPath);
     }
     ctx.imageSmoothingEnabled = false;
-    if (isFemaleIdlePath(presetPath) || isFemaleDancePath(presetPath)) {
+    if (
+      isFemaleIdlePath(presetPath) ||
+      isFemaleDancePath(presetPath) ||
+      isFemaleWalkPath(presetPath)
+    ) {
       // Normalize the full-bleed selector idle art to world sprite metrics.
-      const isDance = isFemaleDancePath(presetPath);
-      const draw = isDance ? FEMALE_WORLD_DANCE_DRAW : FEMALE_WORLD_IDLE_DRAW;
+      const draw = isFemaleDancePath(presetPath)
+        ? FEMALE_WORLD_DANCE_DRAW
+        : isFemaleWalkPath(presetPath)
+          ? FEMALE_WORLD_WALK_DRAW
+          : FEMALE_WORLD_IDLE_DRAW;
       const s = (draw.size / 64) * (size / 64);
       const dw = Math.round(64 * s);
       const dx = Math.round(draw.dx * (size / 64));

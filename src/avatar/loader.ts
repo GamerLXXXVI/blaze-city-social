@@ -38,7 +38,7 @@ export function loadAvatarImage(url: string): Promise<HTMLImageElement> {
     };
     img.onerror = async () => {
       if (url.includes("/idle-female/")) {
-        console.error("[avatar] Missing female selector idle sprite", url);
+        console.error("[avatar] Missing female directional sprite", url);
       }
       if (url.includes("/sit-female/")) {
         console.error("[avatar] Missing female sitting sprite (no male fallback)", url);
