@@ -29,9 +29,11 @@ export const WALK_FRAME_COUNT = 4;
 export const WALK_FRAME_MS = 125;
 // Female directional states V1: 8 idle sprites (one per direction) + 4 walk
 // frames per direction, all native 64px full-bleed frames.
-export const FEMALE_DIRECTIONAL_VERSION = "female-directional-states-v1";
-export const FEMALE_WALK_FRAME_COUNT = 4;
-export const FEMALE_WALK_FRAME_MS = 1000 / 12;
+export const FEMALE_DIRECTIONAL_VERSION = "female-walk-v2";
+// V2 gait: 8 phases per direction, identical 100 ms cadence (10 FPS) for
+// every direction. No direction-specific durations or speed multipliers.
+export const FEMALE_WALK_FRAME_COUNT = 8;
+export const FEMALE_WALK_FRAME_MS = 100;
 // Idle is a single static sprite per direction.
 export const FEMALE_IDLE_FRAME_COUNT = 1;
 export const FEMALE_IDLE_FRAME_MS = 500;

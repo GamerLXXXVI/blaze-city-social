@@ -38,6 +38,10 @@ export function AvatarSprite({
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [frame, setFrame] = useState(0);
+  // Shared semantic gait phase (0..count-1). Kept in a ref so a direction
+  // change while walking selects the same phase from the new strip instead
+  // of restarting the cycle (planted foot stays consistent).
+  const gaitPhaseRef = useRef(0);
 
   const gender = config.gender;
   useEffect(() => {
@@ -51,13 +55,30 @@ export function AvatarSprite({
   const danceCount = danceFrameCount(config);
   const danceMs = danceFrameMs(config);
 
-  // Restarts only when the animation state or the facing direction changes —
-  // position updates alone must not reset the cycle.
+  // Restarts only when the animation state changes — direction changes and
+  // position updates must not reset the cycle.
   useEffect(() => {
     if (state === "walk") {
+      // beginWalking(): one shared requestAnimationFrame clock, one accumulator.
+      gaitPhaseRef.current = 0;
       setFrame(0);
-      const id = window.setInterval(() => setFrame((f) => (f + 1) % walkCount), walkMs);
-      return () => window.clearInterval(id);
+      let accumulatorMs = 0;
+      let previousTimestamp = performance.now();
+      let raf = 0;
+      const tick = (timestamp: number) => {
+        const rawDelta = timestamp - previousTimestamp;
+        previousTimestamp = timestamp;
+        // Prevent a backgrounded tab from skipping multiple visible phases.
+        accumulatorMs += Math.min(rawDelta, walkMs);
+        if (accumulatorMs >= walkMs) {
+          accumulatorMs -= walkMs;
+          gaitPhaseRef.current = (gaitPhaseRef.current + 1) % walkCount;
+          setFrame(gaitPhaseRef.current);
+        }
+        raf = window.requestAnimationFrame(tick);
+      };
+      raf = window.requestAnimationFrame(tick);
+      return () => window.cancelAnimationFrame(raf);
     }
     if (state === "dance") {
       // Wall-clock derived so every connected client shows the same frame of
@@ -82,11 +103,12 @@ export function AvatarSprite({
       };
     }
     setFrame(0);
+    gaitPhaseRef.current = 0;
     if (state === "idle" && idleCount > 1) {
       const id = window.setInterval(() => setFrame((f) => (f + 1) % idleCount), idleMs);
       return () => window.clearInterval(id);
     }
-  }, [state, direction, facing, gender, walkCount, walkMs, idleCount, idleMs, danceCount, danceMs]);
+  }, [state, gender, walkCount, walkMs, idleCount, idleMs, danceCount, danceMs]);
 
   useEffect(() => {
     let cancelled = false;
