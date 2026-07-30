@@ -52,7 +52,7 @@ export const FEMALE_WORLD_DRAW_DX = 16;
 export const FEMALE_WORLD_IDLE_DRAW = {
   size: FEMALE_WORLD_DRAW_SIZE,
   dx: FEMALE_WORLD_DRAW_DX,
-  dy: 15,
+  dy: 16,
 } as const;
 
 export function isFemaleIdlePath(path: string): boolean {
@@ -69,7 +69,7 @@ export function isFemaleWalkPath(path: string): boolean {
 export const FEMALE_WORLD_WALK_DRAW = {
   size: FEMALE_WORLD_DRAW_SIZE,
   dx: FEMALE_WORLD_DRAW_DX,
-  dy: 15,
+  dy: 16,
 } as const;
 
 export function femaleWalkPath(direction: Direction, frame: number): string {
