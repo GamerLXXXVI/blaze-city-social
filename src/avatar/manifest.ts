@@ -98,11 +98,11 @@ export function isFemaleDancePath(path: string): boolean {
 }
 
 export function femaleDancePath(frame: number): string {
-  const f = String((frame % FEMALE_DANCE_FRAME_COUNT) + 1).padStart(2, "0");
+  const f = String((frame % FEMALE_DANCE_FRAME_COUNT) + 1).padStart(3, "0");
   return `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/dance-female/frame-${f}.png?v=${FEMALE_DANCE_VERSION}`;
 }
 
-// Decodes all 24 dance frames once. Playback waits on this so the first loop
+// Decodes all 216 dance frames once. Playback waits on this so the first loop
 // never stalls on a network fetch.
 let femaleDancePreload: Promise<void> | null = null;
 export function preloadFemaleDanceFrames(): Promise<void> {
