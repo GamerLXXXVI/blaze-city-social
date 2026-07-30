@@ -48,7 +48,18 @@ function Login() {
         setError(data.message ?? "Couldn't start Blaze sign-in. Try again in a moment.");
         return;
       }
-      window.location.href = data.authUrl;
+      // blaze.stream sends X-Frame-Options, so it can't load inside the
+      // Lovable preview iframe ("refused to connect"). Escape the frame.
+      const framed = typeof window !== "undefined" && window.top !== window.self;
+      if (framed) {
+        try {
+          window.top!.location.href = data.authUrl;
+        } catch {
+          window.open(data.authUrl, "_blank", "noopener,noreferrer");
+        }
+      } else {
+        window.location.href = data.authUrl;
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong starting Blaze sign-in.");
     } finally {
