@@ -75,25 +75,23 @@ export function femaleSitPath(direction: Direction): string {
 export const DANCE_FRAME_COUNT = 16;
 export const DANCE_FRAME_MS = 165;
 
-// Female-specific dance animation ("Amber Night" smooth dance). 24 native 64px
-// frames, authored full-bleed (body rows 3–62) like the V2 idle art, so the
-// WORLD renderer normalizes them with the same metrics as the idle frames.
-// The previous 8-frame twerk set is fully replaced — frames are never mixed.
-export const FEMALE_DANCE_ID = "amber-night-dance-three-angle" as const;
-export const FEMALE_DANCE_NAME = "Three-Angle Dance" as const;
-export const FEMALE_DANCE_FRAME_COUNT = 72;
-export const FEMALE_DANCE_FRAME_MS = 70;
-export const FEMALE_DANCE_VERSION = "amber-night-dance-three-angle-72f-v1";
-// Identical draw size AND anchor to idle — there is NO dance-specific scale.
-export const FEMALE_WORLD_DANCE_DRAW = FEMALE_WORLD_IDLE_DRAW;
-// Part of the dance art (the back/east sections, frames 25–72) is authored
-// one source row lower in its frame (body rows 3–63) than the idle art
-// (3–62). Those frames get a single rendered-pixel upward nudge so the foot
-// row is identical to idle/walk. Position only — never size.
-export function femaleDanceFootNudgePx(path: string): number {
-  const m = /frame-(\d+)\.png/.exec(path);
-  return m && Number(m[1]) >= 25 ? -1 : 0;
-}
+// Female-specific dance animation — "Amber Night Master Art V12".
+// 216 native 128px frames played sequentially at exactly 24 FPS
+// (41.6667 ms/frame), looping 216 -> 1. Source of truth:
+// animation-manifest.json / frame-map.csv shipped with the package.
+// The previous 72-frame set is fully replaced — frames are never mixed and
+// there is no male fallback for a female avatar.
+export const FEMALE_DANCE_ID = "amber-night-master-art-v12" as const;
+export const FEMALE_DANCE_NAME = "Amber Night Master Art" as const;
+export const FEMALE_DANCE_FRAME_COUNT = 216;
+export const FEMALE_DANCE_FRAME_MS = 1000 / 24;
+export const FEMALE_DANCE_VERSION = "amber-night-master-art-v12-216f";
+// The V12 art is authored in a 128px frame (content rows 10–123) rather than
+// the 64px idle frame (rows 3–62). These metrics blit every dance frame into
+// the SAME shared 64px world canvas at ONE constant destination rectangle, so
+// the rendered body height and the foot row (46) are identical to idle/walk.
+// Constant for all 216 frames — no per-frame cropping, centering or nudging.
+export const FEMALE_WORLD_DANCE_DRAW = { size: 33, dx: 15, dy: 14 } as const;
 
 export function isFemaleDancePath(path: string): boolean {
   return path.includes("/dance-female/");
