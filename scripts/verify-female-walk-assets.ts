@@ -90,8 +90,7 @@ invariant(
   "Public/typed manifest version mismatch",
 );
 invariant(
-  JSON.stringify(publicManifest.directionOrder) ===
-    JSON.stringify(FEMALE_WALK_MANIFEST.directions),
+  JSON.stringify(publicManifest.directionOrder) === JSON.stringify(FEMALE_WALK_MANIFEST.directions),
   "Public/typed manifest direction-order mismatch",
 );
 invariant(
