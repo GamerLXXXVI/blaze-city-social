@@ -80,6 +80,15 @@ export async function compositeFrame(
       } catch {
         return compositeFrame(cfg, direction, "idle", 0, facing);
       }
+    } else if (isFemaleWalkPath(presetPath)) {
+      // Female walk is strict: a missing frame falls back ONLY to the
+      // same-direction female idle sprite (which gets its own legacy
+      // normalization via this recursive call). Never male/generic art.
+      try {
+        image = await loadAvatarImageStrict(presetPath);
+      } catch {
+        return compositeFrame(cfg, direction, "idle", 0, facing);
+      }
     } else {
       image = await loadAvatarImage(presetPath);
     }

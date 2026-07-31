@@ -1,0 +1,896 @@
+{
+  "schemaVersion": 1,
+  "id": "pixellab-female-candidate2-walk-v1",
+  "version": "1.0.0",
+  "characterId": "384a6412-08e4-4e1b-819f-aaa243e03bc2",
+  "characterGroupId": "079c3ebd-269e-46e5-9519-8371586778fa",
+  "animationGroupId": "71495b00-23cb-499f-9891-9132e2172854",
+  "directionOrder": [
+    "south",
+    "south-east",
+    "east",
+    "north-east",
+    "north",
+    "north-west",
+    "west",
+    "south-west"
+  ],
+  "frameCount": 6,
+  "frameDurationMs": 100,
+  "fps": 10,
+  "cycleDurationMs": 600,
+  "canvas": {
+    "width": 64,
+    "height": 64
+  },
+  "pivot": {
+    "x": 32,
+    "y": 46
+  },
+  "baselineRow": 46,
+  "render": {
+    "size": 64,
+    "dx": 0,
+    "dy": 0
+  },
+  "scaling": "nearest-neighbor",
+  "alpha": "binary",
+  "directions": {
+    "south": {
+      "animationId": "ae308d2e-19ab-4475-9632-598b2ed91bf9",
+      "frames": [
+        {
+          "index": 0,
+          "file": "frame-01.png",
+          "sourceFile": "compatibility-64/walk/south/frame-00.png",
+          "sha256": "773e9b568af7bc31fc8758eb8e37ed4f74eb951d31ff9f322e733bb5103912f4",
+          "bounds": {
+            "x": 28,
+            "y": 18,
+            "maxX": 36,
+            "maxY": 46,
+            "width": 9,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 162
+          }
+        },
+        {
+          "index": 1,
+          "file": "frame-02.png",
+          "sourceFile": "compatibility-64/walk/south/frame-01.png",
+          "sha256": "a02a8ddb5a03f637b77628b7daee1a328da360d81d995fb313a5088643dd0173",
+          "bounds": {
+            "x": 28,
+            "y": 18,
+            "maxX": 35,
+            "maxY": 46,
+            "width": 8,
+            "height": 29,
+            "centerX": 31.5,
+            "centerY": 32,
+            "opaquePixels": 160
+          }
+        },
+        {
+          "index": 2,
+          "file": "frame-03.png",
+          "sourceFile": "compatibility-64/walk/south/frame-02.png",
+          "sha256": "1a2a1690256ca8212d74abcb4f592cb10b60d276b6f594e8c3a35f7ebb7aa8ee",
+          "bounds": {
+            "x": 28,
+            "y": 17,
+            "maxX": 35,
+            "maxY": 46,
+            "width": 8,
+            "height": 30,
+            "centerX": 31.5,
+            "centerY": 31.5,
+            "opaquePixels": 160
+          }
+        },
+        {
+          "index": 3,
+          "file": "frame-04.png",
+          "sourceFile": "compatibility-64/walk/south/frame-03.png",
+          "sha256": "93fa2fc7764d4886910c50566d690331742a6865fb10c0a12023ed567e0559a6",
+          "bounds": {
+            "x": 28,
+            "y": 18,
+            "maxX": 36,
+            "maxY": 46,
+            "width": 9,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 168
+          }
+        },
+        {
+          "index": 4,
+          "file": "frame-05.png",
+          "sourceFile": "compatibility-64/walk/south/frame-04.png",
+          "sha256": "4a740bcb4352d1a5d1e66004110de3ba4d322a3e2d7e9f8ed9393642caeadf87",
+          "bounds": {
+            "x": 28,
+            "y": 18,
+            "maxX": 36,
+            "maxY": 46,
+            "width": 9,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 163
+          }
+        },
+        {
+          "index": 5,
+          "file": "frame-06.png",
+          "sourceFile": "compatibility-64/walk/south/frame-05.png",
+          "sha256": "f433a0bdd7ba4f9e555c54d678dece1458038d5ac8410d29d7fe989ff9d16fe9",
+          "bounds": {
+            "x": 28,
+            "y": 18,
+            "maxX": 35,
+            "maxY": 46,
+            "width": 8,
+            "height": 29,
+            "centerX": 31.5,
+            "centerY": 32,
+            "opaquePixels": 156
+          }
+        }
+      ]
+    },
+    "south-east": {
+      "animationId": "c7564198-837d-4455-ab58-0f71bca23bab",
+      "frames": [
+        {
+          "index": 0,
+          "file": "frame-01.png",
+          "sourceFile": "compatibility-64/walk/south-east/frame-00.png",
+          "sha256": "21daf70f96ffc5a47337b069050eae0c19c2b088b223161f3c5c775e6e0744cd",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 36,
+            "maxY": 46,
+            "width": 10,
+            "height": 29,
+            "centerX": 31.5,
+            "centerY": 32,
+            "opaquePixels": 168
+          }
+        },
+        {
+          "index": 1,
+          "file": "frame-02.png",
+          "sourceFile": "compatibility-64/walk/south-east/frame-01.png",
+          "sha256": "db4512e744c5c0e03db2442d40b5577b61a9533d88b53eda51721d806769047f",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 40,
+            "maxY": 46,
+            "width": 14,
+            "height": 29,
+            "centerX": 33.5,
+            "centerY": 32,
+            "opaquePixels": 166
+          }
+        },
+        {
+          "index": 2,
+          "file": "frame-03.png",
+          "sourceFile": "compatibility-64/walk/south-east/frame-02.png",
+          "sha256": "349ffc2d1b267b22948809153064172a9fe4c7d4bd95d5fc522dddb475a917f9",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 38,
+            "maxY": 46,
+            "width": 12,
+            "height": 29,
+            "centerX": 32.5,
+            "centerY": 32,
+            "opaquePixels": 163
+          }
+        },
+        {
+          "index": 3,
+          "file": "frame-04.png",
+          "sourceFile": "compatibility-64/walk/south-east/frame-03.png",
+          "sha256": "970a2875c57a8fad250868fcffcc90cb7dc5bc4a9da6b020a6ef45646c13a95d",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 36,
+            "maxY": 46,
+            "width": 10,
+            "height": 29,
+            "centerX": 31.5,
+            "centerY": 32,
+            "opaquePixels": 168
+          }
+        },
+        {
+          "index": 4,
+          "file": "frame-05.png",
+          "sourceFile": "compatibility-64/walk/south-east/frame-04.png",
+          "sha256": "785819e9dc3e67ee540cf59a7c984c011ddf3fba62eaee4eb3615dd46ced8be9",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 38,
+            "maxY": 46,
+            "width": 12,
+            "height": 29,
+            "centerX": 32.5,
+            "centerY": 32,
+            "opaquePixels": 175
+          }
+        },
+        {
+          "index": 5,
+          "file": "frame-06.png",
+          "sourceFile": "compatibility-64/walk/south-east/frame-05.png",
+          "sha256": "7af588a7091591d5843a60b13af97b2afc3753572a04f737023b97e17a68a751",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 11,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 175
+          }
+        }
+      ]
+    },
+    "east": {
+      "animationId": "c0734777-1c9c-48b8-bc60-cea594e4c5e4",
+      "frames": [
+        {
+          "index": 0,
+          "file": "frame-01.png",
+          "sourceFile": "compatibility-64/walk/east/frame-00.png",
+          "sha256": "b17d9592fe06c408151b21db9f066bd72158c96a1d66eab1ce2de4abe5c86267",
+          "bounds": {
+            "x": 26,
+            "y": 17,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 12,
+            "height": 30,
+            "centerX": 31.5,
+            "centerY": 31.5,
+            "opaquePixels": 145
+          }
+        },
+        {
+          "index": 1,
+          "file": "frame-02.png",
+          "sourceFile": "compatibility-64/walk/east/frame-01.png",
+          "sha256": "4c2b054f8f429ad3b749512eefacb3a81745d46fe9eb35da23d06a4601d5d4b0",
+          "bounds": {
+            "x": 26,
+            "y": 17,
+            "maxX": 41,
+            "maxY": 46,
+            "width": 16,
+            "height": 30,
+            "centerX": 33.5,
+            "centerY": 31.5,
+            "opaquePixels": 169
+          }
+        },
+        {
+          "index": 2,
+          "file": "frame-03.png",
+          "sourceFile": "compatibility-64/walk/east/frame-02.png",
+          "sha256": "f3c743bd4760a2eec2e6f63ce7d3ffc0f2f9e550b3a0e5387a78a3ebd4defc40",
+          "bounds": {
+            "x": 26,
+            "y": 17,
+            "maxX": 38,
+            "maxY": 46,
+            "width": 13,
+            "height": 30,
+            "centerX": 32,
+            "centerY": 31.5,
+            "opaquePixels": 166
+          }
+        },
+        {
+          "index": 3,
+          "file": "frame-04.png",
+          "sourceFile": "compatibility-64/walk/east/frame-03.png",
+          "sha256": "7f9925fad0d6aae64f5cd5f525706fc8676b9bdce8e1c7d1ca95929e6b41ee36",
+          "bounds": {
+            "x": 26,
+            "y": 17,
+            "maxX": 36,
+            "maxY": 46,
+            "width": 11,
+            "height": 30,
+            "centerX": 31,
+            "centerY": 31.5,
+            "opaquePixels": 139
+          }
+        },
+        {
+          "index": 4,
+          "file": "frame-05.png",
+          "sourceFile": "compatibility-64/walk/east/frame-04.png",
+          "sha256": "a64a81efc36194e9fcd420dcf75fd7414f8755c3172d4783802c1f98f958dcac",
+          "bounds": {
+            "x": 26,
+            "y": 18,
+            "maxX": 40,
+            "maxY": 46,
+            "width": 15,
+            "height": 29,
+            "centerX": 33,
+            "centerY": 32,
+            "opaquePixels": 164
+          }
+        },
+        {
+          "index": 5,
+          "file": "frame-06.png",
+          "sourceFile": "compatibility-64/walk/east/frame-05.png",
+          "sha256": "a09a37794203a2d0c3c6278463715d88d090fb16b7051dbd65f862d34a006180",
+          "bounds": {
+            "x": 26,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 12,
+            "height": 29,
+            "centerX": 31.5,
+            "centerY": 32,
+            "opaquePixels": 162
+          }
+        }
+      ]
+    },
+    "north-east": {
+      "animationId": "2f8b8423-2a3d-4938-8536-19133fc9dddc",
+      "frames": [
+        {
+          "index": 0,
+          "file": "frame-01.png",
+          "sourceFile": "compatibility-64/walk/north-east/frame-00.png",
+          "sha256": "6d392d92767a3b7be2d57413e65d089bb0000eb4bdf98c8af96aaef9a2a4d9bc",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 36,
+            "maxY": 46,
+            "width": 10,
+            "height": 29,
+            "centerX": 31.5,
+            "centerY": 32,
+            "opaquePixels": 160
+          }
+        },
+        {
+          "index": 1,
+          "file": "frame-02.png",
+          "sourceFile": "compatibility-64/walk/north-east/frame-01.png",
+          "sha256": "90b021694d6535dd62847bf8ffce8c713fbce49cb1134565ee2cc722ac909e34",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 11,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 161
+          }
+        },
+        {
+          "index": 2,
+          "file": "frame-03.png",
+          "sourceFile": "compatibility-64/walk/north-east/frame-02.png",
+          "sha256": "109a19fe78eb30dbb2a3a233c871efa7ec0ee7898409f819717981de40c5462f",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 36,
+            "maxY": 46,
+            "width": 10,
+            "height": 29,
+            "centerX": 31.5,
+            "centerY": 32,
+            "opaquePixels": 158
+          }
+        },
+        {
+          "index": 3,
+          "file": "frame-04.png",
+          "sourceFile": "compatibility-64/walk/north-east/frame-03.png",
+          "sha256": "a5e2ea17b1355bd5c3a47421d4fa89d5b5222fe91fbb461d9e9329ff7419d042",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 11,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 152
+          }
+        },
+        {
+          "index": 4,
+          "file": "frame-05.png",
+          "sourceFile": "compatibility-64/walk/north-east/frame-04.png",
+          "sha256": "17f94e8d63690f71fcb0069ca0a5cf6d3a019288b37417d7120f61b31828567c",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 39,
+            "maxY": 46,
+            "width": 13,
+            "height": 29,
+            "centerX": 33,
+            "centerY": 32,
+            "opaquePixels": 156
+          }
+        },
+        {
+          "index": 5,
+          "file": "frame-06.png",
+          "sourceFile": "compatibility-64/walk/north-east/frame-05.png",
+          "sha256": "88830ab80785ef2425616fbf9ad155bcacfa87a6370f64109e607aa7240e9251",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 11,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 151
+          }
+        }
+      ]
+    },
+    "north": {
+      "animationId": "a8d483b1-0eaa-4b47-a431-a0fb37e8e5c3",
+      "frames": [
+        {
+          "index": 0,
+          "file": "frame-01.png",
+          "sourceFile": "compatibility-64/walk/north/frame-00.png",
+          "sha256": "08d003cb9bd61487247018aaecd373e3edc7848222f16d69df6751d71b7874c2",
+          "bounds": {
+            "x": 29,
+            "y": 18,
+            "maxX": 35,
+            "maxY": 46,
+            "width": 7,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 149
+          }
+        },
+        {
+          "index": 1,
+          "file": "frame-02.png",
+          "sourceFile": "compatibility-64/walk/north/frame-01.png",
+          "sha256": "35ff05c7ec3355fc6bbde7fd8151070356cff7b2ac5b6012d66595917896fa5c",
+          "bounds": {
+            "x": 29,
+            "y": 19,
+            "maxX": 35,
+            "maxY": 46,
+            "width": 7,
+            "height": 28,
+            "centerX": 32,
+            "centerY": 32.5,
+            "opaquePixels": 149
+          }
+        },
+        {
+          "index": 2,
+          "file": "frame-03.png",
+          "sourceFile": "compatibility-64/walk/north/frame-02.png",
+          "sha256": "9e9d1777d0750ba8081c223caae657751d061d21e2bf73557db293659e82697d",
+          "bounds": {
+            "x": 29,
+            "y": 19,
+            "maxX": 35,
+            "maxY": 46,
+            "width": 7,
+            "height": 28,
+            "centerX": 32,
+            "centerY": 32.5,
+            "opaquePixels": 149
+          }
+        },
+        {
+          "index": 3,
+          "file": "frame-04.png",
+          "sourceFile": "compatibility-64/walk/north/frame-03.png",
+          "sha256": "2f6625c115feac6dd478dfa6d8af258aba31fffa6fde753eda1eb29ce3a50768",
+          "bounds": {
+            "x": 29,
+            "y": 18,
+            "maxX": 35,
+            "maxY": 46,
+            "width": 7,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 153
+          }
+        },
+        {
+          "index": 4,
+          "file": "frame-05.png",
+          "sourceFile": "compatibility-64/walk/north/frame-04.png",
+          "sha256": "064061f8e86904445751b7463bc3bec6f2de751fd5c05f2271f1e294cc120ea4",
+          "bounds": {
+            "x": 29,
+            "y": 19,
+            "maxX": 35,
+            "maxY": 46,
+            "width": 7,
+            "height": 28,
+            "centerX": 32,
+            "centerY": 32.5,
+            "opaquePixels": 149
+          }
+        },
+        {
+          "index": 5,
+          "file": "frame-06.png",
+          "sourceFile": "compatibility-64/walk/north/frame-05.png",
+          "sha256": "4f8634974ea37e0602a9728255607adb4bb8417eda142a42b358717634f3e594",
+          "bounds": {
+            "x": 29,
+            "y": 19,
+            "maxX": 35,
+            "maxY": 46,
+            "width": 7,
+            "height": 28,
+            "centerX": 32,
+            "centerY": 32.5,
+            "opaquePixels": 147
+          }
+        }
+      ]
+    },
+    "north-west": {
+      "animationId": "784a55df-3a4c-48f9-89c5-7075c2dca85b",
+      "frames": [
+        {
+          "index": 0,
+          "file": "frame-01.png",
+          "sourceFile": "compatibility-64/walk/north-west/frame-00.png",
+          "sha256": "3e5655c6eec6c3cedf03fe928f5e21d7e55b1dd442590d42583f680da6eabf7a",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 11,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 158
+          }
+        },
+        {
+          "index": 1,
+          "file": "frame-02.png",
+          "sourceFile": "compatibility-64/walk/north-west/frame-01.png",
+          "sha256": "5b44d3e766ae901e418fe8eb58794c2610bdcfd8eff540fdb635a4f2f6d5bf22",
+          "bounds": {
+            "x": 25,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 13,
+            "height": 29,
+            "centerX": 31,
+            "centerY": 32,
+            "opaquePixels": 159
+          }
+        },
+        {
+          "index": 2,
+          "file": "frame-03.png",
+          "sourceFile": "compatibility-64/walk/north-west/frame-02.png",
+          "sha256": "902496817e2a9213c22f595b0c731946a33e4ebd11d83a08d200cc45f4045888",
+          "bounds": {
+            "x": 26,
+            "y": 18,
+            "maxX": 38,
+            "maxY": 46,
+            "width": 13,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 158
+          }
+        },
+        {
+          "index": 3,
+          "file": "frame-04.png",
+          "sourceFile": "compatibility-64/walk/north-west/frame-03.png",
+          "sha256": "5133ba7e2d88a17293295ea20a25fbdd0114d00a5e15d0f85c8c136baa9878d0",
+          "bounds": {
+            "x": 28,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 10,
+            "height": 29,
+            "centerX": 32.5,
+            "centerY": 32,
+            "opaquePixels": 155
+          }
+        },
+        {
+          "index": 4,
+          "file": "frame-05.png",
+          "sourceFile": "compatibility-64/walk/north-west/frame-04.png",
+          "sha256": "41ed5a403109469c919e2128017ff2f81dca913173fc061af0d05f08754882ae",
+          "bounds": {
+            "x": 26,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 12,
+            "height": 29,
+            "centerX": 31.5,
+            "centerY": 32,
+            "opaquePixels": 166
+          }
+        },
+        {
+          "index": 5,
+          "file": "frame-06.png",
+          "sourceFile": "compatibility-64/walk/north-west/frame-05.png",
+          "sha256": "906c59e38c2275753be04dfca6dec2d0706b745192728e03912a78cc90d08237",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 11,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 160
+          }
+        }
+      ]
+    },
+    "west": {
+      "animationId": "94390f70-65d4-474f-9c9d-c6f9c1341ad0",
+      "frames": [
+        {
+          "index": 0,
+          "file": "frame-01.png",
+          "sourceFile": "compatibility-64/walk/west/frame-00.png",
+          "sha256": "ac02a3ca604e7768a25eb284006d496521c57d0e816fc360fbdbe1f093526edd",
+          "bounds": {
+            "x": 28,
+            "y": 18,
+            "maxX": 38,
+            "maxY": 46,
+            "width": 11,
+            "height": 29,
+            "centerX": 33,
+            "centerY": 32,
+            "opaquePixels": 138
+          }
+        },
+        {
+          "index": 1,
+          "file": "frame-02.png",
+          "sourceFile": "compatibility-64/walk/west/frame-01.png",
+          "sha256": "0113ab35fb2d9b6b1f61cd8b8cad0b2c26ec3b6f62bb425a2c4a12b9ece5fb09",
+          "bounds": {
+            "x": 23,
+            "y": 18,
+            "maxX": 38,
+            "maxY": 46,
+            "width": 16,
+            "height": 29,
+            "centerX": 30.5,
+            "centerY": 32,
+            "opaquePixels": 174
+          }
+        },
+        {
+          "index": 2,
+          "file": "frame-03.png",
+          "sourceFile": "compatibility-64/walk/west/frame-02.png",
+          "sha256": "710015cb076f2c730f239e4e116e5180b1bc634429dce794fb18aac54015c1b5",
+          "bounds": {
+            "x": 26,
+            "y": 18,
+            "maxX": 38,
+            "maxY": 46,
+            "width": 13,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 164
+          }
+        },
+        {
+          "index": 3,
+          "file": "frame-04.png",
+          "sourceFile": "compatibility-64/walk/west/frame-03.png",
+          "sha256": "10f5cb12c4a1582e1a4b3cfde58eeac519724a35b76be68279b32d194f31ace1",
+          "bounds": {
+            "x": 28,
+            "y": 18,
+            "maxX": 38,
+            "maxY": 46,
+            "width": 11,
+            "height": 29,
+            "centerX": 33,
+            "centerY": 32,
+            "opaquePixels": 135
+          }
+        },
+        {
+          "index": 4,
+          "file": "frame-05.png",
+          "sourceFile": "compatibility-64/walk/west/frame-04.png",
+          "sha256": "f221e84cd757afd8560e8e84bb148035c90fc85f6690528aee6ba2e05cf5c070",
+          "bounds": {
+            "x": 23,
+            "y": 18,
+            "maxX": 38,
+            "maxY": 46,
+            "width": 16,
+            "height": 29,
+            "centerX": 30.5,
+            "centerY": 32,
+            "opaquePixels": 171
+          }
+        },
+        {
+          "index": 5,
+          "file": "frame-06.png",
+          "sourceFile": "compatibility-64/walk/west/frame-05.png",
+          "sha256": "4ca5fef89fd51b721b9570d3e8c957fb65cb98ecb1dec37bf3567cd697ad4c42",
+          "bounds": {
+            "x": 26,
+            "y": 18,
+            "maxX": 38,
+            "maxY": 46,
+            "width": 13,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 165
+          }
+        }
+      ]
+    },
+    "south-west": {
+      "animationId": "d6c76abb-3143-4994-839d-9457995c359c",
+      "frames": [
+        {
+          "index": 0,
+          "file": "frame-01.png",
+          "sourceFile": "compatibility-64/walk/south-west/frame-00.png",
+          "sha256": "66cbc64f7d0876e7cbdaf54dcc38572943120dd8167e06a928a95cf653bb3c67",
+          "bounds": {
+            "x": 28,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 10,
+            "height": 29,
+            "centerX": 32.5,
+            "centerY": 32,
+            "opaquePixels": 158
+          }
+        },
+        {
+          "index": 1,
+          "file": "frame-02.png",
+          "sourceFile": "compatibility-64/walk/south-west/frame-01.png",
+          "sha256": "4cdd27c3b2c32a03d2b0c31eb2908e18b4c9031511c5dc3bf094f8e648ca1fd5",
+          "bounds": {
+            "x": 26,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 12,
+            "height": 29,
+            "centerX": 31.5,
+            "centerY": 32,
+            "opaquePixels": 171
+          }
+        },
+        {
+          "index": 2,
+          "file": "frame-03.png",
+          "sourceFile": "compatibility-64/walk/south-west/frame-02.png",
+          "sha256": "ac0efb957062894b0e837a38291276076ebd1807a3eedae6b34e34d286669504",
+          "bounds": {
+            "x": 28,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 10,
+            "height": 29,
+            "centerX": 32.5,
+            "centerY": 32,
+            "opaquePixels": 164
+          }
+        },
+        {
+          "index": 3,
+          "file": "frame-04.png",
+          "sourceFile": "compatibility-64/walk/south-west/frame-03.png",
+          "sha256": "ec3e4191ab37e9a7d3160c5ecb639a848279bbcfe5df466852e7fd9d2b9106a3",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 11,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 156
+          }
+        },
+        {
+          "index": 4,
+          "file": "frame-05.png",
+          "sourceFile": "compatibility-64/walk/south-west/frame-04.png",
+          "sha256": "1939cfc31d4ad8920faeeb2989d4d141750413f4f871f5c700e0cc243f0c7498",
+          "bounds": {
+            "x": 24,
+            "y": 18,
+            "maxX": 36,
+            "maxY": 46,
+            "width": 13,
+            "height": 29,
+            "centerX": 30,
+            "centerY": 32,
+            "opaquePixels": 154
+          }
+        },
+        {
+          "index": 5,
+          "file": "frame-06.png",
+          "sourceFile": "compatibility-64/walk/south-west/frame-05.png",
+          "sha256": "d7d595d8dfd5398cc77673a89d95154f4c2fb1d402094e921339bb50d2b2463b",
+          "bounds": {
+            "x": 27,
+            "y": 18,
+            "maxX": 37,
+            "maxY": 46,
+            "width": 11,
+            "height": 29,
+            "centerX": 32,
+            "centerY": 32,
+            "opaquePixels": 156
+          }
+        }
+      ]
+    }
+  }
+}

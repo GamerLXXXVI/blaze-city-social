@@ -72,7 +72,7 @@ export function loadAvatarImageStrict(url: string): Promise<HTMLImageElement> {
       resolve(img);
     };
     img.onerror = () => {
-      console.error("[avatar] Missing female dance sprite (no male fallback)", url);
+      console.error("[avatar] Missing avatar sprite (strict load, no fallback)", url);
       reject(new Error(`Missing avatar asset: ${url}`));
     };
     img.src = url;
