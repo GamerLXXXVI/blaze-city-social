@@ -177,8 +177,8 @@ export function presetPathFor(
   if (preset !== "blaze-original") return null;
   const root = `/assets/avatars/presets/${preset}`;
   const gender = cfg.gender ?? "male";
-  // Female art has dedicated idle + 8-direction 6-frame walk sets.
-  // Dance/sit still fall through to the male sprites as a TEMPORARY fallback.
+  // Female art has dedicated idle, 8-direction 6-frame walk, dance and sit
+  // sets. No female state ever falls through to male or generic art.
   if (gender === "female") {
     if (state === "idle") {
       return femaleIdleFramePath(direction, frame);
@@ -188,6 +188,7 @@ export function presetPathFor(
       return femaleDancePath(frame);
     }
     if (state === "walk") {
+      // Manifest-driven female walk — never falls back to male art.
       return femaleWalkPath(direction, frame);
     }
     if (state === "sit") {
