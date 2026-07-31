@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "id": "blaze-female-pixellab-walk-production-128-v2",
+  "canvas": {
+    "width": 128,
+    "height": 128
+  },
+  "pivot": {
+    "x": 64,
+    "y": 120
+  },
+  "baselineRow": 120,
+  "frameCount": 6,
+  "frameDurationMs": 100,
+  "fps": 10,
+  "directionOrder": [
+    "south",
+    "south-east",
+    "east",
+    "north-east",
+    "north",
+    "north-west",
+    "west",
+    "south-west"
+  ],
+  "animationIds": {
+    "south": "ae308d2e-19ab-4475-9632-598b2ed91bf9",
+    "south-east": "a1ed2597-c4da-4f24-b907-6e8854038891",
+    "east": "c0734777-1c9c-48b8-bc60-cea594e4c5e4",
+    "north-east": "2f8b8423-2a3d-4938-8536-19133fc9dddc",
+    "north": "a8d483b1-0eaa-4b47-a431-a0fb37e8e5c3",
+    "north-west": "784a55df-3a4c-48f9-89c5-7075c2dca85b",
+    "west": "94390f70-65d4-474f-9c9d-c6f9c1341ad0",
+    "south-west": "d6c76abb-3143-4994-839d-9457995c359c"
+  },
+  "framePattern": "{direction}/frame-{index:02}.png",
+  "transform": {
+    "type": "fixed-crop-only",
+    "sourceCrop": {
+      "left": 48,
+      "top": 51,
+      "width": 128,
+      "height": 128
+    },
+    "resized": false
+  }
+}

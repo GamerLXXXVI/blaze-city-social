@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "blaze-female-pixellab-idle-production-128-v2",
+  "canvas": {
+    "width": 128,
+    "height": 128
+  },
+  "pivot": {
+    "x": 64,
+    "y": 120
+  },
+  "baselineRow": 120,
+  "frameCount": 1,
+  "directionOrder": [
+    "south",
+    "south-east",
+    "east",
+    "north-east",
+    "north",
+    "north-west",
+    "west",
+    "south-west"
+  ],
+  "framePattern": "{direction}.png",
+  "transform": {
+    "type": "fixed-crop-only",
+    "sourceCrop": {
+      "left": 48,
+      "top": 51,
+      "width": 128,
+      "height": 128
+    },
+    "resized": false
+  }
+}
