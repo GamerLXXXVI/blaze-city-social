@@ -3,6 +3,11 @@
 import type { AvatarConfig, Direction, AnimState } from "./types";
 import { DIRECTIONS } from "./types";
 import { invalidateAvatarImageCache, loadAvatarImage } from "./loader";
+import {
+  FEMALE_WALK_MANIFEST,
+  femaleWalkManifestPath,
+  isManifestFemaleWalkPath,
+} from "./femaleWalkManifest";
 
 export const AVATAR_SIZE = 96; // logical avatar frame size in room pixels
 
@@ -25,15 +30,16 @@ export const NPC_RENDER_SCALE = 3.6;
 export type LayerDirection = "down" | "up" | "side";
 
 export const DEFAULT_AVATAR_PRESET = "blaze-original" as const;
+// Male walk contract — unchanged.
 export const WALK_FRAME_COUNT = 4;
 export const WALK_FRAME_MS = 125;
-// Female directional states V1: 8 idle sprites (one per direction) + 4 walk
-// frames per direction, all native 64px full-bleed frames.
+// Legacy female-idle cache/version token. This intentionally stays on the
+// legacy value: female walk now comes from the versioned PixelLab manifest.
 export const FEMALE_DIRECTIONAL_VERSION = "female-walk-v2";
-// V2 gait: 8 phases per direction, identical 100 ms cadence (10 FPS) for
-// every direction. No direction-specific durations or speed multipliers.
-export const FEMALE_WALK_FRAME_COUNT = 8;
-export const FEMALE_WALK_FRAME_MS = 100;
+// Female walk is manifest-driven: 6 contiguous frames per direction at
+// 100 ms/frame (10 FPS) for every direction. Never falls back to male art.
+export const FEMALE_WALK_FRAME_COUNT = FEMALE_WALK_MANIFEST.frameCount;
+export const FEMALE_WALK_FRAME_MS = FEMALE_WALK_MANIFEST.frameMs;
 // Idle is a single static sprite per direction.
 export const FEMALE_IDLE_FRAME_COUNT = 1;
 export const FEMALE_IDLE_FRAME_MS = 500;
@@ -62,21 +68,15 @@ export function isFemaleIdlePath(path: string): boolean {
 }
 
 export function isFemaleWalkPath(path: string): boolean {
-  return path.includes("/walk-female/");
+  return isManifestFemaleWalkPath(path);
 }
 
-// Walk art is authored identically to the idle art (full-bleed 64px frame),
-// so it uses the exact same world draw rectangle — one fixed size and
-// bottom-center anchor for every direction and frame.
-export const FEMALE_WORLD_WALK_DRAW = {
-  size: FEMALE_WORLD_DRAW_SIZE,
-  dx: FEMALE_WORLD_DRAW_DX,
-  dy: 16,
-} as const;
+// The PixelLab walk frames are already normalized to the shared 64px world
+// canvas, so the whole frame is drawn (no second inset/halving).
+export const FEMALE_WORLD_WALK_DRAW = FEMALE_WALK_MANIFEST.render;
 
 export function femaleWalkPath(direction: Direction, frame: number): string {
-  const f = String((frame % FEMALE_WALK_FRAME_COUNT) + 1).padStart(2, "0");
-  return `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/walk-female/${direction}/frame-${f}.png?v=${FEMALE_DIRECTIONAL_VERSION}`;
+  return femaleWalkManifestPath(direction, frame);
 }
 
 // Female sitting art (8 directions, one frame each) is authored full-bleed in
