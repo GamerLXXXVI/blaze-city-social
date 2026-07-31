@@ -31,7 +31,7 @@ const SIX_WALK_FRAMES = [
 
 export const FEMALE_WALK_MANIFEST = {
   id: "pixellab-female-candidate2-walk-v1",
-  version: "1.0.0",
+  version: "1.0.1",
   assetRoot: "/assets/avatars/presets/blaze-original/walk-female-pixellab-v1",
   directions: [
     "south",
