@@ -50,8 +50,8 @@ export const FEMALE_SELECTOR_IDLE_VERSION = FEMALE_DIRECTIONAL_VERSION;
 // the world makes her ~2x too tall. In the WORLD renderer only, the idle frame
 // is blitted into the shared 64px canvas at half size with a whole-pixel
 // offset so her feet land on row 46 and her body height matches the walk art.
-// The selector preview does NOT go through this path (see
-// FemaleSelectorIdleSprite), so it keeps its native 128x128 rendering.
+// FemaleSelectorIdleSprite now renders through AvatarSprite and this shared
+// compositor path, so selector and in-world rendering use the same normalization.
 // The single source of truth for how ANY full-bleed 64px female frame
 // (idle, dance) is blitted into the shared world sprite canvas. Every state
 // uses this same draw size — only the source frame changes.
