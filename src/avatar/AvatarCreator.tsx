@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AvatarSprite } from "./AvatarSprite";
 import { FemaleSelectorIdleSprite } from "./FemaleSelectorIdleSprite";
+import { walkFrameCount } from "./manifest";
 import {
   DIRECTIONS,
   defaultAvatarConfig,
@@ -36,19 +37,12 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
   });
   const [direction, setDirection] = useState<Direction>("south");
   const [walking, setWalking] = useState(false);
-  const [idleResetKey, setIdleResetKey] = useState(0);
 
   const chooseDirection = (d: Direction) => {
     setDirection(d);
-    setIdleResetKey((key) => key + 1);
   };
 
-  const toggleWalking = () => {
-    setWalking((isWalking) => {
-      if (isWalking) setIdleResetKey((key) => key + 1);
-      return !isWalking;
-    });
-  };
+  const toggleWalking = () => setWalking((isWalking) => !isWalking);
 
   return (
     <div className="grid gap-8 md:grid-cols-[280px_1fr] items-start">
@@ -63,11 +57,7 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
         >
           <div className="flex h-48 w-48 items-center justify-center">
             {cfg.gender === "female" ? (
-              <FemaleSelectorIdleSprite
-                direction={direction}
-                resetKey={idleResetKey}
-                walking={walking}
-              />
+              <FemaleSelectorIdleSprite config={cfg} direction={direction} walking={walking} />
             ) : (
               <AvatarSprite
                 config={cfg}
@@ -111,7 +101,6 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
                 aria-pressed={cfg.gender === g}
                 onClick={() => {
                   setCfg((c) => ({ ...c, gender: g }));
-                  setIdleResetKey((key) => key + 1);
                 }}
               >
                 {g === "male" ? "Male" : "Female"}
@@ -124,7 +113,7 @@ export function AvatarCreator({ initial, onSave, saving }: Props) {
           <PresetDetail label="Gender" value={cfg.gender === "female" ? "Female" : "Male"} />
           <PresetDetail label="Style" value="Amber Night" />
           <PresetDetail label="Directions" value="8" />
-          <PresetDetail label="Walk cycle" value="4 frames" />
+          <PresetDetail label="Walk cycle" value={`${walkFrameCount(cfg)} frames`} />
         </div>
         <div className="pt-4">
           <Button
