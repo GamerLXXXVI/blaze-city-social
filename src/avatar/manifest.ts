@@ -247,15 +247,14 @@ export function pathFor(
   }
 }
 
-// Preload + cache all 48 female walk frames once so direction changes never
-// flicker or re-hit the network.
+// Preload + cache all 48 female walk frames (8 directions x 6 phases) plus
+// the 8 idle sprites once so direction changes never flicker or re-hit the
+// network.
 let femaleWalkPreloaded: Promise<void> | null = null;
 export function preloadFemaleWalkFrames(): Promise<void> {
   if (femaleWalkPreloaded) return femaleWalkPreloaded;
   if (typeof window === "undefined") return Promise.resolve();
-  invalidateAvatarImageCache(
-    (url) => url.includes("/idle-female/") || url.includes("/walk-female/"),
-  );
+  invalidateAvatarImageCache((url) => isFemaleIdlePath(url) || isFemaleWalkPath(url));
   if ("caches" in window) {
     void window.caches
       .keys()
@@ -272,8 +271,7 @@ export function preloadFemaleWalkFrames(): Promise<void> {
                       requests
                         .filter(
                           (request) =>
-                            request.url.includes("/idle-female/") ||
-                            request.url.includes("/walk-female/"),
+                            isFemaleIdlePath(request.url) || isFemaleWalkPath(request.url),
                         )
                         .map((request) => cache.delete(request)),
                     ),
