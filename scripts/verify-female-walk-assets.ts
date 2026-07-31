@@ -1,8 +1,8 @@
-import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { inflateSync } from "node:zlib";
 import { join } from "node:path";
 
-import { FEMALE_WALK_MANIFEST } from "../src/avatar/femaleWalkManifest";
+import { FEMALE_PRODUCTION_128 } from "../src/avatar/femaleProduction128";
 
 const expectedDirections = [
   "south",
@@ -15,131 +15,194 @@ const expectedDirections = [
   "south-west",
 ] as const;
 
-const expectedFrames = [
+const expectedWalkFrames = [
+  "frame-00.png",
   "frame-01.png",
   "frame-02.png",
   "frame-03.png",
   "frame-04.png",
   "frame-05.png",
-  "frame-06.png",
 ] as const;
 
 function invariant(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
 
+// ---- typed manifest contract ------------------------------------------------
 invariant(
-  JSON.stringify(FEMALE_WALK_MANIFEST.directions) === JSON.stringify(expectedDirections),
-  "Female walk direction order is incorrect",
-);
-invariant(FEMALE_WALK_MANIFEST.frameCount === 6, "Female walk must contain six frames");
-invariant(FEMALE_WALK_MANIFEST.frameMs === 100, "Female walk frames must last 100 ms");
-invariant(FEMALE_WALK_MANIFEST.fps === 10, "Female walk must play at 10 FPS");
-invariant(
-  FEMALE_WALK_MANIFEST.canvas.width === 64 && FEMALE_WALK_MANIFEST.canvas.height === 64,
-  "Female walk canvas must be 64x64",
+  JSON.stringify(FEMALE_PRODUCTION_128.directions) === JSON.stringify(expectedDirections),
+  "Female direction order is incorrect",
 );
 invariant(
-  FEMALE_WALK_MANIFEST.pivot.x === 32 && FEMALE_WALK_MANIFEST.pivot.y === 46,
-  "Female walk pivot must be (32,46)",
+  JSON.stringify(FEMALE_PRODUCTION_128.walk.frames) === JSON.stringify(expectedWalkFrames),
+  "Female walk frame names must be contiguous frame-00.png through frame-05.png",
 );
-invariant(FEMALE_WALK_MANIFEST.baselineY === 46, "Female walk baseline must be row 46");
+invariant(FEMALE_PRODUCTION_128.walk.frameCount === 6, "Female walk must contain six frames");
+invariant(FEMALE_PRODUCTION_128.walk.frameMs === 100, "Female walk frames must last 100 ms");
+invariant(FEMALE_PRODUCTION_128.walk.fps === 10, "Female walk must play at 10 FPS");
 invariant(
-  FEMALE_WALK_MANIFEST.render.size === 64 &&
-    FEMALE_WALK_MANIFEST.render.dx === 0 &&
-    FEMALE_WALK_MANIFEST.render.dy === 0,
-  "Female walk render rectangle must be full-canvas 64/0/0",
+  FEMALE_PRODUCTION_128.idle.frameCount === 1,
+  "Female idle must be one frame per direction",
 );
-for (const direction of FEMALE_WALK_MANIFEST.directions) {
-  invariant(
-    JSON.stringify(FEMALE_WALK_MANIFEST.frames[direction]) === JSON.stringify(expectedFrames),
-    `${direction} frame names must be contiguous frame-01.png through frame-06.png`,
-  );
-  invariant(
-    new Set(FEMALE_WALK_MANIFEST.frames[direction]).size ===
-      FEMALE_WALK_MANIFEST.frames[direction].length,
-    `${direction} frame names must be unique`,
-  );
-}
+invariant(
+  FEMALE_PRODUCTION_128.canvas.width === 128 && FEMALE_PRODUCTION_128.canvas.height === 128,
+  "Female idle/walk canvas must be 128x128",
+);
+invariant(
+  FEMALE_PRODUCTION_128.pivot.x === 64 && FEMALE_PRODUCTION_128.pivot.y === 120,
+  "Female idle/walk pivot must be (64,120)",
+);
+invariant(FEMALE_PRODUCTION_128.baselineY === 120, "Female baseline must be row 120");
+invariant(FEMALE_PRODUCTION_128.displayScale === 1, "Female display scale must be exactly 1");
 
-let verified = 0;
-const assetDirectory = join(
-  process.cwd(),
-  "public",
-  FEMALE_WALK_MANIFEST.assetRoot.replace(/^\//, ""),
-);
-const publicManifest = JSON.parse(
-  await readFile(join(assetDirectory, "manifest.json"), "utf8"),
-) as {
+// ---- public runtime manifests ----------------------------------------------
+const publicRoot = (assetRoot: string) =>
+  join(process.cwd(), "public", assetRoot.replace(/^\//, ""));
+const idleDir = publicRoot(FEMALE_PRODUCTION_128.idle.assetRoot);
+const walkDir = publicRoot(FEMALE_PRODUCTION_128.walk.assetRoot);
+
+type PublicManifest = {
   id: string;
-  version: string;
-  directionOrder: string[];
-  frameCount: number;
-  frameDurationMs: number;
-  fps: number;
-  baselineRow: number;
   canvas: { width: number; height: number };
   pivot: { x: number; y: number };
-  render: { size: number; dx: number; dy: number };
-  directions: Record<string, { frames: Array<{ file: string; sha256: string }> }>;
+  baselineRow: number;
+  frameCount: number;
+  frameDurationMs?: number;
+  fps?: number;
+  directionOrder: string[];
+  framePattern: string;
+  transform: { type: string; resized: boolean };
 };
 
-invariant(publicManifest.id === FEMALE_WALK_MANIFEST.id, "Public/typed manifest ID mismatch");
-invariant(
-  publicManifest.version === FEMALE_WALK_MANIFEST.version,
-  "Public/typed manifest version mismatch",
-);
-invariant(
-  JSON.stringify(publicManifest.directionOrder) === JSON.stringify(FEMALE_WALK_MANIFEST.directions),
-  "Public/typed manifest direction-order mismatch",
-);
-invariant(
-  publicManifest.frameCount === FEMALE_WALK_MANIFEST.frameCount,
-  "Public/typed manifest frame-count mismatch",
-);
-invariant(
-  publicManifest.frameDurationMs === FEMALE_WALK_MANIFEST.frameMs,
-  "Public/typed manifest frame-timing mismatch",
-);
-invariant(publicManifest.fps === FEMALE_WALK_MANIFEST.fps, "Public/typed manifest FPS mismatch");
-invariant(
-  publicManifest.canvas.width === FEMALE_WALK_MANIFEST.canvas.width &&
-    publicManifest.canvas.height === FEMALE_WALK_MANIFEST.canvas.height,
-  "Public/typed manifest canvas mismatch",
-);
-invariant(
-  publicManifest.pivot.x === FEMALE_WALK_MANIFEST.pivot.x &&
-    publicManifest.pivot.y === FEMALE_WALK_MANIFEST.pivot.y &&
-    publicManifest.baselineRow === FEMALE_WALK_MANIFEST.baselineY,
-  "Public/typed manifest pivot or baseline mismatch",
-);
-invariant(
-  publicManifest.render.size === FEMALE_WALK_MANIFEST.render.size &&
-    publicManifest.render.dx === FEMALE_WALK_MANIFEST.render.dx &&
-    publicManifest.render.dy === FEMALE_WALK_MANIFEST.render.dy,
-  "Public/typed manifest render mismatch",
-);
+const idleManifest = JSON.parse(
+  await readFile(join(idleDir, "manifest.json"), "utf8"),
+) as PublicManifest;
+const walkManifest = JSON.parse(
+  await readFile(join(walkDir, "manifest.json"), "utf8"),
+) as PublicManifest;
 
-for (const direction of FEMALE_WALK_MANIFEST.directions) {
-  const publicFrames = publicManifest.directions[direction]?.frames;
-  invariant(publicFrames?.length === 6, `${direction} public manifest must list six frames`);
-  for (const [index, filename] of FEMALE_WALK_MANIFEST.frames[direction].entries()) {
-    const file = join(assetDirectory, direction, filename);
-    const png = await readFile(file);
-    invariant(
-      png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])),
-      `${file} is not a PNG`,
-    );
-    invariant(png.readUInt32BE(16) === 64, `${file} width is not 64`);
-    invariant(png.readUInt32BE(20) === 64, `${file} height is not 64`);
-    invariant(publicFrames[index].file === filename, `${direction} public frame order mismatch`);
-    invariant(
-      createHash("sha256").update(png).digest("hex") === publicFrames[index].sha256,
-      `${file} SHA-256 mismatch`,
-    );
-    verified += 1;
+for (const [name, manifest, id, frameCount] of [
+  ["idle", idleManifest, FEMALE_PRODUCTION_128.idle.id, 1],
+  ["walk", walkManifest, FEMALE_PRODUCTION_128.walk.id, 6],
+] as const) {
+  invariant(manifest.id === id, `${name} public/typed manifest ID mismatch`);
+  invariant(
+    manifest.canvas.width === 128 && manifest.canvas.height === 128,
+    `${name} public manifest canvas must be 128x128`,
+  );
+  invariant(
+    manifest.pivot.x === 64 && manifest.pivot.y === 120 && manifest.baselineRow === 120,
+    `${name} public manifest pivot/baseline mismatch`,
+  );
+  invariant(manifest.frameCount === frameCount, `${name} public manifest frame-count mismatch`);
+  invariant(
+    JSON.stringify(manifest.directionOrder) === JSON.stringify(expectedDirections),
+    `${name} public manifest direction-order mismatch`,
+  );
+  invariant(manifest.transform.resized === false, `${name} assets must not be resized`);
+}
+invariant(walkManifest.frameDurationMs === 100, "walk public manifest must use 100 ms frames");
+invariant(walkManifest.fps === 10, "walk public manifest must be 10 FPS");
+
+// ---- PNG inspection ---------------------------------------------------------
+const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+
+function paeth(a: number, b: number, c: number): number {
+  const p = a + b - c;
+  const pa = Math.abs(p - a);
+  const pb = Math.abs(p - b);
+  const pc = Math.abs(p - c);
+  if (pa <= pb && pa <= pc) return a;
+  if (pb <= pc) return b;
+  return c;
+}
+
+function decodeRgba(png: Buffer, label: string): { width: number; height: number; data: Buffer } {
+  invariant(png.subarray(0, 8).equals(PNG_SIGNATURE), `${label} is not a PNG`);
+  let offset = 8;
+  let width = 0;
+  let height = 0;
+  let bitDepth = 0;
+  let colorType = 0;
+  let interlace = 0;
+  const idat: Buffer[] = [];
+  while (offset < png.length) {
+    const length = png.readUInt32BE(offset);
+    const type = png.toString("ascii", offset + 4, offset + 8);
+    const body = png.subarray(offset + 8, offset + 8 + length);
+    if (type === "IHDR") {
+      width = body.readUInt32BE(0);
+      height = body.readUInt32BE(4);
+      bitDepth = body[8];
+      colorType = body[9];
+      interlace = body[12];
+    } else if (type === "IDAT") {
+      idat.push(body);
+    } else if (type === "IEND") {
+      break;
+    }
+    offset += 12 + length;
+  }
+  invariant(bitDepth === 8, `${label} must be 8-bit`);
+  invariant(colorType === 6, `${label} must be RGBA (color type 6)`);
+  invariant(interlace === 0, `${label} must not be interlaced`);
+  const raw = inflateSync(Buffer.concat(idat));
+  const bpp = 4;
+  const stride = width * bpp;
+  const out = Buffer.alloc(height * stride);
+  let pos = 0;
+  for (let y = 0; y < height; y++) {
+    const filter = raw[pos++];
+    const line = raw.subarray(pos, pos + stride);
+    pos += stride;
+    const rowStart = y * stride;
+    for (let x = 0; x < stride; x++) {
+      const left = x >= bpp ? out[rowStart + x - bpp] : 0;
+      const up = y > 0 ? out[rowStart - stride + x] : 0;
+      const upLeft = y > 0 && x >= bpp ? out[rowStart - stride + x - bpp] : 0;
+      let value = line[x];
+      if (filter === 1) value += left;
+      else if (filter === 2) value += up;
+      else if (filter === 3) value += (left + up) >> 1;
+      else if (filter === 4) value += paeth(left, up, upLeft);
+      else invariant(filter === 0, `${label} has unsupported PNG filter ${filter}`);
+      out[rowStart + x] = value & 0xff;
+    }
+  }
+  return { width, height, data: out };
+}
+
+function inspect(png: Buffer, label: string): void {
+  const { width, height, data } = decodeRgba(png, label);
+  invariant(width === 128, `${label} width is not 128`);
+  invariant(height === 128, `${label} height is not 128`);
+  let opaque = 0;
+  for (let i = 3; i < data.length; i += 4) {
+    const alpha = data[i];
+    invariant(alpha === 0 || alpha === 255, `${label} has non-binary alpha value ${alpha}`);
+    if (alpha === 255) opaque += 1;
+  }
+  invariant(opaque > 0, `${label} is fully transparent`);
+}
+
+let idleVerified = 0;
+for (const direction of FEMALE_PRODUCTION_128.directions) {
+  const file = join(idleDir, `${direction}.png`);
+  inspect(await readFile(file), file);
+  idleVerified += 1;
+}
+
+let walkVerified = 0;
+for (const direction of FEMALE_PRODUCTION_128.directions) {
+  for (const filename of FEMALE_PRODUCTION_128.walk.frames) {
+    const file = join(walkDir, direction, filename);
+    inspect(await readFile(file), file);
+    walkVerified += 1;
   }
 }
 
-invariant(verified === 48, `Expected 48 female walk assets, verified ${verified}`);
-console.log(`Verified ${verified} female walk assets`);
+invariant(idleVerified === 8, `Expected 8 female idle assets, verified ${idleVerified}`);
+invariant(walkVerified === 48, `Expected 48 female walk assets, verified ${walkVerified}`);
+console.log(
+  `Verified ${idleVerified} female idle and ${walkVerified} female walk assets (128x128)`,
+);

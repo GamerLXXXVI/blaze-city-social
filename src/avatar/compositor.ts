@@ -1,7 +1,6 @@
 import type { AvatarConfig, Direction, AnimState, Facing } from "./types";
 import {
   LAYER_ORDER,
-  AVATAR_SIZE,
   pathFor,
   presetPathFor,
   FEMALE_WORLD_IDLE_DRAW,
@@ -13,6 +12,8 @@ import {
   FEMALE_WORLD_WALK_DRAW,
   isFemaleWalkPath,
 } from "./manifest";
+import { isFemaleProduction128Path } from "./femaleProduction128";
+import { getAvatarRenderMetrics } from "./renderMetrics";
 import { loadAvatarImage, loadAvatarImageStrict } from "./loader";
 
 function cacheKey(
@@ -63,7 +64,9 @@ export async function compositeFrame(
   // (Placeholder art only has idle/walk; real art can have more frames.)
   const frameState: AnimState = state === "walk" && frame % 2 === 0 ? "idle" : state;
 
-  const size = AVATAR_SIZE;
+  // Canvas size is state/config driven: female production-128 idle+walk get a
+  // native 128px canvas; every other combination keeps the legacy 96px canvas.
+  const size = getAvatarRenderMetrics(cfg, state).canvas;
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
@@ -93,7 +96,10 @@ export async function compositeFrame(
       image = await loadAvatarImage(presetPath);
     }
     ctx.imageSmoothingEnabled = false;
-    if (
+    if (isFemaleProduction128Path(presetPath)) {
+      // Native 1:1 draw at (0,0). No resize, interpolation or recentering.
+      ctx.drawImage(image, 0, 0);
+    } else if (
       isFemaleIdlePath(presetPath) ||
       isFemaleDancePath(presetPath) ||
       isFemaleWalkPath(presetPath)

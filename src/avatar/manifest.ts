@@ -8,6 +8,13 @@ import {
   femaleWalkManifestPath,
   isManifestFemaleWalkPath,
 } from "./femaleWalkManifest";
+import {
+  FEMALE_PRODUCTION_128,
+  femaleProduction128IdlePath,
+  femaleProduction128WalkPath,
+  isFemaleProduction128IdlePath,
+  isFemaleProduction128WalkPath,
+} from "./femaleProduction128";
 
 export const AVATAR_SIZE = 96; // logical avatar frame size in room pixels
 
@@ -33,28 +40,22 @@ export const DEFAULT_AVATAR_PRESET = "blaze-original" as const;
 // Male walk contract — unchanged.
 export const WALK_FRAME_COUNT = 4;
 export const WALK_FRAME_MS = 125;
-// Legacy female-idle cache/version token. This intentionally stays on the
-// legacy value: female walk now comes from the versioned PixelLab manifest.
+// Legacy female-idle cache/version token, retained for the superseded V1
+// assets which stay on disk untouched.
 export const FEMALE_DIRECTIONAL_VERSION = "female-walk-v2";
 // Female walk is manifest-driven: 6 contiguous frames per direction at
 // 100 ms/frame (10 FPS) for every direction. Never falls back to male art.
-export const FEMALE_WALK_FRAME_COUNT = FEMALE_WALK_MANIFEST.frameCount;
-export const FEMALE_WALK_FRAME_MS = FEMALE_WALK_MANIFEST.frameMs;
+// Now sourced from the approved production-128 package.
+export const FEMALE_WALK_FRAME_COUNT = FEMALE_PRODUCTION_128.walk.frameCount;
+export const FEMALE_WALK_FRAME_MS = FEMALE_PRODUCTION_128.walk.frameMs;
 // Idle is a single static sprite per direction.
-export const FEMALE_IDLE_FRAME_COUNT = 1;
-export const FEMALE_IDLE_FRAME_MS = 500;
+export const FEMALE_IDLE_FRAME_COUNT = FEMALE_PRODUCTION_128.idle.frameCount;
+export const FEMALE_IDLE_FRAME_MS = FEMALE_PRODUCTION_128.idle.frameMs;
 export const FEMALE_SELECTOR_IDLE_VERSION = FEMALE_DIRECTIONAL_VERSION;
-// The V2 female idle art is authored full-bleed in its 64px frame (body rows
-// 3–62), while every world sprite (male idle/walk, female walk) draws its body
-// in rows 17–46 of the same 64px frame. Drawing the selector art untouched in
-// the world makes her ~2x too tall. In the WORLD renderer only, the idle frame
-// is blitted into the shared 64px canvas at half size with a whole-pixel
-// offset so her feet land on row 46 and her body height matches the walk art.
-// FemaleSelectorIdleSprite now renders through AvatarSprite and this shared
-// compositor path, so selector and in-world rendering use the same normalization.
-// The single source of truth for how ANY full-bleed 64px female frame
-// (idle, dance) is blitted into the shared world sprite canvas. Every state
-// uses this same draw size — only the source frame changes.
+// Legacy normalization metrics for the SUPERSEDED full-bleed 64px female idle
+// art. The production-128 idle/walk assets are never normalized — they are
+// drawn at (0,0) 1:1 on their own 128px canvas. These constants remain only
+// for the legacy assets that are still present on disk.
 export const FEMALE_WORLD_DRAW_SIZE = 32;
 export const FEMALE_WORLD_DRAW_DX = 16;
 export const FEMALE_WORLD_IDLE_DRAW = {
@@ -64,11 +65,11 @@ export const FEMALE_WORLD_IDLE_DRAW = {
 } as const;
 
 export function isFemaleIdlePath(path: string): boolean {
-  return path.includes("/idle-female/");
+  return isFemaleProduction128IdlePath(path) || path.includes("/idle-female/");
 }
 
 export function isFemaleWalkPath(path: string): boolean {
-  return isManifestFemaleWalkPath(path);
+  return isFemaleProduction128WalkPath(path) || isManifestFemaleWalkPath(path);
 }
 
 // The PixelLab walk frames are already normalized to the shared 64px world
@@ -76,8 +77,15 @@ export function isFemaleWalkPath(path: string): boolean {
 export const FEMALE_WORLD_WALK_DRAW = FEMALE_WALK_MANIFEST.render;
 
 export function femaleWalkPath(direction: Direction, frame: number): string {
-  return femaleWalkManifestPath(direction, frame);
+  return femaleProduction128WalkPath(direction, frame);
 }
+
+// Retained so the superseded V1 manifest path helper stays referenced and
+// its assets remain addressable without being used by the runtime.
+export const LEGACY_FEMALE_WALK_V1 = {
+  manifest: FEMALE_WALK_MANIFEST,
+  pathFor: femaleWalkManifestPath,
+} as const;
 
 // Female sitting art (8 directions, one frame each) is authored full-bleed in
 // its 64px frame (body rows 8–59). World sprites draw their body in rows
@@ -164,7 +172,7 @@ export function idleFrameMs(cfg: AvatarConfig): number {
 }
 
 export function femaleIdleFramePath(direction: Direction, _frame = 0): string {
-  return `/assets/avatars/presets/${DEFAULT_AVATAR_PRESET}/idle-female/${direction}.png?v=${FEMALE_DIRECTIONAL_VERSION}`;
+  return femaleProduction128IdlePath(direction);
 }
 
 export function presetPathFor(

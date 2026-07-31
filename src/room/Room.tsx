@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AvatarSprite } from "@/avatar/AvatarSprite";
-import { AVATAR_SIZE, PLAYER_SPRITE_SCALE, NPC_RENDER_SCALE } from "@/avatar/manifest";
+import { AVATAR_SIZE, NPC_RENDER_SCALE } from "@/avatar/manifest";
+import { getAvatarRenderMetrics, LEGACY_RENDER_METRICS } from "@/avatar/renderMetrics";
 import type { AvatarConfig, Direction, Facing, AnimState } from "@/avatar/types";
 import { DIRECTIONS } from "@/avatar/types";
 import { ROOM_HEIGHT, ROOM_WIDTH, ZONES, zoneAt } from "./zones";
@@ -28,6 +29,11 @@ const FOOT_ANCHOR_PCT = 46 / 64; // 0.71875
 // visible seat-top pixel of the stool art so this anchor lands the player
 // squarely on the seat.
 const SIT_ANCHOR_PCT = 40 / 64; // 0.625
+
+// Collision / click clamping margin in WORLD pixels. Deliberately pinned to
+// the legacy 96px avatar frame so movement and clamping stay byte-identical
+// regardless of how large a render canvas a given sprite state uses.
+const LEGACY_COLLISION_MARGIN = AVATAR_SIZE / 2;
 
 // Stool world coordinates, measured directly against the room art:
 // scanned column x=68-70 (source px) of blaze-city-main.png for reddish
@@ -278,8 +284,11 @@ export function Room({
       setTarget({ x: stool.seat.x, y: stool.seat.y });
       return;
     }
-    const cx = Math.max(AVATAR_SIZE / 2, Math.min(ROOM_WIDTH - AVATAR_SIZE / 2, x));
-    const cy = Math.max(AVATAR_SIZE / 2, Math.min(ROOM_HEIGHT - AVATAR_SIZE / 2, y));
+    const cx = Math.max(LEGACY_COLLISION_MARGIN, Math.min(ROOM_WIDTH - LEGACY_COLLISION_MARGIN, x));
+    const cy = Math.max(
+      LEGACY_COLLISION_MARGIN,
+      Math.min(ROOM_HEIGHT - LEGACY_COLLISION_MARGIN, y),
+    );
     // Reject click targets that fall inside a blocker.
     if (isBlocked(cx, cy)) return;
     // Floor click interrupts a turning/dance/sit emote and starts walking.
@@ -509,16 +518,26 @@ function PlayerMarker({
   bubble?: ChatMessage | null;
   now?: number;
 }) {
-  // The marker div IS the scaled sprite box. Its top-left is placed at the
-  // player's world coord, then translated so the sprite's measured foot row
-  // (FOOT_ANCHOR_PCT down from the top of the box) lands exactly on that
-  // coord. Because PLAYER_SPRITE_SCALE grows the whole box uniformly, the
-  // scaled sprite's feet also land on the anchor.
-  const scaledWidthPct = ((AVATAR_SIZE * PLAYER_SPRITE_SCALE) / ROOM_WIDTH) * 100;
+  // The marker div IS the sprite box. Its dimensions and its world anchor are
+  // derived from the state/config render metrics (canvas x display scale, and
+  // the manifest pivot), so a 128px native female sprite anchors from its own
+  // pivot while male/dance/sit keep the legacy 96px x 2.4 box.
+  const metrics = getAvatarRenderMetrics(player.config, player.state);
+  const boxWorldPx = metrics.canvas * metrics.displayScale;
+  const scaledWidthPct = (boxWorldPx / ROOM_WIDTH) * 100;
   // Sitting sprites contact the stool at the hip row (SIT_ANCHOR_PCT),
   // not the standing foot row. Switch anchors so the same world coord
   // means "seat contact" while sitting and "foot contact" otherwise.
-  const anchorPct = player.state === "sit" ? SIT_ANCHOR_PCT : FOOT_ANCHOR_PCT;
+  const anchorPct =
+    player.state === "sit"
+      ? SIT_ANCHOR_PCT
+      : metrics === LEGACY_RENDER_METRICS
+        ? FOOT_ANCHOR_PCT
+        : metrics.pivotY / metrics.canvas;
+  // Nameplate/chat anchor: a FIXED world-point offset above the pivot. It is
+  // independent of alpha bounds and of the state-dependent sprite box, so the
+  // label cannot shift when the avatar changes state.
+  const labelTopPct = ((anchorPct * boxWorldPx - metrics.labelOffsetY) / boxWorldPx) * 100;
   // Visual-only hip alignment nudge from the seat config (0 unless a seat
   // defines one). Does not move the player's logical position.
   const seatOffsetY = player.state === "sit" ? seatOffsetYAt(player.x, player.y) : 0;
@@ -563,15 +582,15 @@ function PlayerMarker({
         }}
       />
 
-      {/* Label stack (bubble + username) floats just above the sprite box,
-          anchored to sprite-box top-center. ChatBubble is absolute-positioned
+      {/* Label stack (bubble + username) anchored at a fixed world-point
+          offset above the sprite pivot. ChatBubble is absolute-positioned
           relative to this wrapper, matching its previous behavior. */}
       <div
         style={{
           position: "absolute",
           left: "50%",
-          bottom: "100%",
-          transform: "translateX(-50%)",
+          top: `${labelTopPct}%`,
+          transform: "translate(-50%, -100%)",
           paddingBottom: 4,
         }}
       >

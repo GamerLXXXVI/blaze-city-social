@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { compositeFrame } from "./compositor";
 import {
-  AVATAR_SIZE,
   danceFrameCount,
   danceFrameMs,
   idleFrameCount,
@@ -11,6 +10,7 @@ import {
   walkFrameCount,
   walkFrameMs,
 } from "./manifest";
+import { getAvatarRenderMetrics } from "./renderMetrics";
 import {
   normalizeDirection,
   type AvatarConfig,
@@ -47,6 +47,10 @@ export function AvatarSprite({
   useEffect(() => {
     if (gender === "female") preloadFemaleWalkFrames();
   }, [gender]);
+
+  // Canvas dimensions are metrics-driven so a 128px female idle/walk frame is
+  // never squeezed back down into the legacy 96px canvas.
+  const metrics = getAvatarRenderMetrics(config, state);
 
   const walkCount = walkFrameCount(config);
   const walkMs = walkFrameMs(config);
@@ -146,8 +150,8 @@ export function AvatarSprite({
   return (
     <canvas
       ref={canvasRef}
-      width={AVATAR_SIZE}
-      height={AVATAR_SIZE}
+      width={metrics.canvas}
+      height={metrics.canvas}
       style={style}
       className={className}
     />
