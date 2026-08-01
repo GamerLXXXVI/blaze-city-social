@@ -64,7 +64,9 @@ export const FEMALE_CANDIDATE2_SIT_METRICS: AvatarRenderMetrics = {
 };
 
 function isBlazeFemale(cfg: AvatarConfig): boolean {
-  return (cfg.preset ?? "blaze-original") === "blaze-original" && (cfg.gender ?? "male") === "female";
+  return (
+    (cfg.preset ?? "blaze-original") === "blaze-original" && (cfg.gender ?? "male") === "female"
+  );
 }
 
 export function usesFemaleProduction128(cfg: AvatarConfig, state: AnimState): boolean {
@@ -73,7 +75,11 @@ export function usesFemaleProduction128(cfg: AvatarConfig, state: AnimState): bo
 }
 
 /** Candidate 2 sitting art exists for WEST only; other directions hold idle. */
-export function usesFemaleCandidate2Sit(cfg: AvatarConfig, state: AnimState, direction?: Direction) {
+export function usesFemaleCandidate2Sit(
+  cfg: AvatarConfig,
+  state: AnimState,
+  direction?: Direction,
+) {
   return isBlazeFemale(cfg) && state === "sit" && hasFemaleSittingArt(direction ?? "west");
 }
 

@@ -3,7 +3,10 @@ import { readFile } from "node:fs/promises";
 import { inflateSync } from "node:zlib";
 import { join } from "node:path";
 
-import { FEMALE_PRODUCTION_128, femaleProduction128IdlePath } from "../src/avatar/femaleProduction128";
+import {
+  FEMALE_PRODUCTION_128,
+  femaleProduction128IdlePath,
+} from "../src/avatar/femaleProduction128";
 import { FEMALE_SITTING_WEST, femaleSittingWestPath } from "../src/avatar/femaleSittingWest";
 import { presetPathFor } from "../src/avatar/manifest";
 import { getAvatarRenderMetrics } from "../src/avatar/renderMetrics";
@@ -155,12 +158,16 @@ const walkDir = publicRoot(FEMALE_PRODUCTION_128.walk.assetRoot);
 let checked = 0;
 for (const direction of FEMALE_PRODUCTION_128.directions) {
   const idleFile = join(idleDir, `${direction}.png`);
-  const idleSha = createHash("sha256").update(await readFile(idleFile)).digest("hex");
+  const idleSha = createHash("sha256")
+    .update(await readFile(idleFile))
+    .digest("hex");
   invariant(idleSha === baseline.idle[direction], `Approved idle asset changed: ${idleFile}`);
   checked += 1;
   for (const frame of FEMALE_PRODUCTION_128.walk.frames) {
     const walkFile = join(walkDir, direction, frame);
-    const walkSha = createHash("sha256").update(await readFile(walkFile)).digest("hex");
+    const walkSha = createHash("sha256")
+      .update(await readFile(walkFile))
+      .digest("hex");
     invariant(
       walkSha === baseline.walk[direction][frame],
       `Approved walk asset changed: ${walkFile}`,
