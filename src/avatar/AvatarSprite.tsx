@@ -50,7 +50,7 @@ export function AvatarSprite({
 
   // Canvas dimensions are metrics-driven so a 128px female idle/walk frame is
   // never squeezed back down into the legacy 96px canvas.
-  const metrics = getAvatarRenderMetrics(config, state);
+  const metrics = getAvatarRenderMetrics(config, state, normalizeDirection(direction, facing));
 
   const walkCount = walkFrameCount(config);
   const walkMs = walkFrameMs(config);

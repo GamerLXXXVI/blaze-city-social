@@ -67,7 +67,7 @@ export async function compositeFrame(
 
   // Canvas size is state/config driven: female production-128 idle+walk get a
   // native 128px canvas; every other combination keeps the legacy 96px canvas.
-  const size = getAvatarRenderMetrics(cfg, state).canvas;
+  const size = getAvatarRenderMetrics(cfg, state, direction).canvas;
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
