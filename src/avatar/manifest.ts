@@ -357,3 +357,21 @@ export function preloadFemaleSittingWest(): Promise<void> {
 }
 
 export { FEMALE_SITTING_WEST, femaleSittingWestPath, isFemaleSittingWestPath };
+
+// Decodes every approved Male V1 frame (8 idle + 48 walk + 1 west sit) once so
+// direction changes, the first step and the first stool interaction never
+// flicker or wait on the network.
+let maleV1Preloaded: Promise<void> | null = null;
+export function preloadMaleV1Frames(): Promise<void> {
+  if (maleV1Preloaded) return maleV1Preloaded;
+  if (typeof window === "undefined") return Promise.resolve();
+  const urls: string[] = [maleV1SitWestPath()];
+  for (const direction of MALE_V1.directions) {
+    urls.push(maleV1IdlePath(direction));
+    for (let i = 0; i < MALE_V1.walk.frameCount; i++) urls.push(maleV1WalkPath(direction, i));
+  }
+  maleV1Preloaded = Promise.all(
+    urls.map((url) => loadAvatarImageStrict(url).catch(() => undefined)),
+  ).then(() => undefined);
+  return maleV1Preloaded;
+}
