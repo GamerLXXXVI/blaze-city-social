@@ -7,10 +7,10 @@ import {
   idleFrameMs,
   preloadFemaleWalkFrames,
   preloadFemaleDanceFrames,
-  preloadMaleV1Frames,
   walkFrameCount,
   walkFrameMs,
 } from "./manifest";
+import { preloadMaleV1Frames } from "./maleV1VerifiedLoader";
 import { getAvatarRenderMetrics } from "./renderMetrics";
 import {
   normalizeDirection,
@@ -47,7 +47,13 @@ export function AvatarSprite({
   const gender = config.gender;
   useEffect(() => {
     if (gender === "female") preloadFemaleWalkFrames();
-    else preloadMaleV1Frames();
+    else {
+      // A rejected verified preload must not become an unhandled rejection;
+      // the per-frame verified loader still fails closed at draw time.
+      void preloadMaleV1Frames().catch((error) => {
+        console.error("[avatar] Male V1 verified preload failed", error);
+      });
+    }
   }, [gender]);
 
   // Canvas dimensions are metrics-driven so a 128px female idle/walk frame is
