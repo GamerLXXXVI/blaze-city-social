@@ -1,0 +1,583 @@
+{
+  "schemaVersion": 1,
+  "id": "blaze-city-approved-male-v1-runtime",
+  "approvalStatus": "visually-approved",
+  "pixelLab": {
+    "characterId": "b85f530c-8af4-4113-b914-1e0b6c208c1c",
+    "sittingStateId": "e0bde7db-8269-4d14-8831-f071e91d778b"
+  },
+  "directionOrder": [
+    "south",
+    "south-east",
+    "east",
+    "north-east",
+    "north",
+    "north-west",
+    "west",
+    "south-west"
+  ],
+  "integrity": {
+    "algorithm": "SHA-256",
+    "assetCount": 57,
+    "verifyBeforeDecode": true
+  },
+  "render": {
+    "logicalCanvas": [
+      128,
+      128
+    ],
+    "displayScale": 1.12,
+    "interpolation": "none",
+    "imageSmoothingEnabled": false
+  },
+  "idle": {
+    "sourceCanvas": [
+      232,
+      232
+    ],
+    "sourceRect": [
+      52,
+      55,
+      128,
+      128
+    ],
+    "destinationRect": [
+      0,
+      0,
+      128,
+      128
+    ],
+    "productionPivot": [
+      64,
+      120
+    ],
+    "nativePivot": [
+      116,
+      175
+    ],
+    "transform": "translation-crop-only",
+    "assets": {
+      "south": {
+        "path": "public/assets/avatars/presets/blaze-original/male-v1/idle/south.png",
+        "url": "/assets/avatars/presets/blaze-original/male-v1/idle/south.png",
+        "sha256": "4d884ea9b9a923ccbddb66a2cf58caf29c7699821d261ee854d0cdf8454544a4",
+        "byteLength": 4775,
+        "width": 232,
+        "height": 232
+      },
+      "south-east": {
+        "path": "public/assets/avatars/presets/blaze-original/male-v1/idle/south-east.png",
+        "url": "/assets/avatars/presets/blaze-original/male-v1/idle/south-east.png",
+        "sha256": "5da156a8f385f9d7d286ad5aa520dac3d72c2ff8ee98a778caefe68f868e204c",
+        "byteLength": 4978,
+        "width": 232,
+        "height": 232
+      },
+      "east": {
+        "path": "public/assets/avatars/presets/blaze-original/male-v1/idle/east.png",
+        "url": "/assets/avatars/presets/blaze-original/male-v1/idle/east.png",
+        "sha256": "9393ba605431409e55d9548b50f8b66805b20b2718d3e780ba31a71e803492df",
+        "byteLength": 3829,
+        "width": 232,
+        "height": 232
+      },
+      "north-east": {
+        "path": "public/assets/avatars/presets/blaze-original/male-v1/idle/north-east.png",
+        "url": "/assets/avatars/presets/blaze-original/male-v1/idle/north-east.png",
+        "sha256": "37ad3f3a59dd68ec024de718b0750d281a030c71d54374a65cd3753f203d9e98",
+        "byteLength": 4784,
+        "width": 232,
+        "height": 232
+      },
+      "north": {
+        "path": "public/assets/avatars/presets/blaze-original/male-v1/idle/north.png",
+        "url": "/assets/avatars/presets/blaze-original/male-v1/idle/north.png",
+        "sha256": "08ab013668c1ffe5c24958244c78fb1719b8e83a8ba88d5efa468bffdf29c329",
+        "byteLength": 4614,
+        "width": 232,
+        "height": 232
+      },
+      "north-west": {
+        "path": "public/assets/avatars/presets/blaze-original/male-v1/idle/north-west.png",
+        "url": "/assets/avatars/presets/blaze-original/male-v1/idle/north-west.png",
+        "sha256": "3ad9376f6de3cf6a2f7aa8e3ab1d9fda8f097719abc232b0ef71110efc22d3de",
+        "byteLength": 4780,
+        "width": 232,
+        "height": 232
+      },
+      "west": {
+        "path": "public/assets/avatars/presets/blaze-original/male-v1/idle/west.png",
+        "url": "/assets/avatars/presets/blaze-original/male-v1/idle/west.png",
+        "sha256": "be2d1bb09740d75b5881283f8823c96b5d3e5b2a2a22bb93dbbe26bd15c1c5d2",
+        "byteLength": 3991,
+        "width": 232,
+        "height": 232
+      },
+      "south-west": {
+        "path": "public/assets/avatars/presets/blaze-original/male-v1/idle/south-west.png",
+        "url": "/assets/avatars/presets/blaze-original/male-v1/idle/south-west.png",
+        "sha256": "a8b84293c56c243b0b48eb09ebbe5b672eb18f2c5e880aaa5bcd31d8ccfaa88d",
+        "byteLength": 5090,
+        "width": 232,
+        "height": 232
+      }
+    }
+  },
+  "walk": {
+    "canvas": [
+      128,
+      128
+    ],
+    "productionPivot": [
+      64,
+      120
+    ],
+    "framesPerDirection": 6,
+    "frameDurationMs": 100,
+    "loopDurationMs": 600,
+    "transform": "approved-production-candidate-no-runtime-resize",
+    "assets": {
+      "south": [
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-00.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-00.png",
+          "sha256": "1e11bd03923dd057549413164cfb1da953aef5daf6a004be4c2fbd583f8b8165",
+          "byteLength": 4356,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-01.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-01.png",
+          "sha256": "75ef772db202a9de8f462b405d5a83a4ae54f1d14622f976e44810a57f83849d",
+          "byteLength": 4401,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-02.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-02.png",
+          "sha256": "1a8c83af0cc070e0902ea0143783d891f0750858720989c3bda7074fdb705a1a",
+          "byteLength": 4463,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-03.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-03.png",
+          "sha256": "6f60227b82b1f9b0bc5e1a4f3cf56122db2e0b12fc749801776bb1bbaa5b36da",
+          "byteLength": 4293,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-04.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-04.png",
+          "sha256": "939d78267fb2d0372eff3bb20e93284122855c084f4d86dfc66bacfe6fa6aaa5",
+          "byteLength": 4415,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-05.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south/frame-05.png",
+          "sha256": "c0dfed92f063fc3aaee23f49d13f440701aa4fce76b7c243f54a09c1ba4ddc31",
+          "byteLength": 4408,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "south-east": [
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-00.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-00.png",
+          "sha256": "ea78d4b5ac8c1b51f8f528f4f3d828621dcc765d2fd98b581eb586e889a5951e",
+          "byteLength": 4530,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-01.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-01.png",
+          "sha256": "93dd2787688d0c936d255d9c92182671b7b5a1c2db3e624adf4e03cade40ab8b",
+          "byteLength": 4475,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-02.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-02.png",
+          "sha256": "e4f3b7fa046b3d144f828b7d0fc1f2d5c1c1c47bfb5c6e1cffe74358b4b1110d",
+          "byteLength": 4505,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-03.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-03.png",
+          "sha256": "a3639ca55fb69f855f4d33876c60784d52610301fd78a253ae2f64c5ddbe948b",
+          "byteLength": 4592,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-04.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-04.png",
+          "sha256": "a31b026d47410290933e2e19731be75ac6bdc4b21a01eb8343b17e779ccb7a1a",
+          "byteLength": 5011,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-05.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-east/frame-05.png",
+          "sha256": "b8b3930447943a87bd432fd80908e24177a8c8ff8e4c443ad4b6520ff699c282",
+          "byteLength": 4604,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "east": [
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-00.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-00.png",
+          "sha256": "91df53532116b78260026fd34bf35fd17ed09ecf4e4f72fddc971b6f5ee7dec4",
+          "byteLength": 3587,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-01.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-01.png",
+          "sha256": "1e2c34cd9f983724b2999b1d5b174168f1bd143014910fc5061ad067d7d4ca97",
+          "byteLength": 4343,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-02.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-02.png",
+          "sha256": "314fef3da688626b75e1a34d9ecbefd688a5931870807c2ebb630d58a9841dbf",
+          "byteLength": 4090,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-03.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-03.png",
+          "sha256": "41d1be6ed1eaaefc3c2837fabd2298a6e0d63725b05102455b5eda9284a80556",
+          "byteLength": 3598,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-04.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-04.png",
+          "sha256": "0438a0ace62e89e0092a37d1918617b5dc4f9fdf1116bfa626a7f812f857604c",
+          "byteLength": 4360,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-05.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/east/frame-05.png",
+          "sha256": "3cddf4c84ecf2d48f8ed22f9289ae13757a1cf3af5287ef2dd1fba7345f36c39",
+          "byteLength": 4096,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "north-east": [
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-00.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-00.png",
+          "sha256": "39970cb72fd77f65ee7e28c77c81d8eda03fc0988e41046747520ae909554191",
+          "byteLength": 3902,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-01.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-01.png",
+          "sha256": "7e7e740cfd1a1d0a98546a3639d6903baaaee5db22a77ffa591cba967718d9ca",
+          "byteLength": 4300,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-02.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-02.png",
+          "sha256": "35775dc01254bf8d0cfbc6b07e677311ef005716f39b4e3241df6e1da6ca7ec0",
+          "byteLength": 4105,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-03.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-03.png",
+          "sha256": "b0165ce0b477561866e237a733e4bdd991e8d1ce7dacbf262265c3405c448ba5",
+          "byteLength": 4108,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-04.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-04.png",
+          "sha256": "4263b6de0f466f6ed987dd61569c6794e987d56eb4336f41c0a0c4986abb3bcb",
+          "byteLength": 3939,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-05.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-east/frame-05.png",
+          "sha256": "8667a4a10011c45966ab80d95d69e8dcc88a3178f9138a82e5409b9722befbaa",
+          "byteLength": 3921,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "north": [
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-00.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-00.png",
+          "sha256": "36b8b56c940e42a7c05e0a73496b1fc27b6138184b7b17dc1412a39363377b11",
+          "byteLength": 4166,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-01.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-01.png",
+          "sha256": "1d87c137ec55de493decda0667e82226ad5729c1c8650f0053e6290ed015811f",
+          "byteLength": 3928,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-02.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-02.png",
+          "sha256": "eef6960206507678194a2fd04d877371fac03b11108dd2ce179eea6db50165aa",
+          "byteLength": 4101,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-03.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-03.png",
+          "sha256": "e683666244ff3a8e80ab3a49474c2474a01db6c900b6323fcb30f887e56c3b67",
+          "byteLength": 4177,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-04.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-04.png",
+          "sha256": "eda97b94017166c965808f7cbc88e3febf702cb1b9b7fb04d388ec50def9e6e2",
+          "byteLength": 4179,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-05.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north/frame-05.png",
+          "sha256": "7e54b14a2da388edcaa3bf1512b32cfc9b32287a3bd4d58571f419413481aeb5",
+          "byteLength": 4166,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "north-west": [
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-00.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-00.png",
+          "sha256": "b63d8e04492a2e05be1d237c27c738d01f177ba26328312f127642963efcc293",
+          "byteLength": 4244,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-01.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-01.png",
+          "sha256": "bc888c22d8b9db3939633ca1caaea89b5daccf4ae7c15604b9af9d6d35cdd4e3",
+          "byteLength": 4237,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-02.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-02.png",
+          "sha256": "cfb9ad7be01a0736f6a5e8146df13ad6bc550357e7811c8b13b7004615ef459d",
+          "byteLength": 4316,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-03.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-03.png",
+          "sha256": "64a210baf2a8675e11821f0033d0aaa57669ee1b8da54a73620816d9dcbcb057",
+          "byteLength": 4228,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-04.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-04.png",
+          "sha256": "a3ddbe5ee92eaaf704d1bd9bcee7c6f753ca5164916fe23f2d359bec86db2440",
+          "byteLength": 4722,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-05.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/north-west/frame-05.png",
+          "sha256": "94b2d4ec355c374f2c6d6a7b7cde8f6e45714f003e2cdef256000ebd90e230d2",
+          "byteLength": 4525,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "west": [
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-00.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-00.png",
+          "sha256": "250071e230372c2ec9c271f8b4ffcab60f67e7ee0dae6fdf4af1dcfcbce78a71",
+          "byteLength": 3496,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-01.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-01.png",
+          "sha256": "9cb378d2e674d28aeef5fb5ea01f015f06a74d0e2e46648e973e26416baff650",
+          "byteLength": 4083,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-02.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-02.png",
+          "sha256": "653795ed32bf80b6849a43482c40d64a2d6a61882d1fb3d0cd89761670bc3013",
+          "byteLength": 4004,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-03.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-03.png",
+          "sha256": "91c7780a94b47432d6d9948ad143b2a3430af01cb54bdc825f14b50ef16d463a",
+          "byteLength": 3548,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-04.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-04.png",
+          "sha256": "62f9333cb2f96b8a73816383faea0db6886e941b76df0df67fdfd35cfe3b1679",
+          "byteLength": 4263,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-05.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/west/frame-05.png",
+          "sha256": "c9f077ab984ad06710c8080a189ec43dad0b77789862c08ef96b35c43db5fa10",
+          "byteLength": 4170,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "south-west": [
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-00.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-00.png",
+          "sha256": "626e650e226d7205debca6d1d18643875724591a0a630748db5ac021e6b0d24b",
+          "byteLength": 4627,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-01.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-01.png",
+          "sha256": "bcf37022dd1d8beccbb9fd4b2928db4eb8b35a2420252f196460cb10a9664cb2",
+          "byteLength": 4758,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-02.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-02.png",
+          "sha256": "315cc92e2b24f6ad0f9cf355a82e338e7be66af9928d6c207d050173a9930cd5",
+          "byteLength": 4590,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-03.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-03.png",
+          "sha256": "5f097cfea9e81bbcfd182501d0e5046a403baa900a85fd4b4c7ccdb030d433a7",
+          "byteLength": 4480,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-04.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-04.png",
+          "sha256": "0c307eeb246d7ac4e90bf683ac422cd16963871eed0a7e4f659999f5540bada7",
+          "byteLength": 4773,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "path": "public/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-05.png",
+          "url": "/assets/avatars/presets/blaze-original/male-v1/walk/south-west/frame-05.png",
+          "sha256": "44f49aade582257e94a1628bcf4425e7664898932a46a501a74a71827fcd922d",
+          "byteLength": 4457,
+          "width": 128,
+          "height": 128
+        }
+      ]
+    }
+  },
+  "sit": {
+    "supportedDirections": [
+      "west"
+    ],
+    "canvas": [
+      128,
+      128
+    ],
+    "productionPivot": [
+      64,
+      80
+    ],
+    "transform": "approved-production-candidate-no-runtime-resize",
+    "assets": {
+      "west": {
+        "path": "public/assets/avatars/presets/blaze-original/male-v1/sit/west.png",
+        "url": "/assets/avatars/presets/blaze-original/male-v1/sit/west.png",
+        "sha256": "0e11679c19b9e63b3233aab416d9bcb6d9820b8135b375ef7fc45799bb04fb31",
+        "byteLength": 3390,
+        "width": 128,
+        "height": 128
+      }
+    },
+    "loadFallback": {
+      "state": "idle",
+      "direction": "west"
+    }
+  },
+  "dance": {
+    "status": "temporary-safe-fallback",
+    "fallback": {
+      "state": "idle",
+      "direction": "south",
+      "frame": 0
+    }
+  },
+  "protected": {
+    "approvedPngsImmutable": true,
+    "femaleAssetsUntouched": true,
+    "legacyAssetsLeftOnDiskButUnreferenced": true
+  }
+}
