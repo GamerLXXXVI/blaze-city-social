@@ -7,6 +7,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "check:female-walk-assets": "bun scripts/verify-female-walk-assets.ts",
+    "check:female-sitting-assets": "bun scripts/verify-female-sitting-assets.ts",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
