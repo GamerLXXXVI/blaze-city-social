@@ -1,0 +1,78 @@
+{
+  "idle": {
+    "south": "3b59a1c056aaaa018b5ad09f9e0ebf9413be54714d8ad3061bf4d4f3d32f838f",
+    "south-east": "e842391aabb18217e291e1f0b91f58af6e805617057bbcd544ae5382bc6d3ca4",
+    "east": "c4d5a4831473d610b4b2ad5f916b9c6dcf359762325d7acf1c6d33fab4aec322",
+    "north-east": "71284f9bf8c154a39f17d02d18c9e09fb5d5419669a2e74f618129518cd19f11",
+    "north": "b96ed19108f54255d334dc1cf9aea6a3f822c65134f61bd55390e2c24291877b",
+    "north-west": "e1ea78af07962298f8e5b7a8817221904c5ce747fd1b8b171a251ba91c0d64b4",
+    "west": "36ff1f97687057ef36a86ff3178a2dc4f1aa25f7bfcca6cc4425e62e197b403a",
+    "south-west": "6caa13df00b6b67e0df830c92fdfdc8ad1b1a08e3ead63fe991db611bf57ab84"
+  },
+  "walk": {
+    "south": {
+      "frame-00.png": "777eeca51737c2537b3a6ae3cc12976e6859202b0895e78b5ba456b30783e36b",
+      "frame-01.png": "37a3aaff58b1338e3b78e3bf29854fd241d1c1eb5893e9c8ab22a6ac5915dd2f",
+      "frame-02.png": "c33cfa63c0ac81e5c94e6648f06e7d798f9b8527a92bccd48bd2bb468823ebd8",
+      "frame-03.png": "3c93827cc210f8363db4e4fc4b1d39f690dd985fec601b9d007e8dc2a209f186",
+      "frame-04.png": "0d1e5a29ea95e84f47bf7c4b68d33c62e4d55789292791e6f91b846f16a96ab9",
+      "frame-05.png": "e007f3452cd81e4f3ba3ef5a74d728c1ce13b2df8f2e57b7ebec9db109b9ced2"
+    },
+    "south-east": {
+      "frame-00.png": "5a3b6d6a0f8f58749dea0d017d1598305364021ba650a6dceedc1809c85b4d3a",
+      "frame-01.png": "379bb757ff5b1d9d461e6f9e95d4249eb0b18844e6bdbd9ae22041d4ff28f68f",
+      "frame-02.png": "999792e1c24861336a0efb77dd2292b6a8beb543115949a740c055f4adb9b721",
+      "frame-03.png": "f783188146d47274f1b383322400c8da50a147170aa03ccd5d588bfb5d83a68b",
+      "frame-04.png": "a500684e58254db1152e395aae59251c827d23f36f785235bdeb5e6b3c40ae2c",
+      "frame-05.png": "22f11af35f6d89aeac2be231bfeae8c5d5e04e4728f086f702d00909776d2b0c"
+    },
+    "east": {
+      "frame-00.png": "19c48d7f549f2c5d525ee8e6d9c165f9895fcbd8b204107305170ea64051b0a0",
+      "frame-01.png": "e6e3b411389c02e8c1e3d0406b5253ee7bad612d700a5e5dc5c0ec67427aae54",
+      "frame-02.png": "89880df3adf65828badb971ef4c601f384884f60c1c3a11b6c0a339b2f8aab6a",
+      "frame-03.png": "23995a22faa8f1ef4afa6d8a7e0ff8e1e3eaa6d60f4dcde49127b9d63148baa0",
+      "frame-04.png": "9d92520c852110b65e7316eb624af5d3dccb055c97c17fc95cf5c5988903f073",
+      "frame-05.png": "d89ffb6f3c91201a9aaf511c2c20db3f58bcbdb9abfac84dd5df2dad31b1aa94"
+    },
+    "north-east": {
+      "frame-00.png": "4e9da1108cac9dcc5906d2462b1fc5069f06e45369ff806340a0a1379668bd84",
+      "frame-01.png": "7fcb959b39ba2e8eeb94c025adb8a87ae3e887719e41a2fa7c74230775e500e3",
+      "frame-02.png": "dc8af79e3735b463fbcaba3055cc4dc32d807132a1716f7ec8982f428762f526",
+      "frame-03.png": "339e43492eaaff5cf6be038aa0c540503fc55282ad1200966173590eee652fc6",
+      "frame-04.png": "0f374f09a0adf31816a39fa2d15114771aab46f8a5520c8bf455ddf1b2246a2a",
+      "frame-05.png": "e5f5ec7d11e77c873a45bde7a85103418a302439d2f2b11b7f0baf7d174d8296"
+    },
+    "north": {
+      "frame-00.png": "bb719924f69ba6f1b6ec2e788b17e9d39cf6027e19cd259e463d079de71d665e",
+      "frame-01.png": "d86834cd9e47608331fa3dba10c79380d8b0c951feba5dc8477c978f58027d83",
+      "frame-02.png": "88a217c90a5747fb3c2a97296ee401e907807e1d90f25c5ac8b692ea9ddf929e",
+      "frame-03.png": "6b85a91233c7faf680c438dc2a975d38c25637b980a0baf41d857c3513e9a5bb",
+      "frame-04.png": "298561c164b21ff661783fe3c5c9a20673fe41073c2bcafc30599b88835af79b",
+      "frame-05.png": "b95f11128e0525d6cc605d5eae6067b97beee7b2b10ff31b1cc99138d52a3fa6"
+    },
+    "north-west": {
+      "frame-00.png": "8e92d6ec8307c498c6b7470126401123a5fbfae4fcb4e03bfff77a3c7741d91a",
+      "frame-01.png": "d16b6b2e10a743bda83142cb8110dcfd15775cd08ccdd6ce2f663616fe89f876",
+      "frame-02.png": "6b69895431e8d813ed59af1a696536e6984ffdb90fb01d818ddbc0c4eb0c104c",
+      "frame-03.png": "484ae993bb1f0450b11c57c7675638a592abaaf9a76821907751acc567be8b76",
+      "frame-04.png": "0abbc5a79f8b2cb972d76909bd2f62b24df85b88a157b01117837d1c2eee0452",
+      "frame-05.png": "984aee3edd160d74d882aca30414807f43d8b2168f4913c00b64daabdd8873bc"
+    },
+    "west": {
+      "frame-00.png": "68b48e09b87f7429a336c44ae480d9439dffd7436d54373ec9d0161d37b54d79",
+      "frame-01.png": "6d8f69c1afc2d42fd4826d7dbaf6b39acda43eca1fa457e1af777aa9a85b1a66",
+      "frame-02.png": "8fec850b3e991afbdb9dd0161828ea69a4bf966745656e77f45500e158aa2b6b",
+      "frame-03.png": "02e6959f2f8ff8654191cff2eba5f859cd14bbe5e445fa361587cc05273b08bb",
+      "frame-04.png": "b78c1f8a70b0d89cf2bceb2f36e54b32a9bdcd77c056235ee503d7abe616bbd0",
+      "frame-05.png": "fa9740548e6c33e4a2eddbeaecb678e7dceeb73b07b581c63f7a444283754f2e"
+    },
+    "south-west": {
+      "frame-00.png": "ef4aea6d8759c3ca6cc255f686abcfab4e2e6d215d830f1b75527ad43c5e6333",
+      "frame-01.png": "f968a5e6dc85b59bec2907ee4d697944631154a3d19d863739aff092c5f47880",
+      "frame-02.png": "50f728ed080daca42e338da1c185b92687dfe04ba3e207650572a2a20603ece5",
+      "frame-03.png": "dd5fbea19dd0460108b4e805b4a6fee13f99b55b5411f7a7932bafe4cb2aa2e0",
+      "frame-04.png": "df3c4b22f969191fda770572097ccc43cc4eede22b0d75a465086ce1f80b074d",
+      "frame-05.png": "450f6afe8385fd7762e2a79aa06e8a245d2471824631cb1ac752cc8c3349dfed"
+    }
+  }
+}
