@@ -277,7 +277,7 @@ for (const [direction, frames] of Object.entries(femaleBaseline.walk)) {
 const compositorSource = await readFile(join(process.cwd(), "src/avatar/compositor.ts"), "utf8");
 const maleBranch = compositorSource.slice(
   compositorSource.indexOf("isMaleV1Path(presetPath)"),
-  compositorSource.indexOf("ctx.imageSmoothingEnabled"),
+  compositorSource.indexOf("image = await loadAvatarImage(presetPath)"),
 );
 invariant(
   maleBranch.includes("loadMaleV1VerifiedImage"),
