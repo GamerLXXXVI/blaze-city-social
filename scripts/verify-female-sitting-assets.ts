@@ -217,11 +217,15 @@ invariant(
 const male = { preset: "blaze-original", gender: "male" } as unknown as AvatarConfig;
 const maleSit = getAvatarRenderMetrics(male, "sit", "west");
 invariant(
-  maleSit.canvas === 96 &&
-    maleSit.displayScale === 2.4 &&
-    maleSit.pivotX === 48 &&
-    maleSit.pivotY === 60,
-  "Legacy male sit geometry must remain 96 / 2.4 / (48,60)",
+  maleSit.canvas === 128 &&
+    maleSit.displayScale === 1.12 &&
+    maleSit.pivotX === 64 &&
+    maleSit.pivotY === 80,
+  // Superseded by the approved Male V1 package: male west sitting now uses the
+  // native 128px seat-anchored geometry. Legacy 96 / 2.4 / (48,60) remains for
+  // non-blaze-original presets only. Male V1 geometry is asserted in full by
+  // scripts/verify-male-v1-assets.ts.
+  "Male V1 west sit geometry must be 128 / 1.12 / (64,80)",
 );
 
 console.log(
