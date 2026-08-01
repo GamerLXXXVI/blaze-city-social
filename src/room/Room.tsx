@@ -522,18 +522,19 @@ function PlayerMarker({
   // derived from the state/config render metrics (canvas x display scale, and
   // the manifest pivot), so a 128px native female sprite anchors from its own
   // pivot while male/dance/sit keep the legacy 96px x 2.4 box.
-  const metrics = getAvatarRenderMetrics(player.config, player.state);
+  const metrics = getAvatarRenderMetrics(
+    player.config,
+    player.state,
+    normalizeDirection(player.direction, player.facing),
+  );
   const boxWorldPx = metrics.canvas * metrics.displayScale;
   const scaledWidthPct = (boxWorldPx / ROOM_WIDTH) * 100;
-  // Sitting sprites contact the stool at the hip row (SIT_ANCHOR_PCT),
-  // not the standing foot row. Switch anchors so the same world coord
-  // means "seat contact" while sitting and "foot contact" otherwise.
-  const anchorPct =
-    player.state === "sit"
-      ? SIT_ANCHOR_PCT
-      : metrics === LEGACY_RENDER_METRICS
-        ? FOOT_ANCHOR_PCT
-        : metrics.pivotY / metrics.canvas;
+  // Fully metrics-driven anchor: the manifest pivot IS the world anchor.
+  // Standing metrics pivot at the foot row, sitting metrics pivot at the
+  // stool-seat contact row, so the same world coord means the right thing
+  // in every state without any hardcoded branch.
+  const anchorXPct = metrics.pivotX / metrics.canvas;
+  const anchorPct = metrics.pivotY / metrics.canvas;
   // Nameplate/chat anchor: a FIXED world-point offset above the pivot. It is
   // independent of alpha bounds and of the state-dependent sprite box, so the
   // label cannot shift when the avatar changes state.
@@ -554,7 +555,8 @@ function PlayerMarker({
         top: `${((player.y + seatOffsetY) / ROOM_HEIGHT) * 100}%`,
         width: `${scaledWidthPct}%`,
         aspectRatio: "1 / 1",
-        transform: `translate(-50%, -${anchorPct * 100}%)`,
+        transform: `translate(-${anchorXPct * 100}%, -${anchorPct * 100}%)`,
+        transformOrigin: `${anchorXPct * 100}% ${anchorPct * 100}%`,
       }}
     >
       {/* Sprite fills the marker box. */}
@@ -571,7 +573,7 @@ function PlayerMarker({
         aria-hidden
         style={{
           position: "absolute",
-          left: "50%",
+          left: `${anchorXPct * 100}%`,
           top: `${anchorPct * 100}%`,
           transform: "translate(-50%, -50%)",
           width: "45%",
@@ -588,7 +590,7 @@ function PlayerMarker({
       <div
         style={{
           position: "absolute",
-          left: "50%",
+          left: `${anchorXPct * 100}%`,
           top: `${labelTopPct}%`,
           transform: "translate(-50%, -100%)",
           paddingBottom: 4,
