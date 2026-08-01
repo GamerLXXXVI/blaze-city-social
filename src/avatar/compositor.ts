@@ -13,6 +13,7 @@ import {
   isFemaleWalkPath,
 } from "./manifest";
 import { isFemaleProduction128Path } from "./femaleProduction128";
+import { isFemaleSittingWestPath } from "./femaleSittingWest";
 import { getAvatarRenderMetrics } from "./renderMetrics";
 import { loadAvatarImage, loadAvatarImageStrict } from "./loader";
 
@@ -83,6 +84,16 @@ export async function compositeFrame(
       } catch {
         return compositeFrame(cfg, direction, "idle", 0, facing);
       }
+    } else if (isFemaleSittingWestPath(presetPath)) {
+      // Candidate 2 WEST sitting is strict: while it is still loading the
+      // caller keeps the already-rendered Candidate 2 West idle canvas, and
+      // on error we fall back ONLY to Candidate 2 West idle — never a
+      // placeholder, male, or legacy female identity.
+      try {
+        image = await loadAvatarImageStrict(presetPath);
+      } catch {
+        return compositeFrame(cfg, direction, "idle", 0, facing);
+      }
     } else if (isFemaleWalkPath(presetPath)) {
       // Female walk is strict: a missing frame falls back ONLY to the
       // same-direction female idle sprite (which gets its own legacy
@@ -96,7 +107,7 @@ export async function compositeFrame(
       image = await loadAvatarImage(presetPath);
     }
     ctx.imageSmoothingEnabled = false;
-    if (isFemaleProduction128Path(presetPath)) {
+    if (isFemaleProduction128Path(presetPath) || isFemaleSittingWestPath(presetPath)) {
       // Native 1:1 draw at (0,0). No resize, interpolation or recentering.
       ctx.drawImage(image, 0, 0);
     } else if (

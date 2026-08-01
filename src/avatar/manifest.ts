@@ -2,7 +2,7 @@
 // Real art can drop into /public/assets/... at these exact URLs and just work.
 import type { AvatarConfig, Direction, AnimState } from "./types";
 import { DIRECTIONS } from "./types";
-import { invalidateAvatarImageCache, loadAvatarImage } from "./loader";
+import { invalidateAvatarImageCache, loadAvatarImage, loadAvatarImageStrict } from "./loader";
 import {
   FEMALE_WALK_MANIFEST,
   femaleWalkManifestPath,
