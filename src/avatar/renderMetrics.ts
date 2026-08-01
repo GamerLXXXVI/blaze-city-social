@@ -1,6 +1,7 @@
 import { AVATAR_SIZE, PLAYER_SPRITE_SCALE } from "./manifest";
 import { FEMALE_PRODUCTION_128 } from "./femaleProduction128";
 import { FEMALE_SITTING_WEST, hasFemaleSittingArt } from "./femaleSittingWest";
+import { MALE_V1, hasMaleV1SittingArt, isMaleV1 } from "./maleV1";
 import type { AnimState, AvatarConfig, Direction } from "./types";
 
 export interface AvatarRenderMetrics {
@@ -69,6 +70,32 @@ function isBlazeFemale(cfg: AvatarConfig): boolean {
   );
 }
 
+// Approved Male V1 idle + walk (+ dance safe fallback). Native 128px canvas,
+// 1.12 display scale, manifest pivot (64,120). Idle and walk share ONE
+// metrics object so an idle<->walk transition cannot change canvas size,
+// display scale or world anchor.
+export const MALE_V1_METRICS: AvatarRenderMetrics = {
+  canvas: MALE_V1.canvas.width,
+  displayScale: MALE_V1.displayScale,
+  pivotX: MALE_V1.pivot.x,
+  pivotY: MALE_V1.pivot.y,
+  labelOffsetY: MALE_V1.labelOffsetY,
+};
+
+// Male V1 WEST sitting. Same canvas + display scale as idle/walk, but the
+// dedicated stool-seat anchor (64,80) instead of the standing foot pivot.
+export const MALE_V1_SIT_METRICS: AvatarRenderMetrics = {
+  canvas: MALE_V1.canvas.width,
+  displayScale: MALE_V1.displayScale,
+  pivotX: MALE_V1.sit.seatAnchor.x,
+  pivotY: MALE_V1.sit.seatAnchor.y,
+  labelOffsetY: MALE_V1.labelOffsetY,
+};
+
+function isBlazeMale(cfg: AvatarConfig): boolean {
+  return isMaleV1(cfg.preset, cfg.gender);
+}
+
 export function usesFemaleProduction128(cfg: AvatarConfig, state: AnimState): boolean {
   if (!isBlazeFemale(cfg)) return false;
   return state === "idle" || state === "walk";
@@ -89,6 +116,12 @@ export function getAvatarRenderMetrics(
   direction?: Direction,
 ): AvatarRenderMetrics {
   if (usesFemaleProduction128(cfg, state)) return FEMALE_PRODUCTION_128_METRICS;
+  if (isBlazeMale(cfg)) {
+    // West -> Male V1 sitting; any other sit direction holds the Male V1 idle
+    // for that direction. Dance has no approved art and holds idle too.
+    if (state === "sit" && hasMaleV1SittingArt(direction ?? "west")) return MALE_V1_SIT_METRICS;
+    return MALE_V1_METRICS;
+  }
   if (isBlazeFemale(cfg) && state === "sit") {
     // West -> Candidate 2 sitting; any other direction holds the Candidate 2
     // production idle for that direction (never legacy sitting art).

@@ -14,6 +14,7 @@ import {
 } from "./manifest";
 import { isFemaleProduction128Path } from "./femaleProduction128";
 import { isFemaleSittingWestPath } from "./femaleSittingWest";
+import { MALE_V1, isMaleV1IdlePath, isMaleV1Path } from "./maleV1";
 import { getAvatarRenderMetrics } from "./renderMetrics";
 import { loadAvatarImage, loadAvatarImageStrict } from "./loader";
 
@@ -103,11 +104,30 @@ export async function compositeFrame(
       } catch {
         return compositeFrame(cfg, direction, "idle", 0, facing);
       }
+    } else if (isMaleV1Path(presetPath)) {
+      // Male V1 is strict: a missing walk/sit frame falls back ONLY to the
+      // same-direction Male V1 idle sprite. Never female art, never the
+      // legacy male art, never a placeholder.
+      try {
+        image = await loadAvatarImageStrict(presetPath);
+      } catch {
+        if (state === "idle") throw new Error(`Missing approved Male V1 idle frame: ${presetPath}`);
+        return compositeFrame(cfg, direction, "idle", 0, facing);
+      }
     } else {
       image = await loadAvatarImage(presetPath);
     }
     ctx.imageSmoothingEnabled = false;
-    if (isFemaleProduction128Path(presetPath) || isFemaleSittingWestPath(presetPath)) {
+    if (isMaleV1IdlePath(presetPath)) {
+      // Approved Male V1 idle art is authored on a 232px canvas: ONE
+      // translation-crop of the 128x128 production window. No resize,
+      // no interpolation, no per-frame recentering.
+      const r = MALE_V1.idle.sourceRect;
+      ctx.drawImage(image, r.x, r.y, r.width, r.height, 0, 0, r.width, r.height);
+    } else if (isMaleV1Path(presetPath)) {
+      // Male V1 walk + west sit are already native 128x128. Native 1:1 draw.
+      ctx.drawImage(image, 0, 0);
+    } else if (isFemaleProduction128Path(presetPath) || isFemaleSittingWestPath(presetPath)) {
       // Native 1:1 draw at (0,0). No resize, interpolation or recentering.
       ctx.drawImage(image, 0, 0);
     } else if (
