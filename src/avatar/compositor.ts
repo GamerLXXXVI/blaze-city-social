@@ -13,6 +13,7 @@ import {
   isFemaleWalkPath,
 } from "./manifest";
 import { isFemaleProduction128Path } from "./femaleProduction128";
+import { isFemaleSittingWestPath } from "./femaleSittingWest";
 import { getAvatarRenderMetrics } from "./renderMetrics";
 import { loadAvatarImage, loadAvatarImageStrict } from "./loader";
 
@@ -66,7 +67,7 @@ export async function compositeFrame(
 
   // Canvas size is state/config driven: female production-128 idle+walk get a
   // native 128px canvas; every other combination keeps the legacy 96px canvas.
-  const size = getAvatarRenderMetrics(cfg, state).canvas;
+  const size = getAvatarRenderMetrics(cfg, state, direction).canvas;
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
@@ -78,6 +79,16 @@ export async function compositeFrame(
     if (isFemaleDancePath(presetPath)) {
       // If the female dance art is missing, preserve her idle sprite rather
       // than silently substituting the male dance sprite.
+      try {
+        image = await loadAvatarImageStrict(presetPath);
+      } catch {
+        return compositeFrame(cfg, direction, "idle", 0, facing);
+      }
+    } else if (isFemaleSittingWestPath(presetPath)) {
+      // Candidate 2 WEST sitting is strict: while it is still loading the
+      // caller keeps the already-rendered Candidate 2 West idle canvas, and
+      // on error we fall back ONLY to Candidate 2 West idle — never a
+      // placeholder, male, or legacy female identity.
       try {
         image = await loadAvatarImageStrict(presetPath);
       } catch {
@@ -96,7 +107,7 @@ export async function compositeFrame(
       image = await loadAvatarImage(presetPath);
     }
     ctx.imageSmoothingEnabled = false;
-    if (isFemaleProduction128Path(presetPath)) {
+    if (isFemaleProduction128Path(presetPath) || isFemaleSittingWestPath(presetPath)) {
       // Native 1:1 draw at (0,0). No resize, interpolation or recentering.
       ctx.drawImage(image, 0, 0);
     } else if (

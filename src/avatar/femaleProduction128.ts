@@ -26,7 +26,7 @@ type FemaleProduction128Manifest = {
   canvas: { width: 128; height: 128 };
   pivot: { x: 64; y: 120; semantic: "bottom-center" };
   baselineY: 120;
-  displayScale: 1;
+  displayScale: 1.12;
 };
 
 const WALK_FRAMES = [
@@ -39,7 +39,9 @@ const WALK_FRAMES = [
 ] as const;
 
 export const FEMALE_PRODUCTION_128 = {
-  version: "2.0.0",
+  // Cache/version token only. Bumped for the 1.0 -> 1.12 display-scale
+  // change; the PNG bytes are untouched.
+  version: "2.1.0",
   idle: {
     id: "blaze-female-pixellab-idle-production-128-v2",
     assetRoot: "/assets/avatars/presets/blaze-original/idle-female-pixellab-v2",
@@ -67,7 +69,9 @@ export const FEMALE_PRODUCTION_128 = {
   canvas: { width: 128, height: 128 },
   pivot: { x: 64, y: 120, semantic: "bottom-center" },
   baselineY: 120,
-  displayScale: 1,
+  // Runtime display scale only — the 128x128 source pixels are never
+  // resized, resampled or re-authored.
+  displayScale: 1.12,
 } as const satisfies FemaleProduction128Manifest;
 
 export function femaleProduction128IdlePath(direction: Direction): string {

@@ -7,6 +7,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "check:female-walk-assets": "bun scripts/verify-female-walk-assets.ts",
+    "check:female-sitting-assets": "bun scripts/verify-female-sitting-assets.ts",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
@@ -69,7 +70,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
-    "@lovable.dev/vite-tanstack-config": "2.8.4",
+    "@lovable.dev/vite-tanstack-config": "2.8.1",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

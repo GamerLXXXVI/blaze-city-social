@@ -53,7 +53,7 @@ invariant(
   "Female idle/walk pivot must be (64,120)",
 );
 invariant(FEMALE_PRODUCTION_128.baselineY === 120, "Female baseline must be row 120");
-invariant(FEMALE_PRODUCTION_128.displayScale === 1, "Female display scale must be exactly 1");
+invariant(FEMALE_PRODUCTION_128.displayScale === 1.12, "Female display scale must be exactly 1.12");
 
 // ---- public runtime manifests ----------------------------------------------
 const publicRoot = (assetRoot: string) =>
