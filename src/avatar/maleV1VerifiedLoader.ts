@@ -84,15 +84,18 @@ function flatten(manifest: MaleV1PublicManifest): Map<string, MaleV1AssetEntry> 
   if (manifest.id !== MALE_V1.id) fail("manifest id mismatch");
   if (manifest.approvalStatus !== "visually-approved") fail("manifest is not approved");
   if (manifest.pixelLab.characterId !== MALE_V1.characterId) fail("character id mismatch");
-  if (manifest.pixelLab.sittingStateId !== MALE_V1.sittingStateId) fail("sitting state id mismatch");
+  if (manifest.pixelLab.sittingStateId !== MALE_V1.sittingStateId)
+    fail("sitting state id mismatch");
   if (manifest.directionOrder.join(",") !== MALE_V1.directions.join(",")) {
     fail("direction order mismatch");
   }
   if (manifest.integrity.algorithm !== "SHA-256") fail("integrity algorithm must be SHA-256");
   if (manifest.integrity.assetCount !== MALE_V1.assetCount) fail("asset count must be 57");
-  if (manifest.integrity.verifyBeforeDecode !== true) fail("manifest must require verify-before-decode");
+  if (manifest.integrity.verifyBeforeDecode !== true)
+    fail("manifest must require verify-before-decode");
   if (manifest.render.logicalCanvas[0] !== MALE_V1.canvas.width) fail("logical canvas must be 128");
-  if (manifest.render.logicalCanvas[1] !== MALE_V1.canvas.height) fail("logical canvas must be 128");
+  if (manifest.render.logicalCanvas[1] !== MALE_V1.canvas.height)
+    fail("logical canvas must be 128");
   if (manifest.render.displayScale !== MALE_V1.displayScale) fail("display scale must be 1.12");
   if (manifest.render.interpolation !== "none") fail("interpolation must be none");
   const r = MALE_V1.idle.sourceRect;
@@ -111,7 +114,10 @@ function flatten(manifest: MaleV1PublicManifest): Map<string, MaleV1AssetEntry> 
   }
   if (manifest.sit.productionPivot[0] !== MALE_V1.sit.seatAnchor.x) fail("seat anchor mismatch");
   if (manifest.sit.productionPivot[1] !== MALE_V1.sit.seatAnchor.y) fail("seat anchor mismatch");
-  if (manifest.sit.loadFallback.state !== "idle" || manifest.sit.loadFallback.direction !== "west") {
+  if (
+    manifest.sit.loadFallback.state !== "idle" ||
+    manifest.sit.loadFallback.direction !== "west"
+  ) {
     fail("sit fallback must be the Male V1 west idle");
   }
   if (manifest.dance.status !== "temporary-safe-fallback") fail("dance must be the safe fallback");

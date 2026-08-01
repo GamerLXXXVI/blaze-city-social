@@ -292,13 +292,10 @@ invariant(
   "failed Male V1 west sit must fall back to the verified Male V1 west idle",
 );
 invariant(
-  maleBranch.includes("compositeFrame(cfg, direction, \"idle\", 0, facing)"),
+  maleBranch.includes('compositeFrame(cfg, direction, "idle", 0, facing)'),
   "failed Male V1 walk must fall back to the same-direction verified Male V1 idle",
 );
-invariant(
-  maleBranch.includes("throw error"),
-  "failed Male V1 idle must fail closed",
-);
+invariant(maleBranch.includes("throw error"), "failed Male V1 idle must fail closed");
 
 const loaderSource = await readFile(
   join(process.cwd(), "src/avatar/maleV1VerifiedLoader.ts"),
