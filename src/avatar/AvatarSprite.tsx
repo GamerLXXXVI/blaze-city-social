@@ -7,6 +7,7 @@ import {
   idleFrameMs,
   preloadFemaleWalkFrames,
   preloadFemaleDanceFrames,
+  preloadMaleV1Frames,
   walkFrameCount,
   walkFrameMs,
 } from "./manifest";
@@ -46,6 +47,7 @@ export function AvatarSprite({
   const gender = config.gender;
   useEffect(() => {
     if (gender === "female") preloadFemaleWalkFrames();
+    else preloadMaleV1Frames();
   }, [gender]);
 
   // Canvas dimensions are metrics-driven so a 128px female idle/walk frame is
