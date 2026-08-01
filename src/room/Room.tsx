@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AvatarSprite } from "@/avatar/AvatarSprite";
 import { AVATAR_SIZE, NPC_RENDER_SCALE } from "@/avatar/manifest";
-import { getAvatarRenderMetrics, LEGACY_RENDER_METRICS } from "@/avatar/renderMetrics";
+import { getAvatarRenderMetrics } from "@/avatar/renderMetrics";
 import type { AvatarConfig, Direction, Facing, AnimState } from "@/avatar/types";
-import { DIRECTIONS } from "@/avatar/types";
+import { DIRECTIONS, normalizeDirection } from "@/avatar/types";
 import { ROOM_HEIGHT, ROOM_WIDTH, ZONES, zoneAt } from "./zones";
 import { isBlocked } from "./zones";
 import { facingFromDelta, stepToward, type Vec2 } from "./movement";
@@ -16,20 +16,10 @@ const BUBBLE_MAX_CHARS = 120;
 const BUBBLE_MAX_WIDTH_PX = 200;
 const BUBBLE_EDGE_THRESHOLD = 100;
 
-// Measured foot row on the 64px source sprite (bottom-most non-transparent
-// pixel is consistently at row 46 across all 8 idle directions and every
-// walk frame). Sprites are drawn full-canvas in the compositor so this
-// fraction applies directly to the rendered sprite box.
-const FOOT_ANCHOR_PCT = 46 / 64; // 0.71875
-
-// Seat anchor for the sit pose — the row on the 64px source sprite where
-// the hip/butt makes contact with the stool. Calibrated by inspecting the
-// west sit sprite (hip row ≈ 40 in the padded 64x64 canvas) and cross-
-// checked against the south sit; each stool's world Y is placed at the
-// visible seat-top pixel of the stool art so this anchor lands the player
-// squarely on the seat.
-const SIT_ANCHOR_PCT = 40 / 64; // 0.625
-
+// Foot row (46/64) and seat row (40/64) are no longer hardcoded here — they
+// live in the render-metrics module as LEGACY_RENDER_METRICS.pivotY and
+// LEGACY_SIT_RENDER_METRICS.pivotY, so every anchor is metrics-driven.
+//
 // Collision / click clamping margin in WORLD pixels. Deliberately pinned to
 // the legacy 96px avatar frame so movement and clamping stay byte-identical
 // regardless of how large a render canvas a given sprite state uses.
