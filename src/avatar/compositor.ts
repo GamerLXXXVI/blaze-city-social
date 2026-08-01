@@ -14,7 +14,7 @@ import {
 } from "./manifest";
 import { isFemaleProduction128Path } from "./femaleProduction128";
 import { isFemaleSittingWestPath } from "./femaleSittingWest";
-import { MALE_V1, isMaleV1IdlePath, isMaleV1Path, isMaleV1SitPath, maleV1IdlePath } from "./maleV1";
+import { MALE_V1, isMaleV1IdlePath, isMaleV1Path, isMaleV1SitPath } from "./maleV1";
 import { loadMaleV1VerifiedImage } from "./maleV1VerifiedLoader";
 import { getAvatarRenderMetrics } from "./renderMetrics";
 import { loadAvatarImage, loadAvatarImageStrict } from "./loader";
