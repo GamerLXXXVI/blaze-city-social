@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "blaze-female-candidate2-west-sit-128-v1",
+  "characterId": "384a6412-08e4-4e1b-819f-aaa243e03bc2",
+  "characterGroupId": "079c3ebd-269e-46e5-9519-8371586778fa",
+  "pixelLabStateId": "205f8eba-3a91-40a4-8b9f-6c872dedb86f",
+  "direction": "west",
+  "screenDirection": "left",
+  "canvas": {
+    "width": 128,
+    "height": 128
+  },
+  "crop": {
+    "left": 48,
+    "top": 51,
+    "width": 128,
+    "height": 128
+  },
+  "seatAnchor": {
+    "x": 64,
+    "y": 80,
+    "semantic": "stool-seat-contact"
+  },
+  "displayScale": 1.12,
+  "file": "west.png",
+  "sha256": "ca8d80e01520dba2d65681e619543522738b134308b3b0976e80b954d4bce287",
+  "strictLoad": true,
+  "fallback": "candidate-2-west-idle",
+  "qa": {
+    "binaryAlpha": true,
+    "greenPixels": 0,
+    "noClipping": true,
+    "sourcePixelsPreserved": true,
+    "resized": false,
+    "furnitureBakedIn": false
+  }
+}
