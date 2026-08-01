@@ -21,6 +21,14 @@ import {
   hasFemaleSittingArt,
   isFemaleSittingWestPath,
 } from "./femaleSittingWest";
+import {
+  MALE_V1,
+  hasMaleV1SittingArt,
+  isMaleV1,
+  maleV1IdlePath,
+  maleV1SitWestPath,
+  maleV1WalkPath,
+} from "./maleV1";
 
 export const AVATAR_SIZE = 96; // logical avatar frame size in room pixels
 
@@ -154,23 +162,34 @@ export function preloadFemaleDanceFrames(): Promise<void> {
 }
 
 export function danceFrameCount(cfg: AvatarConfig): number {
-  return (cfg.gender ?? "male") === "female" ? FEMALE_DANCE_FRAME_COUNT : DANCE_FRAME_COUNT;
+  if ((cfg.gender ?? "male") === "female") return FEMALE_DANCE_FRAME_COUNT;
+  // Male V1 has no approved dance art yet — one static safe-fallback frame.
+  if (isMaleV1(cfg.preset, cfg.gender)) return MALE_V1.dance.frameCount;
+  return DANCE_FRAME_COUNT;
 }
 
 export function danceFrameMs(cfg: AvatarConfig): number {
-  return (cfg.gender ?? "male") === "female" ? FEMALE_DANCE_FRAME_MS : DANCE_FRAME_MS;
+  if ((cfg.gender ?? "male") === "female") return FEMALE_DANCE_FRAME_MS;
+  if (isMaleV1(cfg.preset, cfg.gender)) return MALE_V1.dance.frameMs;
+  return DANCE_FRAME_MS;
 }
 
 export function walkFrameCount(cfg: AvatarConfig): number {
-  return (cfg.gender ?? "male") === "female" ? FEMALE_WALK_FRAME_COUNT : WALK_FRAME_COUNT;
+  if ((cfg.gender ?? "male") === "female") return FEMALE_WALK_FRAME_COUNT;
+  if (isMaleV1(cfg.preset, cfg.gender)) return MALE_V1.walk.frameCount;
+  return WALK_FRAME_COUNT;
 }
 
 export function walkFrameMs(cfg: AvatarConfig): number {
-  return (cfg.gender ?? "male") === "female" ? FEMALE_WALK_FRAME_MS : WALK_FRAME_MS;
+  if ((cfg.gender ?? "male") === "female") return FEMALE_WALK_FRAME_MS;
+  if (isMaleV1(cfg.preset, cfg.gender)) return MALE_V1.walk.frameMs;
+  return WALK_FRAME_MS;
 }
 
 export function idleFrameCount(cfg: AvatarConfig): number {
-  return (cfg.gender ?? "male") === "female" ? FEMALE_IDLE_FRAME_COUNT : 1;
+  if ((cfg.gender ?? "male") === "female") return FEMALE_IDLE_FRAME_COUNT;
+  if (isMaleV1(cfg.preset, cfg.gender)) return MALE_V1.idle.frameCount;
+  return 1;
 }
 
 export function idleFrameMs(cfg: AvatarConfig): number {
@@ -191,6 +210,19 @@ export function presetPathFor(
   if (preset !== "blaze-original") return null;
   const root = `/assets/avatars/presets/${preset}`;
   const gender = cfg.gender ?? "male";
+  // Approved Male V1: idle / walk / west-sit. Never falls through to female
+  // art, to the legacy male art, or to the layered placeholder pipeline.
+  if (gender === "male") {
+    if (state === "walk") return maleV1WalkPath(direction, frame);
+    if (state === "sit") {
+      return hasMaleV1SittingArt(direction) ? maleV1SitWestPath() : maleV1IdlePath(direction);
+    }
+    if (state === "dance") {
+      // No approved male dance art yet — hold the safe idle fallback.
+      return maleV1IdlePath(MALE_V1.dance.fallback.direction);
+    }
+    return maleV1IdlePath(direction);
+  }
   // Female art has dedicated idle, 8-direction 6-frame walk, dance and sit
   // sets. No female state ever falls through to male or generic art.
   if (gender === "female") {
