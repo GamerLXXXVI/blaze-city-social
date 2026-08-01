@@ -15,6 +15,12 @@ import {
   isFemaleProduction128IdlePath,
   isFemaleProduction128WalkPath,
 } from "./femaleProduction128";
+import {
+  FEMALE_SITTING_WEST,
+  femaleSittingWestPath,
+  hasFemaleSittingArt,
+  isFemaleSittingWestPath,
+} from "./femaleSittingWest";
 
 export const AVATAR_SIZE = 96; // logical avatar frame size in room pixels
 
@@ -200,8 +206,12 @@ export function presetPathFor(
       return femaleWalkPath(direction, frame);
     }
     if (state === "sit") {
-      // Never fall through to the male sit sprite for a female player.
-      return femaleSitPath(direction);
+      // Candidate 2 sitting exists for WEST only (every stool forces west).
+      // Any other direction holds the Candidate 2 production idle for that
+      // direction — never the legacy sit-female art, never male art.
+      return hasFemaleSittingArt(direction)
+        ? femaleSittingWestPath()
+        : femaleIdleFramePath(direction);
     }
   }
   if (state === "dance") {
@@ -297,5 +307,21 @@ export function preloadFemaleWalkFrames(): Promise<void> {
   }
   femaleWalkPreloaded = Promise.all(urls.map((url) => loadAvatarImage(url))).then(() => undefined);
   void preloadFemaleDanceFrames();
+  void preloadFemaleSittingWest();
   return femaleWalkPreloaded;
 }
+
+// Decodes the single Candidate 2 WEST sitting frame once so the first stool
+// interaction never waits on the network.
+let femaleSittingPreload: Promise<void> | null = null;
+export function preloadFemaleSittingWest(): Promise<void> {
+  if (!femaleSittingPreload) {
+    femaleSittingPreload = loadAvatarImageStrict(femaleSittingWestPath()).then(
+      () => undefined,
+      () => undefined,
+    );
+  }
+  return femaleSittingPreload;
+}
+
+export { FEMALE_SITTING_WEST, femaleSittingWestPath, isFemaleSittingWestPath };
