@@ -4,6 +4,12 @@ import { join } from "node:path";
 
 import { MALE_V1, maleV1IdlePath, maleV1SitWestPath, maleV1WalkPath } from "../src/avatar/maleV1";
 import { presetPathFor, walkFrameCount, walkFrameMs, idleFrameCount } from "../src/avatar/manifest";
+import {
+  MALE_V1_MANIFEST_BYTE_LENGTH,
+  MALE_V1_MANIFEST_SHA256,
+  MALE_V1_MANIFEST_URL,
+  maleV1CanonicalPath,
+} from "../src/avatar/maleV1VerifiedLoader";
 import { getAvatarRenderMetrics } from "../src/avatar/renderMetrics";
 import type { AvatarConfig, Direction } from "../src/avatar/types";
 
@@ -21,12 +27,31 @@ type AssetEntry = {
 };
 
 const root = join(process.cwd(), "public", MALE_V1.assetRoot.replace(/^\//, ""));
-const manifest = JSON.parse(await readFile(join(root, "manifest.json"), "utf8")) as {
+
+// ---- pinned public manifest bytes -------------------------------------------
+// The browser runtime loader verifies these exact values before it parses the
+// manifest, so a drift here would silently disable runtime verification.
+const manifestBytes = await readFile(join(root, "manifest.json"));
+invariant(
+  MALE_V1_MANIFEST_URL === `${MALE_V1.assetRoot}/manifest.json`,
+  "runtime manifest URL must point at the approved Male V1 manifest",
+);
+invariant(
+  manifestBytes.byteLength === MALE_V1_MANIFEST_BYTE_LENGTH,
+  `public manifest byte length is ${manifestBytes.byteLength}, pinned ${MALE_V1_MANIFEST_BYTE_LENGTH}`,
+);
+const manifestSha = createHash("sha256").update(manifestBytes).digest("hex");
+invariant(
+  manifestSha === MALE_V1_MANIFEST_SHA256,
+  `public manifest SHA-256 is ${manifestSha}, pinned ${MALE_V1_MANIFEST_SHA256}`,
+);
+
+const manifest = JSON.parse(manifestBytes.toString("utf8")) as {
   id: string;
   approvalStatus: string;
   pixelLab: { characterId: string; sittingStateId: string };
   directionOrder: Direction[];
-  integrity: { algorithm: string; assetCount: number };
+  integrity: { algorithm: string; assetCount: number; verifyBeforeDecode: boolean };
   render: { logicalCanvas: [number, number]; displayScale: number; interpolation: string };
   idle: {
     sourceCanvas: [number, number];
@@ -61,6 +86,10 @@ invariant(
 );
 invariant(manifest.integrity.algorithm === "SHA-256", "integrity algorithm must be SHA-256");
 invariant(manifest.integrity.assetCount === MALE_V1.assetCount, "asset count mismatch");
+invariant(
+  manifest.integrity.verifyBeforeDecode === true,
+  "manifest must declare verify-before-decode",
+);
 invariant(
   manifest.render.logicalCanvas[0] === 128 && manifest.render.logicalCanvas[1] === 128,
   "logical canvas must be 128x128",
@@ -244,6 +273,64 @@ for (const [direction, frames] of Object.entries(femaleBaseline.walk)) {
   }
 }
 
+// ---- runtime verification contract -------------------------------------------
+const compositorSource = await readFile(join(process.cwd(), "src/avatar/compositor.ts"), "utf8");
+const maleBranch = compositorSource.slice(
+  compositorSource.indexOf("isMaleV1Path(presetPath)"),
+  compositorSource.indexOf("image = await loadAvatarImage(presetPath)"),
+);
+invariant(
+  maleBranch.includes("loadMaleV1VerifiedImage"),
+  "compositor Male V1 branch must use the verified loader",
+);
+invariant(
+  !maleBranch.includes("loadAvatarImageStrict") && !maleBranch.includes("loadAvatarImage("),
+  "compositor Male V1 branch must never use the legacy image loaders",
+);
+invariant(
+  maleBranch.includes('compositeFrame(cfg, "west", "idle", 0, facing)'),
+  "failed Male V1 west sit must fall back to the verified Male V1 west idle",
+);
+invariant(
+  maleBranch.includes('compositeFrame(cfg, direction, "idle", 0, facing)'),
+  "failed Male V1 walk must fall back to the same-direction verified Male V1 idle",
+);
+invariant(maleBranch.includes("throw error"), "failed Male V1 idle must fail closed");
+
+const loaderSource = await readFile(
+  join(process.cwd(), "src/avatar/maleV1VerifiedLoader.ts"),
+  "utf8",
+);
+for (const needle of [
+  "crypto.subtle.digest",
+  "MALE_V1_MANIFEST_SHA256",
+  "byteLength",
+  "naturalWidth",
+  "URL.revokeObjectURL",
+  "verifiedImages.delete",
+]) {
+  invariant(
+    loaderSource.includes(needle),
+    `verified loader must implement the runtime contract (${needle})`,
+  );
+}
+invariant(
+  maleV1CanonicalPath(maleV1IdlePath("south")) === `${MALE_V1.assetRoot}/idle/south.png`,
+  "canonical path lookup must strip the cache-busting query",
+);
+invariant(
+  manifest.idle.assets.south.url === maleV1CanonicalPath(maleV1IdlePath("south")),
+  "runtime idle URL must match the manifest entry",
+);
+invariant(
+  manifest.sit.assets.west.url === maleV1CanonicalPath(maleV1SitWestPath()),
+  "runtime sit URL must match the manifest entry",
+);
+invariant(
+  manifest.walk.assets.south[3].url === maleV1CanonicalPath(maleV1WalkPath("south", 3)),
+  "runtime walk URL must match the manifest entry",
+);
+
 console.log(
-  `Verified ${checked} approved Male V1 assets (SHA-256, 8-bit RGBA, 232px idle crop / 128px walk+sit), strict runtime resolution with idle-only fallbacks, and ${femaleChecked} untouched female assets`,
+  `Verified ${checked} approved Male V1 assets (SHA-256, 8-bit RGBA, 232px idle crop / 128px walk+sit), pinned manifest bytes, runtime hash-verified loading with idle-only fallbacks, and ${femaleChecked} untouched female assets`,
 );

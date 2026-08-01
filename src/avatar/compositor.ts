@@ -14,7 +14,8 @@ import {
 } from "./manifest";
 import { isFemaleProduction128Path } from "./femaleProduction128";
 import { isFemaleSittingWestPath } from "./femaleSittingWest";
-import { MALE_V1, isMaleV1IdlePath, isMaleV1Path } from "./maleV1";
+import { MALE_V1, isMaleV1IdlePath, isMaleV1Path, isMaleV1SitPath } from "./maleV1";
+import { loadMaleV1VerifiedImage } from "./maleV1VerifiedLoader";
 import { getAvatarRenderMetrics } from "./renderMetrics";
 import { loadAvatarImage, loadAvatarImageStrict } from "./loader";
 
@@ -105,13 +106,24 @@ export async function compositeFrame(
         return compositeFrame(cfg, direction, "idle", 0, facing);
       }
     } else if (isMaleV1Path(presetPath)) {
-      // Male V1 is strict: a missing walk/sit frame falls back ONLY to the
-      // same-direction Male V1 idle sprite. Never female art, never the
-      // legacy male art, never a placeholder.
+      // Male V1 is manifest-driven and hash-verified at runtime: the
+      // permissive/strict legacy image loaders are never used for these
+      // paths. Fallbacks are explicit and stay inside the verified Male V1
+      // package — never female art, legacy male art, layered art, or a
+      // placeholder.
       try {
-        image = await loadAvatarImageStrict(presetPath);
-      } catch {
-        if (state === "idle") throw new Error(`Missing approved Male V1 idle frame: ${presetPath}`);
+        image = await loadMaleV1VerifiedImage(presetPath);
+      } catch (error) {
+        if (isMaleV1IdlePath(presetPath)) {
+          // Idle (which also backs the temporary static male dance frame) has
+          // no safe substitute: fail closed.
+          throw error;
+        }
+        if (isMaleV1SitPath(presetPath)) {
+          // West sitting falls back specifically to the verified West idle.
+          return compositeFrame(cfg, "west", "idle", 0, facing);
+        }
+        // Walk falls back to the same-direction verified Male V1 idle.
         return compositeFrame(cfg, direction, "idle", 0, facing);
       }
     } else {
