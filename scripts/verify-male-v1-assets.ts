@@ -2,12 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import {
-  MALE_V1,
-  maleV1IdlePath,
-  maleV1SitWestPath,
-  maleV1WalkPath,
-} from "../src/avatar/maleV1";
+import { MALE_V1, maleV1IdlePath, maleV1SitWestPath, maleV1WalkPath } from "../src/avatar/maleV1";
 import { presetPathFor, walkFrameCount, walkFrameMs, idleFrameCount } from "../src/avatar/manifest";
 import { getAvatarRenderMetrics } from "../src/avatar/renderMetrics";
 import type { AvatarConfig, Direction } from "../src/avatar/types";
@@ -184,7 +179,10 @@ for (const direction of MALE_V1.directions) {
 for (const state of ["idle", "walk", "sit", "dance"] as const) {
   for (const direction of MALE_V1.directions) {
     const path = presetPathFor(male, direction, state, 0)!;
-    invariant(path.startsWith(MALE_V1.assetRoot), `male ${state} escaped the Male V1 root: ${path}`);
+    invariant(
+      path.startsWith(MALE_V1.assetRoot),
+      `male ${state} escaped the Male V1 root: ${path}`,
+    );
     invariant(!path.includes("female"), `male ${state} must never resolve to female art: ${path}`);
   }
 }
